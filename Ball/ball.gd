@@ -28,7 +28,9 @@ signal rest
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	pass
+	GlobalSettings.range_settings.range_units.setting_changed.connect(set_env)
+	GlobalSettings.range_settings.temperature.setting_changed.connect(set_env)
+	GlobalSettings.range_settings.altitude.setting_changed.connect(set_env)
 
 
 func _process(_delta: float) -> void:
@@ -195,9 +197,10 @@ func hit_from_data(data : Dictionary):
 						Vector3(0.0, 1.0, 0.0), -data["HLA"]*PI/180.0)
 	omega = Vector3(0.0, 0.0, data["TotalSpin"]*0.10472).rotated(Vector3(1.0, 0.0, 0.0), data["SpinAxis"]*PI/180)
 	
-func set_env(data: Dictionary):
-	airDensity = Coefficients.get_air_density(data["Altitude"], data["Temp"])
-	dynamicAirViscosity = Coefficients.get_dynamic_air_viscosity(data["Temp"])
+func set_env(_value):
+	airDensity = Coefficients.get_air_density(GlobalSettings.range_settings.altitude.value,
+		 GlobalSettings.range_settings.temperature.value)
+	dynamicAirViscosity = Coefficients.get_dynamic_air_viscosity(GlobalSettings.range_settings.temperature.value)
 	
 func reset():
 	position = Vector3(0.0, 0.1, 0.0)

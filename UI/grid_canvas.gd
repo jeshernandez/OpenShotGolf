@@ -24,6 +24,8 @@ func _draw():
 
 func _ready():
 	load_layout()
+	
+	GlobalSettings.range_settings.range_units.setting_changed.connect(set_units)
 
 func snap_to_grid(panel: Control):
 	var global_snap_x = round((panel.global_position.x - GRID_ORIGIN.x) / GRID_SIZE.x) * GRID_SIZE.x + GRID_ORIGIN.x
@@ -64,3 +66,15 @@ func _notification(what):
 	if what == NOTIFICATION_WM_CLOSE_REQUEST:
 		save_layout()
 		get_tree().quit()  # Actually close the game after saving
+		
+func set_units(value):
+	if value == Enums.Units.IMPERIAL:
+		$Distance.set_units("yd")
+		$Carry.set_units("yd")
+		$Offline.set_units("yd")
+		$Apex.set_units("ft")
+	else:
+		$Distance.set_units("m")
+		$Carry.set_units("m")
+		$Offline.set_units("m")
+		$Apex.set_units("m")

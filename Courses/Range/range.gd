@@ -12,19 +12,32 @@ var auto_reset_enabled := false
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	$PhantomCamera3D.follow_target = $GolfBall/Ball
+	GlobalSettings.range_settings.camera_follow_mode.setting_changed.connect(set_camera_follow_mode)
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta: float) -> void:
-	ball_data["Distance"] = str($GolfBall.get_distance())
-	ball_data["Carry"] = str($GolfBall.carry)
-	ball_data["Apex"] = str($GolfBall.apex*3)
-	var offline = $GolfBall.get_offline()
-	var offline_text := "R"
-	if offline < 0:
-		offline_text = "L"
-	offline_text += str(abs(offline))
-	ball_data["Offline"] = offline_text
+	var m2yd = 1.09361 # Meters to yards
+	if GlobalSettings.range_settings.range_units.value == Enums.Units.IMPERIAL:
+		ball_data["Distance"] = str(int($GolfBall.get_distance()*m2yd))
+		ball_data["Carry"] = str(int($GolfBall.carry*m2yd))
+		ball_data["Apex"] = str(int($GolfBall.apex*3*m2yd))
+		var offline = int($GolfBall.get_offline()*m2yd)
+		var offline_text := "R"
+		if offline < 0:
+			offline_text = "L"
+		offline_text += str(abs(offline))
+		ball_data["Offline"] = offline_text
+	else:
+		ball_data["Distance"] = str($GolfBall.get_distance())
+		ball_data["Carry"] = str($GolfBall.carry)
+		ball_data["Apex"] = str($GolfBall.apex)
+		var offline = $GolfBall.get_offline()
+		var offline_text := "R"
+		if offline < 0:
+			offline_text = "L"
+		offline_text += str(abs(offline))
+		ball_data["Offline"] = offline_text
 	
 	$RangeUI.set_data(ball_data)
 
@@ -34,8 +47,16 @@ func _on_tcp_client_hit_ball(data: Dictionary) -> void:
 
 
 func _on_golf_ball_rest(_ball_data) -> void:
-	if auto_reset_enabled:
-		await get_tree().create_timer(ball_reset_time).timeout
+	if GlobalSettings.range_settings.auto_ball_reset.value:
+		await get_tree().create_timer(GlobalSettings.range_settings.ball_reset_timer.value).timeout
 		$GolfBall.reset_ball()
 		ball_data["HLA"] = 0.0
 		ball_data["VLA"] = 0.0
+		
+func set_camera_follow_mode() -> void:
+	if GlobalSettings.range_settings.camera_follow_mode.value:
+		$PhantomCamera3D.follow_mode = 5 # Framed
+		$PhantomCamera3D.follow_target = $GolfBall/Ball
+	else:
+		$PhantomCamera3D.follow_mode = 0 # None
+	

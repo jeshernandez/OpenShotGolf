@@ -18,12 +18,20 @@ func _process(_delta: float) -> void:
 
 
 func set_data(data: Dictionary) -> void:
-	$GridCanvas/Distance.set_data(data["Distance"])
-	$GridCanvas/Carry.set_data(data["Carry"])
-	$GridCanvas/Offline.set_data(data["Offline"])
-	$GridCanvas/Apex.set_data(data["Apex"])
-	$GridCanvas/VLA.set_data("%3.1f" % data["VLA"])
-	$GridCanvas/HLA.set_data("%3.1f" % data["HLA"])
+	if GlobalSettings.range_settings.range_units.value == Enums.Units.IMPERIAL:
+		$GridCanvas/Distance.set_data(data["Distance"])
+		$GridCanvas/Carry.set_data(data["Carry"])
+		$GridCanvas/Offline.set_data(data["Offline"])
+		$GridCanvas/Apex.set_data(data["Apex"])
+		$GridCanvas/VLA.set_data("%3.1f" % data["VLA"])
+		$GridCanvas/HLA.set_data("%3.1f" % data["HLA"])
+	else:
+		$GridCanvas/Distance.set_data(data["Distance"])
+		$GridCanvas/Carry.set_data(data["Carry"])
+		$GridCanvas/Offline.set_data(data["Offline"])
+		$GridCanvas/Apex.set_data(data["Apex"])
+		$GridCanvas/VLA.set_data("%3.1f" % data["VLA"])
+		$GridCanvas/HLA.set_data("%3.1f" % data["HLA"])
 
 
 func _on_rec_button_pressed() -> void:
@@ -65,6 +73,3 @@ func _on_shot_injector_inject(data: Variant) -> void:
 
 func _on_environment_settings_inject_env(data: Variant) -> void:
 	emit_signal("set_env", data)
-
-func _on_exit_button_pressed() -> void:
-	SceneManager.change_scene("res://UI/MainMenu/main_menu.tscn")

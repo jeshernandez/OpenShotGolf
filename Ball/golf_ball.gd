@@ -34,17 +34,18 @@ func _process(delta: float) -> void:
 		$BallTrail.clear_points()
 		
 	if track_points:
-		apex = max(apex, int($Ball.position.y*1.09361))
-		offline = int($Ball.position.z*1.09361)
+		apex = max(apex, int($Ball.position.y))
+		offline = int($Ball.position.z)
 		if $Ball.state == Enums.BallState.FLIGHT:
-			carry = int(Vector2($Ball.position.x, $Ball.position.z).length()*1.09361)
+			carry = int(Vector2($Ball.position.x, $Ball.position.z).length())
 		trail_timer += delta
 		if trail_timer >= trail_resolution:
 			$BallTrail.add_point($Ball.position)
 			trail_timer = 0.0
 
 func get_distance() -> int:
-	return int(Vector2($Ball.position.x, $Ball.position.z).length()*1.09361)
+	# Returns the distance in physics units of meters
+	return int(Vector2($Ball.position.x, $Ball.position.z).length())
 	
 func get_offline() -> int:
 	return int($Ball.position.z)
@@ -72,7 +73,7 @@ func reset_shot_data() -> void:
 
 func _on_ball_rest() -> void:
 	track_points = false
-	shot_data["TotalDistance"] = int(Vector2($Ball.position.x, $Ball.position.z).length()*1.09361)
+	shot_data["TotalDistance"] = int(Vector2($Ball.position.x, $Ball.position.z).length())
 	shot_data["CarryDistance"] = carry
 	shot_data["Apex"] = apex
 	shot_data["OfflineDistance"] = offline

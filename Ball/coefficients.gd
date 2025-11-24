@@ -11,9 +11,18 @@ const GAS_CONSTANT_DRY_AIR = 287.058 # Unit: [J/(kg*K)]
 const DYN_VISCOSITY_ZERO_DEGREE = 1.716e-05 # Unit: [kg/(m*s)]
 const SUTHERLAND_CONSTANT = 198.72 # Unit: [K] Source: https://www.grc.nasa.gov/www/BGH/viscosity.html
 
+static func FtoC(temp: float) -> float:
+	return (temp - 32)* 5/9
+
 static func get_air_density(altitude: float, temp: float) -> float:
-	var tempK = (temp - 32) * 5/9 + KELVIN_CELCIUS
-	var altitudeMeters = altitude * 0.3048
+	var tempK : float
+	var altitudeMeters : float
+	if GlobalSettings.range_settings.range_units.value == Enums.Units.IMPERIAL:
+		tempK = FtoC(temp) + KELVIN_CELCIUS
+		altitudeMeters = altitude * 0.3048
+	else:
+		tempK = temp + KELVIN_CELCIUS
+		altitudeMeters = altitude
 	
 	# calculation through barometric formula. Source: https://en.wikipedia.org/wiki/Barometric_formula
 	var exponent = (-EARTH_ACCELERATION_SPEED * MOLAR_MASS_DRY_AIR * altitudeMeters) / (UNIVERSAL_GAS_CONSTANT * tempK)
@@ -22,7 +31,11 @@ static func get_air_density(altitude: float, temp: float) -> float:
 	return pressure / (GAS_CONSTANT_DRY_AIR * tempK)
 	
 static func get_dynamic_air_viscosity(temp: float) -> float:
-	var tempK = (temp - 32) * 5/9 + KELVIN_CELCIUS
+	var tempK : float
+	if GlobalSettings.range_settings.range_units.value == Enums.Units.IMPERIAL:
+		tempK= FtoC(temp) + KELVIN_CELCIUS
+	else:
+		tempK = temp + KELVIN_CELCIUS
 	
 	# Sutherland formula
 	return DYN_VISCOSITY_ZERO_DEGREE * pow((tempK / KELVIN_CELCIUS), 1.5) * (KELVIN_CELCIUS + SUTHERLAND_CONSTANT) / (tempK + SUTHERLAND_CONSTANT)

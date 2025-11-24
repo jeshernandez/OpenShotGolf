@@ -1,7 +1,7 @@
 class_name Setting
 extends RefCounted
 
-signal setting_changed
+signal setting_changed(val)
 
 var value : Variant
 var default : Variant
@@ -16,7 +16,7 @@ func _init(def: Variant, minimum: Variant = null, maximum: Variant = null):
 	
 func reset_default():
 	value = default
-	emit_signal("setting_changed")
+	emit_signal("setting_changed", value)
 
 func set_value(val: Variant):
 	if _min and value < _min:
@@ -26,9 +26,9 @@ func set_value(val: Variant):
 	else:
 		value = val
 		
-	emit_signal("setting_changed")
+	emit_signal("setting_changed", value)
 	
 func set_default(def: Variant):
 	default = def
-	emit_signal("setting_changed")
+	emit_signal("setting_changed", value)
 	
