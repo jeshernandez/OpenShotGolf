@@ -22,13 +22,13 @@ Open Shot Golf (formerly JaySimG) is an open source golf simulator built with th
 
 ## Feature Highlights
 - GSPro-compatible TCP listener for incoming ball/club data.
-- Physically based ball flight with drag, lift (Magnus), grass drag, and friction modeling.
+- Physics based ball flight with drag, lift (Magnus), grass drag, and friction modeling.
 - On-range telemetry: carry, total, apex, offline, and shot trails.
 - Environment tuning for temperature and altitude, impacting air density and flight.
 - Range session recorder and basic UI for club selection and shot playback.
 
 ## Ball Physics and Distance Calculation
-- Ball flight is driven by `Player/ball.gd` using Godot physics. Forces include gravity, drag, Magnus lift, grass drag, and frictional torque for bounce and rollout.
+- Ball flight is driven by `Player/ball.gd`. Forces include gravity, drag, Magnus lift, grass drag, and frictional torque for bounce and rollout.
 - Spin, launch angle, and ball speed are applied in `hit_from_data`, and the ball transitions through FLIGHT, ROLLOUT, and REST states.
 - Distance metrics come from `Player/player.gd`: horizontal distance is `Vector2(x, z).length()` in meters, converted to yards in range UI when needed (`Courses/Range/range.gd`). Carry, apex, and offline distances are tracked until the ball rests.
 
@@ -39,7 +39,7 @@ Open Shot Golf (formerly JaySimG) is an open source golf simulator built with th
 
 ## Build and Run
 ### Install Godot
-Download and install Godot for your operating system: https://godotengine.org/download
+Download and install Godot 4.5 for your operating system: https://godotengine.org/download
 
 ### Clone Repository
 - Clone repository into a local folder:  
@@ -52,7 +52,9 @@ Download and install Godot for your operating system: https://godotengine.org/do
 
 ### Run
 - Press the play button or `F5` to start the project.
+- When opening the project for the first time, Godot errors may appear due to importing add-ons. Simply close and re-open. 
 - Set your launch monitor to send data to port `49152`, or use the local hit/reset shortcuts below.
+  - Python script `~/Resources/SocketTest/SocketTest.py` could be used to test TCP functionality. 
 
 ## Controls
 - `h`: Simulate a built-in hit with sample ball data.
