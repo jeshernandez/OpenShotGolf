@@ -4,7 +4,7 @@ var track_points : bool = false
 var trail_timer : float = 0.0
 var trail_resolution : float = 0.1
 var apex := 0
-var ball_data: Dictionary = {
+var display_data: Dictionary = {
 	"Distance": "---",
 	"Carry": "---",
 	"Offline": "---",
@@ -35,7 +35,7 @@ func _ready() -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("reset"):
 		_reset_display_data()
-		$RangeUI.set_data(ball_data)
+		$RangeUI.set_data(display_data)
 
 
 func _on_tcp_client_hit_ball(data: Dictionary) -> void:
@@ -50,13 +50,18 @@ func _process(_delta: float) -> void:
 
 
 func _on_golf_ball_rest(_ball_data) -> void:
+	# Show final shot numbers immediately on rest
+	_update_ball_display()
+	
 	if GlobalSettings.range_settings.auto_ball_reset.value:
 		await get_tree().create_timer(GlobalSettings.range_settings.ball_reset_timer.value).timeout
+		_reset_display_data()
+		$RangeUI.set_data(display_data)
 		$Player.reset_ball()
-		ball_data["HLA"] = 0.0
-		ball_data["VLA"] = 0.0
-	_update_ball_display()
-		
+		return
+	
+	# No auto reset: leave final numbers visible
+
 func set_camera_follow_mode(value) -> void:
 	if value:
 		$PhantomCamera3D.follow_mode = 5 # Framed
@@ -77,22 +82,24 @@ func _on_surface_changed(value) -> void:
 
 func _reset_display_data() -> void:
 	raw_ball_data.clear()
-	ball_data["Distance"] = "---"
-	ball_data["Carry"] = "---"
-	ball_data["Offline"] = "---"
-	ball_data["Apex"] = "---"
-	ball_data["VLA"] = 0.0
-	ball_data["HLA"] = 0.0
-	ball_data["Speed"] = "---"
-	ball_data["BackSpin"] = "---"
-	ball_data["SideSpin"] = "---"
-	ball_data["TotalSpin"] = "---"
-	ball_data["SpinAxis"] = "---"
+	last_display.clear()
+	display_data["Distance"] = "---"
+	display_data["Carry"] = "---"
+	display_data["Offline"] = "---"
+	display_data["Apex"] = "---"
+	display_data["VLA"] = 0.0
+	display_data["HLA"] = 0.0
+	display_data["Speed"] = "---"
+	display_data["BackSpin"] = "---"
+	display_data["SideSpin"] = "---"
+	display_data["TotalSpin"] = "---"
+	display_data["SpinAxis"] = "---"
 
 
 func _update_ball_display() -> void:
-	var show_distance: bool = $Player.get_ball_state() == Enums.BallState.REST
-	ball_data = ShotFormatterHelper.format_ball_display(raw_ball_data, $Player, GlobalSettings.range_settings.range_units.value, show_distance, ball_data)
-	last_display = ball_data.duplicate()
-	$RangeUI.set_data(ball_data)
+	# Show distance continuously (updates during flight/rollout, final at rest)
+	var show_distance: bool = true
+	display_data = ShotFormatterHelper.format_ball_display(raw_ball_data, $Player, GlobalSettings.range_settings.range_units.value, show_distance, display_data)
+	last_display = display_data.duplicate()
+	$RangeUI.set_data(display_data)
 	
