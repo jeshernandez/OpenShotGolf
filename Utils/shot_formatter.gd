@@ -34,7 +34,7 @@ static func format_ball_display(raw_ball_data: Dictionary, player: Node, units: 
 			carry_val = raw_ball_data.get("CarryDistance", 0.0) as float / 1.0 # raw is assumed yards
 		ball_data["Carry"] = str(int(carry_val*m2yd if not raw_ball_data.has("CarryDistance") else carry_val))
 		ball_data["Apex"] = str(int(player.apex*3.28084))
-		var offline = int(player.get_offline()*m2yd)
+		var offline = int(player.get_side_distance()*m2yd)
 		var offline_text := "R"
 		if offline < 0:
 			offline_text = "L"

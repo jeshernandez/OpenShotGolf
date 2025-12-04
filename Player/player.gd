@@ -6,7 +6,7 @@ var trail_timer : float = 0.0
 var trail_resolution : float = 0.1
 var apex := 0.0
 var carry := 0.0
-var offline := 0.0
+var side_distance := 0.0
 var shot_data: Dictionary = {}
 
 signal good_data
@@ -29,7 +29,7 @@ func _process(_delta: float) -> void:
 		$Ball.call_deferred("reset")
 		apex = 0.0
 		carry = 0.0
-		offline = 0.0
+		side_distance = 0.0
 		track_points = false
 		$BallTrail.clear_points()
 
@@ -37,7 +37,7 @@ func _process(_delta: float) -> void:
 func _physics_process(delta: float) -> void:
 	if track_points:
 		apex = max(apex, $Ball.position.y)
-		offline = $Ball.position.z
+		side_distance = $Ball.position.z
 		if $Ball.state == Enums.BallState.FLIGHT:
 			carry = Vector2($Ball.position.x, $Ball.position.z).length()
 		trail_timer += delta
@@ -49,7 +49,7 @@ func get_distance() -> int:
 	# Returns the distance in physics units of meters
 	return int(Vector2($Ball.position.x, $Ball.position.z).length())
 	
-func get_offline() -> int:
+func get_side_distance() -> int:
 	return int($Ball.position.z)
 
 func validate_data(data: Dictionary) -> bool:
@@ -65,7 +65,7 @@ func reset_ball():
 	$BallTrail.clear_points()
 	apex = 0.0
 	carry = 0.0
-	offline = 0.0
+	side_distance = 0.0
 	reset_shot_data()
 		
 
@@ -78,7 +78,7 @@ func _on_ball_rest() -> void:
 	shot_data["TotalDistance"] = int(Vector2($Ball.position.x, $Ball.position.z).length())
 	shot_data["CarryDistance"] = int(carry)
 	shot_data["Apex"] = int(apex)
-	shot_data["OfflineDistance"] = int(offline)
+	shot_data["SideDistance"] = int(side_distance)
 	emit_signal("rest", shot_data)
 
 
