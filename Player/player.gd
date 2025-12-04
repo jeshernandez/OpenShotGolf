@@ -4,9 +4,9 @@ extends Node3D
 var track_points : bool = false
 var trail_timer : float = 0.0
 var trail_resolution : float = 0.1
-var apex : int = 0
-var carry: int = 0
-var offline: int = 0
+var apex := 0.0
+var carry := 0.0
+var offline := 0.0
 var shot_data: Dictionary = {}
 
 signal good_data
@@ -27,17 +27,19 @@ func _process(delta: float) -> void:
 		$BallTrail.add_point($Ball.position)
 	if Input.is_action_just_pressed("reset"):
 		$Ball.call_deferred("reset")
-		apex = 0
-		carry = 0
-		offline = 0
+		apex = 0.0
+		carry = 0.0
+		offline = 0.0
 		track_points = false
 		$BallTrail.clear_points()
-		
+
+
+func _physics_process(delta: float) -> void:
 	if track_points:
-		apex = max(apex, int($Ball.position.y))
-		offline = int($Ball.position.z)
+		apex = max(apex, $Ball.position.y)
+		offline = $Ball.position.z
 		if $Ball.state == Enums.BallState.FLIGHT:
-			carry = int(Vector2($Ball.position.x, $Ball.position.z).length())
+			carry = Vector2($Ball.position.x, $Ball.position.z).length()
 		trail_timer += delta
 		if trail_timer >= trail_resolution:
 			$BallTrail.add_point($Ball.position)
@@ -61,11 +63,11 @@ func validate_data(data: Dictionary) -> bool:
 func reset_ball():
 	$Ball.call_deferred("reset")
 	$BallTrail.clear_points()
-	apex = 0
-	carry = 0
-	offline = 0
+	apex = 0.0
+	carry = 0.0
+	offline = 0.0
 	reset_shot_data()
-	
+		
 
 func reset_shot_data() -> void:
 	for key in shot_data.keys():
@@ -74,9 +76,9 @@ func reset_shot_data() -> void:
 func _on_ball_rest() -> void:
 	track_points = false
 	shot_data["TotalDistance"] = int(Vector2($Ball.position.x, $Ball.position.z).length())
-	shot_data["CarryDistance"] = carry
-	shot_data["Apex"] = apex
-	shot_data["OfflineDistance"] = offline
+	shot_data["CarryDistance"] = int(carry)
+	shot_data["Apex"] = int(apex)
+	shot_data["OfflineDistance"] = int(offline)
 	emit_signal("rest", shot_data)
 
 
@@ -95,7 +97,7 @@ func _on_tcp_client_hit_ball(data: Dictionary) -> void:
 	shot_data = data.duplicate()
 	
 	track_points = true
-	apex = 0
+	apex = 0.0
 	$BallTrail.call_deferred("clear_points")
 	$BallTrail.call_deferred("add_point", $Ball.position)
 	$Ball.call_deferred("hit_from_data", data)
@@ -105,7 +107,7 @@ func _on_range_ui_hit_shot(data: Variant) -> void:
 	shot_data = data.duplicate()
 	
 	track_points = true
-	apex = 0
+	apex = 0.0
 	$BallTrail.call_deferred("clear_points")
 	$BallTrail.call_deferred("add_point", $Ball.position)
 	$Ball.call_deferred("hit_from_data", data)

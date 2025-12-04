@@ -109,6 +109,46 @@ offset_bottom = 517.0
 label = "HLA"
 units = "deg"
 
+[node name="Speed" parent="GridCanvas" instance=ExtResource("1_q72xt")]
+layout_mode = 0
+offset_top = 472.0
+offset_right = 120.0
+offset_bottom = 565.0
+label = "Speed"
+units = "mph"
+
+[node name="BackSpin" parent="GridCanvas" instance=ExtResource("1_q72xt")]
+layout_mode = 0
+offset_top = 520.0
+offset_right = 120.0
+offset_bottom = 613.0
+label = "BackSpin"
+units = "rpm"
+
+[node name="SideSpin" parent="GridCanvas" instance=ExtResource("1_q72xt")]
+layout_mode = 0
+offset_top = 568.0
+offset_right = 120.0
+offset_bottom = 661.0
+label = "SideSpin"
+units = "rpm"
+
+[node name="TotalSpin" parent="GridCanvas" instance=ExtResource("1_q72xt")]
+layout_mode = 0
+offset_top = 616.0
+offset_right = 120.0
+offset_bottom = 709.0
+label = "TotalSpin"
+units = "rpm"
+
+[node name="SpinAxis" parent="GridCanvas" instance=ExtResource("1_q72xt")]
+layout_mode = 0
+offset_top = 664.0
+offset_right = 120.0
+offset_bottom = 757.0
+label = "SpinAxis"
+units = "deg"
+
 [node name="ClubSelector" parent="GridCanvas" instance=ExtResource("3_crlyb")]
 layout_mode = 0
 offset_top = 70.0
@@ -187,5 +227,15 @@ text = "Hit Shot"
 [connection signal="drag_started" from="GridCanvas/VLA" to="GridCanvas" method="_on_panel_drag_started"]
 [connection signal="drag_ended" from="GridCanvas/HLA" to="GridCanvas" method="_on_panel_drag_ended"]
 [connection signal="drag_started" from="GridCanvas/HLA" to="GridCanvas" method="_on_panel_drag_started"]
+[connection signal="drag_ended" from="GridCanvas/Speed" to="GridCanvas" method="_on_panel_drag_ended"]
+[connection signal="drag_started" from="GridCanvas/Speed" to="GridCanvas" method="_on_panel_drag_started"]
+[connection signal="drag_ended" from="GridCanvas/BackSpin" to="GridCanvas" method="_on_panel_drag_ended"]
+[connection signal="drag_started" from="GridCanvas/BackSpin" to="GridCanvas" method="_on_panel_drag_started"]
+[connection signal="drag_ended" from="GridCanvas/SideSpin" to="GridCanvas" method="_on_panel_drag_ended"]
+[connection signal="drag_started" from="GridCanvas/SideSpin" to="GridCanvas" method="_on_panel_drag_started"]
+[connection signal="drag_ended" from="GridCanvas/TotalSpin" to="GridCanvas" method="_on_panel_drag_ended"]
+[connection signal="drag_started" from="GridCanvas/TotalSpin" to="GridCanvas" method="_on_panel_drag_started"]
+[connection signal="drag_ended" from="GridCanvas/SpinAxis" to="GridCanvas" method="_on_panel_drag_ended"]
+[connection signal="drag_started" from="GridCanvas/SpinAxis" to="GridCanvas" method="_on_panel_drag_started"]
 [connection signal="inject" from="ShotInjector" to="." method="_on_shot_injector_inject"]
 [connection signal="pressed" from="ShotInjector/Button" to="ShotInjector" method="_on_button_pressed"]

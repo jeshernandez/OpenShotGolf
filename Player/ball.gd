@@ -190,12 +190,24 @@ func hit():
 	omega = Vector3(0.0, 0.0, data["TotalSpin"]*0.10472).rotated(Vector3(1.0, 0.0, 0.0), data["SpinAxis"]*PI/180.0)
 	
 func hit_from_data(data : Dictionary):
+	var speed_mps: float = (data.get("Speed", 0.0) as float)*0.44704
+	var vla_deg: float = data.get("VLA", 0.0) as float
+	var hla_deg: float = data.get("HLA", 0.0) as float
+	var backspin: float = data.get("BackSpin", data.get("TotalSpin", 0.0)) as float
+	var sidespin: float = data.get("SideSpin", 0.0) as float
+	var total_spin: float = data.get("TotalSpin", 0.0) as float
+	if total_spin == 0.0 and (backspin != 0.0 or sidespin != 0.0):
+		total_spin = sqrt(backspin*backspin + sidespin*sidespin)
+	var spin_axis: float = data.get("SpinAxis", 0.0) as float
+	if spin_axis == 0.0 and (backspin != 0.0 or sidespin != 0.0):
+		spin_axis = rad_to_deg(atan2(sidespin, backspin))
+
 	state = Enums.BallState.FLIGHT
 	position = Vector3(0.0, 0.05, 0.0)
-	velocity = Vector3(data["Speed"]*0.44704, 0, 0).rotated(
-					Vector3(0.0, 0.0, 1.0), data["VLA"]*PI/180.0).rotated(
-						Vector3(0.0, 1.0, 0.0), -data["HLA"]*PI/180.0)
-	omega = Vector3(0.0, 0.0, data["TotalSpin"]*0.10472).rotated(Vector3(1.0, 0.0, 0.0), data["SpinAxis"]*PI/180)
+	velocity = Vector3(speed_mps, 0, 0).rotated(
+					Vector3(0.0, 0.0, 1.0), vla_deg*PI/180.0).rotated(
+						Vector3(0.0, 1.0, 0.0), -hla_deg*PI/180.0)
+	omega = Vector3(0.0, 0.0, total_spin*0.10472).rotated(Vector3(1.0, 0.0, 0.0), spin_axis*PI/180)
 	
 func set_env(_value):
 	airDensity = Coefficients.get_air_density(GlobalSettings.range_settings.altitude.value,
