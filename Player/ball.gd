@@ -198,14 +198,26 @@ func hit_from_data(data : Dictionary):
 	var speed_mps: float = (data.get("Speed", 0.0) as float)*0.44704
 	var vla_deg: float = data.get("VLA", 0.0) as float
 	var hla_deg: float = data.get("HLA", 0.0) as float
-	var backspin: float = data.get("BackSpin", data.get("TotalSpin", 0.0)) as float
-	var sidespin: float = data.get("SideSpin", 0.0) as float
-	var total_spin: float = data.get("TotalSpin", 0.0) as float
-	if total_spin == 0.0 and (backspin != 0.0 or sidespin != 0.0):
+	var has_backspin := data.has("BackSpin")
+	var has_sidespin := data.has("SideSpin")
+	var has_total := data.has("TotalSpin")
+	var has_axis := data.has("SpinAxis")
+	var backspin: float = (data.get("BackSpin", 0.0) as float)
+	var sidespin: float = (data.get("SideSpin", 0.0) as float)
+	var total_spin: float = (data.get("TotalSpin", 0.0) as float)
+	var spin_axis: float = (data.get("SpinAxis", 0.0) as float)
+
+	# Derive totals/axis only when missing (do not treat 0.0 as missing).
+	if total_spin == 0.0 and (has_backspin or has_sidespin):
 		total_spin = sqrt(backspin*backspin + sidespin*sidespin)
-	var spin_axis: float = data.get("SpinAxis", 0.0) as float
-	if spin_axis == 0.0 and (backspin != 0.0 or sidespin != 0.0):
+	if not has_axis and (has_backspin or has_sidespin):
 		spin_axis = rad_to_deg(atan2(sidespin, backspin))
+	# If components are missing but total+axis are present, derive them for consistency.
+	if has_total and has_axis:
+		if not has_backspin:
+			backspin = total_spin * cos(deg_to_rad(spin_axis))
+		if not has_sidespin:
+			sidespin = total_spin * sin(deg_to_rad(spin_axis))
 
 	state = Enums.BallState.FLIGHT
 	position = Vector3(0.0, 0.05, 0.0)

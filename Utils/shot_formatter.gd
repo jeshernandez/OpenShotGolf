@@ -1,0 +1,55 @@
+extends Object
+class_name ShotFormatter
+
+# Formats ball/shot data for UI display, with unit conversion and derived spin.
+static func format_ball_display(raw_ball_data: Dictionary, player: Node, units: Enums.Units) -> Dictionary:
+	var ball_data: Dictionary = {}
+	var m2yd := 1.09361
+	var has_backspin := raw_ball_data.has("BackSpin")
+	var has_sidespin := raw_ball_data.has("SideSpin")
+	var has_total := raw_ball_data.has("TotalSpin")
+	var has_axis := raw_ball_data.has("SpinAxis")
+	var backspin: float = (raw_ball_data.get("BackSpin", 0.0) as float)
+	var sidespin: float = (raw_ball_data.get("SideSpin", 0.0) as float)
+	var total_spin: float = (raw_ball_data.get("TotalSpin", 0.0) as float)
+	var spin_axis: float = (raw_ball_data.get("SpinAxis", 0.0) as float)
+	if total_spin == 0.0 and (has_backspin or has_sidespin):
+		total_spin = sqrt(backspin*backspin + sidespin*sidespin)
+	if not has_axis and (has_backspin or has_sidespin):
+		spin_axis = rad_to_deg(atan2(sidespin, backspin))
+	if has_total and has_axis:
+		if not has_backspin:
+			backspin = total_spin * cos(deg_to_rad(spin_axis))
+		if not has_sidespin:
+			sidespin = total_spin * sin(deg_to_rad(spin_axis))
+	
+	if units == Enums.Units.IMPERIAL:
+		ball_data["Distance"] = str(int(player.get_distance()*m2yd))
+		ball_data["Carry"] = str(int(player.carry*m2yd))
+		ball_data["Apex"] = str(int(player.apex*3.28084))
+		var offline = int(player.get_offline()*m2yd)
+		var offline_text := "R"
+		if offline < 0:
+			offline_text = "L"
+		offline_text += str(abs(offline))
+		ball_data["Offline"] = offline_text
+		ball_data["Speed"] = "%3.1f" % raw_ball_data.get("Speed", 0.0)
+	else:
+		ball_data["Distance"] = str(player.get_distance())
+		ball_data["Carry"] = str(int(player.carry))
+		ball_data["Apex"] = str(int(player.apex))
+		var offline = player.get_offline()
+		var offline_text := "R"
+		if offline < 0:
+			offline_text = "L"
+		offline_text += str(abs(offline))
+		ball_data["Offline"] = offline_text
+		ball_data["Speed"] = "%3.1f" % (raw_ball_data.get("Speed", 0.0) * 0.44704)
+	
+	ball_data["BackSpin"] = str(int(backspin))
+	ball_data["SideSpin"] = str(int(sidespin))
+	ball_data["TotalSpin"] = str(int(total_spin))
+	ball_data["SpinAxis"] = "%3.1f" % spin_axis
+	ball_data["VLA"] = raw_ball_data.get("VLA", 0.0)
+	ball_data["HLA"] = raw_ball_data.get("HLA", 0.0)
+	return ball_data
