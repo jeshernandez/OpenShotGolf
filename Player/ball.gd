@@ -220,13 +220,14 @@ func hit_from_data(data : Dictionary):
 
 	state = Enums.BallState.FLIGHT
 	position = Vector3(0.0, 0.05, 0.0)
-	velocity = Vector3(data["Speed"]*0.44704, 0, 0).rotated(
-					Vector3(0.0, 0.0, 1.0), data["VLA"]*PI/180.0).rotated(
-						Vector3(0.0, 1.0, 0.0), -data["HLA"]*PI/180.0)
-	if data["TotalSpin"] == 0.0:
-		omega = Vector3(data["SideSpin"], 0.0, data["BackSpin"])
+	velocity = Vector3(speed_mps, 0, 0).rotated(
+					Vector3(0.0, 0.0, 1.0), vla_deg*PI/180.0).rotated(
+						Vector3(0.0, 1.0, 0.0), -hla_deg*PI/180.0)
+	if total_spin == 0.0:
+		# Use component spins (rpm -> rad/s)
+		omega = Vector3(sidespin*0.10472, 0.0, backspin*0.10472)
 	else:
-		omega = Vector3(0.0, 0.0, data["TotalSpin"]*0.10472).rotated(Vector3(1.0, 0.0, 0.0), data["SpinAxis"]*PI/180)
+		omega = Vector3(0.0, 0.0, total_spin*0.10472).rotated(Vector3(1.0, 0.0, 0.0), spin_axis*PI/180)
 	
 func set_env(_value):
 	airDensity = Coefficients.get_air_density(GlobalSettings.range_settings.altitude.value,

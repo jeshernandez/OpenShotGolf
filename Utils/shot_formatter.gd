@@ -34,12 +34,12 @@ static func format_ball_display(raw_ball_data: Dictionary, player: Node, units: 
 			carry_val = raw_ball_data.get("CarryDistance", 0.0) as float / 1.0 # raw is assumed yards
 		ball_data["Carry"] = str(int(carry_val*m2yd if not raw_ball_data.has("CarryDistance") else carry_val))
 		ball_data["Apex"] = str(int(player.apex*3.28084))
-		var offline = int(player.get_side_distance()*m2yd)
-		var offline_text := "R"
-		if offline < 0:
-			offline_text = "L"
-		offline_text += str(abs(offline))
-		ball_data["Offline"] = offline_text
+		var side_distance = int(player.get_side_distance()*m2yd)
+		var side_text := "R"
+		if side_distance < 0:
+			side_text = "L"
+		side_text += str(abs(side_distance))
+		ball_data["Offline"] = side_text
 		ball_data["Speed"] = "%3.1f" % raw_ball_data.get("Speed", 0.0)
 	else:
 		if show_distance:
@@ -51,12 +51,12 @@ static func format_ball_display(raw_ball_data: Dictionary, player: Node, units: 
 			carry_val = raw_ball_data.get("CarryDistance", 0.0) as float
 		ball_data["Carry"] = str(int(carry_val))
 		ball_data["Apex"] = str(int(player.apex))
-		var offline = player.get_offline()
-		var offline_text := "R"
-		if offline < 0:
-			offline_text = "L"
-		offline_text += str(abs(offline))
-		ball_data["Offline"] = offline_text
+		var side_distance = player.get_side_distance()
+		var side_text := "R"
+		if side_distance < 0:
+			side_text = "L"
+		side_text += str(abs(side_distance))
+		ball_data["Offline"] = side_text
 		ball_data["Speed"] = "%3.1f" % (raw_ball_data.get("Speed", 0.0) * 0.44704)
 	
 	ball_data["BackSpin"] = str(int(backspin))

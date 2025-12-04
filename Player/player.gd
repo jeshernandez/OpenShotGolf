@@ -105,6 +105,7 @@ func _on_tcp_client_hit_ball(data: Dictionary) -> void:
 
 func _on_range_ui_hit_shot(data: Variant) -> void:
 	shot_data = data.duplicate()
+	print("Local shot injection payload: ", JSON.stringify(shot_data))
 	
 	track_points = true
 	apex = 0.0

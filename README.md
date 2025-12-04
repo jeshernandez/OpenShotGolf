@@ -54,7 +54,7 @@ Open Shot Golf (formerly JaySimG) is an open source golf simulator built with th
 ![System Data Flow](assets/images/dataflow_ssd.png)
 
 ## Sample Data Payload
-Example GSPro-style message used for socket testing (`Resources/SocketTest/test_shot.json`):
+Example GSPro-style message used for socket testing (`assets/data/drive_test_shot.json`):
 
 ```json
 {
@@ -111,7 +111,7 @@ Download and install Godot 4.5 for your operating system: https://godotengine.or
 - Press the play button or `F5` to start the project.
 - When opening the project for the first time, Godot errors may appear due to importing add-ons. Simply close and re-open. 
 - Set your launch monitor to send data to port `49152`, or use the local hit/reset shortcuts below.
-  - Python script `~/Resources/SocketTest/SocketTest.py` could be used to test TCP functionality. 
+  - Python script `~/Resources/SocketTest/SocketTest.py` could be used to test TCP functionality (defaults to `assets/data/drive_test_shot.json`). 
 
 ## Controls
 - `h`: Simulate a built-in hit with sample ball data.
