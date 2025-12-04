@@ -195,7 +195,10 @@ func hit_from_data(data : Dictionary):
 	velocity = Vector3(data["Speed"]*0.44704, 0, 0).rotated(
 					Vector3(0.0, 0.0, 1.0), data["VLA"]*PI/180.0).rotated(
 						Vector3(0.0, 1.0, 0.0), -data["HLA"]*PI/180.0)
-	omega = Vector3(0.0, 0.0, data["TotalSpin"]*0.10472).rotated(Vector3(1.0, 0.0, 0.0), data["SpinAxis"]*PI/180)
+	if data["TotalSpin"] == 0.0:
+		omega = Vector3(data["SideSpin"], 0.0, data["BackSpin"])
+	else:
+		omega = Vector3(0.0, 0.0, data["TotalSpin"]*0.10472).rotated(Vector3(1.0, 0.0, 0.0), data["SpinAxis"]*PI/180)
 	
 func set_env(_value):
 	airDensity = Coefficients.get_air_density(GlobalSettings.range_settings.altitude.value,
