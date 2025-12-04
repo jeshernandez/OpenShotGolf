@@ -20,7 +20,6 @@ var display_data: Dictionary = {
 var ball_reset_time := 5.0
 var auto_reset_enabled := false
 var raw_ball_data: Dictionary = {}
-const ShotFormatterHelper = preload("res://Utils/shot_formatter.gd")
 var last_display: Dictionary = {}
 
 
@@ -99,7 +98,7 @@ func _reset_display_data() -> void:
 func _update_ball_display() -> void:
 	# Show distance continuously (updates during flight/rollout, final at rest)
 	var show_distance: bool = true
-	display_data = ShotFormatterHelper.format_ball_display(raw_ball_data, $Player, GlobalSettings.range_settings.range_units.value, show_distance, display_data)
+	display_data = ShotFormatter.format_ball_display(raw_ball_data, $Player, GlobalSettings.range_settings.range_units.value, show_distance, display_data)
 	last_display = display_data.duplicate()
 	$RangeUI.set_data(display_data)
 	
