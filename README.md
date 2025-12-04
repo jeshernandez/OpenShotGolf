@@ -7,6 +7,8 @@
 - [Feature Highlights](#feature-highlights)
 - [Ball Physics and Distance Calculation](#ball-physics-and-distance-calculation)
 - [Launch Monitor and Networking](#launch-monitor-and-networking)
+- [Data Sequence Diagram](#data-sequence-diagram)
+- [Sample Data Payload](#sample-data-payload)
 - [Build and Run](#build-and-run)
 - [Controls](#controls)
 - [Project Layout](#project-layout)
@@ -36,6 +38,50 @@ Open Shot Golf (formerly JaySimG) is an open source golf simulator built with th
 - A TCP server in `TCP/tcp_server.gd` listens on port `49152` for GSPro-style JSON payloads. When `ShotDataOptions.ContainsBallData` is true, ball data is emitted to the gameplay layer.
 - Good data responses return `{ "Code": 200 }`; malformed data returns a 50x response. Adjust your launch monitor to target the host IP and port `49152`.
 - Keyboard shortcuts remain available for local testing without hardware (see Controls).
+
+## Data Sequence Diagram
+![System Data Flow](assets/images/dataflow_ssd.png)
+
+## Sample Data Payload
+Example GSPro-style message used for socket testing (`Resources/SocketTest/test_shot.json`):
+
+```json
+{
+    "DeviceID": "GSPro LM 1.1",
+    "Units": "Yards",
+    "ShotNumber": 13,
+    "APIversion": "1",
+    "BallData" : {
+        "Speed": 147.5,
+        "SpinAxis": -13.2,
+        "TotalSpin": 3250.0,
+        "BackSpin": 2500.0,
+        "SideSpin": -800.0,
+        "HLA": 2.3,
+        "VLA": 14.3,
+        "CarryDistance": 256.5
+    },
+    "ClubData": {
+        "Speed": 0.0,
+        "AngleOfAttack": 0.0,
+        "FaceToTarget": 0.0,
+        "Lie": 0.0,
+        "Loft": 0.0,
+        "Path": 0.0,
+        "SpeedAtImpact": 0.0,
+        "VerticalFaceImpact": 0.0,
+        "HorizontalFaceImpact": 0.0,
+        "ClosureRate": 0.0
+    },
+    "ShotDataOptions": {
+        "ContainsBallData": true,
+        "ContainsClubData": false,
+        "LaunchMonitorIsReady": true,
+        "LaunchMonitorBallDetected": true,
+        "IsHeartBeat": false
+    }
+}
+```
 
 ## Build and Run
 ### Install Godot
