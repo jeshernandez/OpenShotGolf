@@ -22,7 +22,6 @@ var nu_g = 0.0005 # Grass drag viscosity; surface-driven
 var drag_cf := 1.2 # Drag correction factor
 var lift_cf := 1.2 # lift correction factor
 var surface_type := Enums.Surface.FIRM
-const SurfaceHelper = preload("res://Utils/surface.gd")
 
 var state : Enums.BallState = Enums.BallState.REST
 
@@ -251,7 +250,7 @@ func set_surface(surface: int) -> void:
 
 
 func _apply_surface(surface: int) -> void:
-	var params := SurfaceHelper.get_params(surface as Enums.Surface)
+	var params := SurfaceUtil.get_params(surface as Enums.Surface)
 	u_k = params["u_k"]
 	u_kr = params["u_kr"]
 	nu_g = params["nu_g"]
