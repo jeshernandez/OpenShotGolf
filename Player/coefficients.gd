@@ -69,9 +69,9 @@ static func get_Cl(Re: float, S: float) -> float:
 	# Calculations (fixed interpolation with equality handled)
 	var Re_values: Array[float] = [50000.0, 60000.0, 65000.0, 70000.0, 75000.0]
 	var Re_high_index: int = Re_values.size() - 1
-	for i in range(Re_values.size()):
-		if Re <= Re_values[i]:
-			Re_high_index = i
+	for val in Re_values:
+		if Re <= val:
+			Re_high_index = Re_values.find(val)
 			break
 	var Re_low_index: int = max(Re_high_index - 1, 0)
 	
