@@ -51,6 +51,7 @@ static func get_Cd(Re: float) -> float:
 
 static func get_Cl(Re: float, S: float) -> float:
 	# Low and high S
+
 	if S < 0.05:
 		return 0.05
 	if S > .35:
@@ -65,7 +66,7 @@ static func get_Cl(Re: float, S: float) -> float:
 	if Re >= 75000:
 		return .203 
 		
-	# Calculations
+	# Calculations (fixed interpolation with equality handled)
 	var Re_values: Array[float] = [50000.0, 60000.0, 65000.0, 70000.0, 75000.0]
 	var Re_high_index: int = Re_values.size() - 1
 	for i in range(Re_values.size()):
@@ -84,6 +85,14 @@ static func get_Cl(Re: float, S: float) -> float:
 	var weight : float = 0.0
 	if Re_high != Re_low:
 		weight = (Re - Re_low)/(Re_high - Re_low)
+	
+	# Debug prints to catch the buggy path, only enable when debugging/testing Reynolds interpolation.
+	# if Re_high_index == 0 and Re > Re_values[0]:
+	# 	print("BUG_RE_INTERP: Re=", Re, "low_idx=", Re_low_index, "high_idx=", Re_high_index, "low=", Re_values[Re_low_index], "high=", Re_values[Re_high_index], "weight=", weight, "S=", S)
+	# elif Re >= Re_values.back():
+	# 	print("Re near/above top table: Re=", Re, "low=", Re_values[Re_low_index], "high=", Re_values[Re_high_index], "weight=", weight, "S=", S)
+	# if abs(Re - 60000.0) < 200 or abs(Re - 75000.0) < 200:
+	# 	print("Re checkpoint", Re, "S", S, "Cl_low/high", Cl_low, Cl_high, "weight", weight)
 	
 	# Interpolate final Cl value from uper and lower Cl
 	return lerpf(Cl_low, Cl_high, weight)

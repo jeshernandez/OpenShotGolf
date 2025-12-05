@@ -49,6 +49,7 @@ func _process(_delta: float) -> void:
 
 
 func _on_golf_ball_rest(_ball_data) -> void:
+	raw_ball_data = _ball_data.duplicate()
 	# Show final shot numbers immediately on rest
 	_update_ball_display()
 	
@@ -67,6 +68,12 @@ func set_camera_follow_mode(value) -> void:
 		$PhantomCamera3D.follow_target = $Player/Ball
 	else:
 		$PhantomCamera3D.follow_mode = 0 # None
+
+
+func _on_range_ui_hit_shot(data: Dictionary) -> void:
+	# For local injected shots, prime the display immediately with the payload data.
+	raw_ball_data = data.duplicate()
+	_update_ball_display()
 
 
 func _apply_surface_to_ball() -> void:
