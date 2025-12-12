@@ -5,6 +5,7 @@ var range_units := Setting.new(Enums.Units.IMPERIAL)
 var camera_follow_mode := Setting.new(false)
 var shot_injector_enabled := Setting.new(false)
 var auto_ball_reset := Setting.new(false)
+var fullscreen := Setting.new(false)
 var ball_reset_timer := Setting.new(7.0, 1.0, 15.0)
 var temperature := Setting.new(75, -40, 120)
 var altitude := Setting.new(0.0, -1000.0, 10000.0)
@@ -17,6 +18,7 @@ func _init():
 		"camera_follow_mode": camera_follow_mode,
 		"shot_injector_enabled": shot_injector_enabled,
 		"auto_ball_reset": auto_ball_reset,
+		"fullscreen": fullscreen,
 		"ball_reset_timer": ball_reset_timer,
 		"temperature": temperature,
 		"altitude": altitude,
@@ -29,6 +31,7 @@ func reset_defaults():
 	camera_follow_mode.value = false
 	shot_injector_enabled.value = false
 	auto_ball_reset.value = false
+	fullscreen.value = false
 	ball_reset_timer.value = 7.0
 	temperature.value = 75
 	altitude.value = 0.0

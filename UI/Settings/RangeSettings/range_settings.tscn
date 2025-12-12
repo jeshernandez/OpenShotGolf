@@ -127,6 +127,32 @@ text = "On"
 layout_mode = 2
 size_flags_horizontal = 3
 
+[node name="Fullscreen" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/Fullscreen"]
+layout_mode = 2
+text = "Fullscreen"
+
+[node name="Control3" type="Control" parent="MarginContainer/VBoxContainer/Fullscreen"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Label2" type="Label" parent="MarginContainer/VBoxContainer/Fullscreen"]
+layout_mode = 2
+text = "Off"
+
+[node name="CheckButton" type="CheckButton" parent="MarginContainer/VBoxContainer/Fullscreen"]
+layout_mode = 2
+
+[node name="Label3" type="Label" parent="MarginContainer/VBoxContainer/Fullscreen"]
+layout_mode = 2
+text = "On"
+
+[node name="Control2" type="Control" parent="MarginContainer/VBoxContainer/Fullscreen"]
+layout_mode = 2
+size_flags_horizontal = 3
+
 [node name="BallResetTimer" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
 
@@ -254,6 +280,7 @@ text = "Exit to Menu"
 [connection signal="toggled" from="MarginContainer/VBoxContainer/CameraFollow/CheckButton" to="." method="_on_camer_check_button_toggled"]
 [connection signal="toggled" from="MarginContainer/VBoxContainer/AutoBallReset/CheckButton" to="." method="_on_auto_reset_check_button_toggled"]
 [connection signal="toggled" from="MarginContainer/VBoxContainer/ShotInjector/CheckButton" to="." method="_on_injector_check_button_toggled"]
+[connection signal="toggled" from="MarginContainer/VBoxContainer/Fullscreen/CheckButton" to="." method="_on_fullscreen_check_button_toggled"]
 [connection signal="value_changed" from="MarginContainer/VBoxContainer/BallResetTimer/ResetSpinBox" to="." method="_on_reset_spin_box_value_changed"]
 [connection signal="value_changed" from="MarginContainer/VBoxContainer/Temperature/TemperatureSpinBox" to="." method="_on_temperature_spin_box_value_changed"]
 [connection signal="value_changed" from="MarginContainer/VBoxContainer/Altitude/AltitudeSpinBox" to="." method="_on_altitude_spin_box_value_changed"]

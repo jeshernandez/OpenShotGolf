@@ -6,6 +6,7 @@ var temperature_spin_box : SpinBox = null
 var altitude_spin_box : SpinBox = null
 var drag_spin_box : SpinBox = null
 var surface_option : OptionButton = null
+var fullscreen_check_button : CheckButton = null
 
 
 func _setup_spin_box(spin_box: SpinBox, setting: Setting, step: float) -> void:
@@ -28,6 +29,7 @@ func _ready() -> void:
 	altitude_spin_box = $MarginContainer/VBoxContainer/Altitude/AltitudeSpinBox
 	drag_spin_box = $MarginContainer/VBoxContainer/DragScale/DragSpinBox
 	surface_option = $MarginContainer/VBoxContainer/SurfaceType/SurfaceOption
+	fullscreen_check_button = $MarginContainer/VBoxContainer/Fullscreen/CheckButton
 	
 	# Reset Timer Settings
 	_setup_spin_box(reset_spin_box, GlobalSettings.range_settings.ball_reset_timer, 0.5)
@@ -49,6 +51,8 @@ func _ready() -> void:
 	surface_option.select(GlobalSettings.range_settings.surface_type.value)
 	
 	GlobalSettings.range_settings.range_units.setting_changed.connect(update_units)
+	GlobalSettings.range_settings.fullscreen.setting_changed.connect(_sync_fullscreen_button)
+	_sync_fullscreen_button(GlobalSettings.range_settings.fullscreen.value)
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -82,6 +86,10 @@ func _on_auto_reset_check_button_toggled(toggled_on: bool) -> void:
 func _on_injector_check_button_toggled(toggled_on: bool) -> void:
 	GlobalSettings.range_settings.shot_injector_enabled.set_value(toggled_on)
 
+
+func _on_fullscreen_check_button_toggled(toggled_on: bool) -> void:
+	GlobalSettings.range_settings.fullscreen.set_value(toggled_on)
+
 func _on_reset_spin_box_value_changed(value: float) -> void:
 	GlobalSettings.range_settings.ball_reset_timer.set_value(value)
 
@@ -101,6 +109,13 @@ func _on_drag_spin_box_value_changed(value: float) -> void:
 func _on_surface_option_item_selected(index: int) -> void:
 	var id: int = surface_option.get_item_id(index)
 	GlobalSettings.range_settings.surface_type.set_value(id)
+
+
+func _sync_fullscreen_button(value: bool) -> void:
+	if fullscreen_check_button == null:
+		return
+	if fullscreen_check_button.button_pressed != value:
+		fullscreen_check_button.set_pressed_no_signal(value)
 
 func update_units(value) -> void:
 	const m2ft = 3.28084
