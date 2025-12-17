@@ -122,7 +122,7 @@ func reset_shot_data() -> void:
 
 func _on_ball_rest() -> void:
 	track_points = false
-	shot_data["TotalDistance"] = int($Ball.get_downrange_yards() / 1.09361)  # Downrange distance in meters
+	shot_data["TotalDistance"] = get_distance()  # Downrange distance in meters
 	shot_data["CarryDistance"] = int(carry)
 	shot_data["Apex"] = int(apex)
 	shot_data["SideDistance"] = int(side_distance)
