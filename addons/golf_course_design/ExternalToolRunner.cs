@@ -113,6 +113,7 @@ public static class ExternalToolRunner
         }
 
         process.WaitForExit();
+        // Second call flushes pending async output events after process exit.
         process.WaitForExit();
 
         var standardOutput = output.ToString().Trim();

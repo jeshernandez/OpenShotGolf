@@ -15,7 +15,6 @@ public static class CourseExportService
     // The exported course inherits this shared, course-agnostic base scene (environment, sky,
     // lighting, camera, player, terrain) instead of cloning the range. See Courses/_shared/.
     private const string SharedBaseScenePath = "res://Courses/_shared/course_base.tscn";
-    private const string SharedBaseSceneUid = "uid://c0ursebasescene0";
 
     public static CourseExportResult ExportCourse(GolfCourseProject project)
     {
@@ -322,11 +321,13 @@ public static class CourseExportService
 
         var builder = new StringBuilder();
         // load_steps is a hint; Godot recomputes it on save. Use a safe upper bound.
-        var loadSteps = 5 + teeMaterialIds.Count;
+        var loadSteps = 7 + teeMaterialIds.Count;
         builder.AppendLine($"[gd_scene load_steps={loadSteps} format=3]");
         builder.AppendLine();
+        var baseSceneUid = ResourceLoader.GetResourceUid(SharedBaseScenePath);
+        var uidAttr = baseSceneUid >= 0 ? $"uid=\"{ResourceUid.IdToText(baseSceneUid)}\" " : string.Empty;
         builder.AppendLine(
-            $"[ext_resource type=\"PackedScene\" uid=\"{SharedBaseSceneUid}\" path=\"{SharedBaseScenePath}\" id=\"1_base\"]");
+            $"[ext_resource type=\"PackedScene\" {uidAttr}path=\"{SharedBaseScenePath}\" id=\"1_base\"]");
         builder.AppendLine($"[ext_resource type=\"Script\" path=\"{scriptProjectPath}\" id=\"2_course\"]");
         builder.AppendLine();
         AppendMarkerSubResources(builder, teeMaterialIds);
@@ -368,11 +369,26 @@ public static class CourseExportService
         builder.AppendLine("height = 1.0");
         builder.AppendLine();
 
+        // Shared dark-green tee body (#0C6100), matching the overlay tee disc. All tee spheres use this;
+        // the real tee colour is shown by the small indicator topper instead.
+        builder.AppendLine("[sub_resource type=\"StandardMaterial3D\" id=\"TeeBodyMat\"]");
+        builder.AppendLine("albedo_color = Color(0.047059, 0.380392, 0, 1)");
+        builder.AppendLine();
+
+        // Small topper that carries the per-tee colour (blue/white/red/gold/etc.).
+        builder.AppendLine("[sub_resource type=\"SphereMesh\" id=\"TeeIndicatorMesh\"]");
+        builder.AppendLine("radius = 0.28");
+        builder.AppendLine("height = 0.56");
+        builder.AppendLine();
+
         foreach (var entry in teeMaterialIds)
         {
             var (r, g, b) = TeeColorToRgb(entry.Key);
             builder.AppendLine($"[sub_resource type=\"StandardMaterial3D\" id=\"{entry.Value}\"]");
             builder.AppendLine($"albedo_color = Color({Inv(r)}, {Inv(g)}, {Inv(b)}, 1)");
+            builder.AppendLine("emission_enabled = true");
+            builder.AppendLine($"emission = Color({Inv(r)}, {Inv(g)}, {Inv(b)}, 1)");
+            builder.AppendLine("emission_energy_multiplier = 0.3");
             builder.AppendLine();
         }
     }
@@ -427,8 +443,15 @@ public static class CourseExportService
                 builder.AppendLine($"[node name=\"Marker\" type=\"MeshInstance3D\" parent=\"{holeNodePath}/{teeNodeName}\"]");
                 builder.AppendLine($"transform = {BuildTransform(Vector2.Zero, 0.5f)}");
                 builder.AppendLine("mesh = SubResource(\"TeeMesh\")");
+                builder.AppendLine("surface_material_override/0 = SubResource(\"TeeBodyMat\")");
+
+                // Colour indicator sitting on top of the dark-green body, carrying the real tee colour.
                 if (materialId != null)
                 {
+                    builder.AppendLine();
+                    builder.AppendLine($"[node name=\"ColorIndicator\" type=\"MeshInstance3D\" parent=\"{holeNodePath}/{teeNodeName}/Marker\"]");
+                    builder.AppendLine($"transform = {BuildTransform(Vector2.Zero, 0.65f)}");
+                    builder.AppendLine("mesh = SubResource(\"TeeIndicatorMesh\")");
                     builder.AppendLine($"surface_material_override/0 = SubResource(\"{materialId}\")");
                 }
 

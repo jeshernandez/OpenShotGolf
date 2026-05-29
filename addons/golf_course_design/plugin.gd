@@ -8,9 +8,7 @@ var _dock: Control
 
 func _enter_tree() -> void:
 	_dock = DockScene.new()
-	_dock.set("EditorPlugin", self)
 	add_control_to_bottom_panel(_dock, "Golf Course Design")
-	make_bottom_panel_item_visible(_dock)
 
 
 func _exit_tree() -> void:

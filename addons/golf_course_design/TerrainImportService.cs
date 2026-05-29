@@ -7,36 +7,63 @@ using Godot;
 
 public sealed record TerrainBuildResult(string TerrainPath, string? BackupPath, string Message);
 
+// Returned by RunBackgroundPipeline. Either the build completed entirely in the background
+// (TerrainBuildComplete) or it needs a Terrain3D import step on the main thread (TerrainBuildPending).
+public abstract record TerrainBuildStaging;
+public sealed record TerrainBuildComplete(TerrainBuildResult Result) : TerrainBuildStaging;
+public sealed record TerrainBuildPending(
+    string StagingTerrainPath,
+    string TerrainAbsolutePath,
+    string TerrainProjectPath,
+    string HeightImagePath,
+    string? ColorImagePath,
+    float ImportScale,
+    float HeightOffset,
+    string? ClassImagePath,
+    double RasterMinX,
+    double RasterMinY,
+    double RasterMaxX,
+    double RasterMaxY) : TerrainBuildStaging;
+
 public static class TerrainImportService
 {
     private const string RangeTerrainPath = "res://Courses/Range/Terrain";
     private const string ImportRunnerPath = "res://addons/golf_course_design/TerrainImportRunner.gd";
 
+    // Convenience wrapper: runs the full pipeline synchronously (background pipeline + main-thread finalize).
     public static TerrainBuildResult BuildTerrain(GolfCourseProject project, Node helperHost)
     {
-        ArgumentNullException.ThrowIfNull(project);
         ArgumentNullException.ThrowIfNull(helperHost);
+        var staging = RunBackgroundPipeline(project);
+        return FinalizeOnMainThread(staging, helperHost);
+    }
 
+    // Runs all file I/O and external-tool work that is safe on a background thread.
+    // For copy-only modes the build is complete and returns TerrainBuildComplete.
+    // For Heightmap/PointCloud modes it returns TerrainBuildPending for FinalizeOnMainThread.
+    public static TerrainBuildStaging RunBackgroundPipeline(GolfCourseProject project)
+    {
+        ArgumentNullException.ThrowIfNull(project);
         project.EnsureDefaults();
 
         var terrainProjectPath = CourseFileUtilities.NormalizeProjectPath(project.GetTerrainOutputProjectPath());
         if (string.IsNullOrWhiteSpace(terrainProjectPath))
-        {
             throw new InvalidOperationException("Set a terrain folder before building terrain.");
-        }
 
         var terrainAbsolutePath = CourseFileUtilities.ToAbsolutePath(terrainProjectPath);
         var profile = project.ImportProfile ?? new TerrainImportProfile();
         ValidateModeMatchesSources(profile);
-        if (profile.Mode is TerrainImportProfile.TerrainImportMode.Manual
-            && !profile.CopySourceTerrainData)
+
+        if (profile.Mode is TerrainImportProfile.TerrainImportMode.Manual && !profile.CopySourceTerrainData)
         {
             Directory.CreateDirectory(terrainAbsolutePath);
-            return new TerrainBuildResult(terrainProjectPath, null, "Manual terrain mode left the terrain folder untouched.");
+            return new TerrainBuildComplete(new TerrainBuildResult(terrainProjectPath, null,
+                "Manual terrain mode left the terrain folder untouched."));
         }
 
         var workspaceAbsolutePath = CreateWorkspace(project);
-        var terrainFolderName = Path.GetFileName(terrainAbsolutePath.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar));
+        var terrainFolderName = Path.GetFileName(
+            terrainAbsolutePath.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar));
         var stagingTerrainPath = Path.Combine(workspaceAbsolutePath, $"{terrainFolderName}.build");
         CourseFileUtilities.EnsureCleanDirectory(stagingTerrainPath);
 
@@ -44,54 +71,112 @@ public static class TerrainImportService
         {
             case TerrainImportProfile.TerrainImportMode.Manual:
                 CopyBaseTerrain(profile, stagingTerrainPath);
-                break;
+                return new TerrainBuildComplete(FinalizeCopyMode(stagingTerrainPath, terrainAbsolutePath, terrainProjectPath));
+
             case TerrainImportProfile.TerrainImportMode.ExternalTerrainData:
                 if (!profile.CopySourceTerrainData)
                 {
                     Directory.CreateDirectory(terrainAbsolutePath);
-                    return new TerrainBuildResult(terrainProjectPath, null, "External terrain mode left the terrain folder untouched.");
+                    return new TerrainBuildComplete(new TerrainBuildResult(terrainProjectPath, null,
+                        "External terrain mode left the terrain folder untouched."));
                 }
-
                 CopyBaseTerrain(profile, stagingTerrainPath);
-                break;
+                return new TerrainBuildComplete(FinalizeCopyMode(stagingTerrainPath, terrainAbsolutePath, terrainProjectPath));
+
             case TerrainImportProfile.TerrainImportMode.Heightmap:
                 ValidateGdalTools(profile);
-                BuildFromHeightmap(project, helperHost, stagingTerrainPath, workspaceAbsolutePath);
-                break;
+                var (hPath, cPath, scale, offset, hClassPath, hGrid) = PrepareHeightmapPipeline(project, workspaceAbsolutePath);
+                return new TerrainBuildPending(stagingTerrainPath, terrainAbsolutePath, terrainProjectPath,
+                    hPath, cPath, scale, offset, hClassPath,
+                    hGrid?.MinX ?? 0, hGrid?.MinY ?? 0, hGrid?.MaxX ?? 0, hGrid?.MaxY ?? 0);
+
             case TerrainImportProfile.TerrainImportMode.PointCloud:
                 ValidateGdalTools(profile);
                 ExternalToolRunner.EnsureCommandAvailable(profile.PdalCommand, "PDAL");
-                BuildFromPointCloud(project, helperHost, stagingTerrainPath, workspaceAbsolutePath);
-                break;
+                var (pcPath, pcColor, pcScale, pcOffset, pcClassPath, pcGrid) = PreparePointCloudPipeline(project, workspaceAbsolutePath);
+                return new TerrainBuildPending(stagingTerrainPath, terrainAbsolutePath, terrainProjectPath,
+                    pcPath, pcColor, pcScale, pcOffset, pcClassPath,
+                    pcGrid?.MinX ?? 0, pcGrid?.MinY ?? 0, pcGrid?.MaxX ?? 0, pcGrid?.MaxY ?? 0);
+
             default:
                 throw new InvalidOperationException($"Unsupported import mode: {profile.Mode}");
         }
+    }
 
+    // Completes a TerrainBuildPending by running the Terrain3D importer and swapping the terrain
+    // directory. Must be called on the Godot main thread (AddChild/Call require it).
+    // For TerrainBuildComplete the result is returned immediately.
+    public static TerrainBuildResult FinalizeOnMainThread(TerrainBuildStaging staging, Node helperHost)
+    {
+        ArgumentNullException.ThrowIfNull(helperHost);
+
+        if (staging is TerrainBuildComplete complete)
+            return complete.Result;
+
+        var pending = (TerrainBuildPending)staging;
+        var runner = GetOrCreateRunner(helperHost);
+        // Deliberately do NOT bake the hole-zone overlay into the Terrain3D color map. The color map
+        // multiplies the albedo (ALBEDO = albedo * color_map.rgb), so a saturated overlay would tint
+        // the textures (e.g. pink fairways) and also trips the importer's auto "show_colormap" debug
+        // view when the asset list is empty. Per-zone texturing comes from the control map painted by
+        // paint_control_map() below; overlay_color.png remains a design-time artifact only.
+        var colorPath = string.Empty;
+
+        var result = runner.Call(
+            "import_to_terrain",
+            pending.HeightImagePath,
+            colorPath,
+            pending.StagingTerrainPath,
+            pending.ImportScale,
+            pending.HeightOffset);
+
+        if (result.VariantType == Variant.Type.Bool && !result.As<bool>())
+            throw new InvalidOperationException("Terrain3D import failed.");
+
+        if (!string.IsNullOrEmpty(pending.ClassImagePath) && File.Exists(pending.ClassImagePath))
+        {
+            runner.Call("paint_control_map",
+                pending.ClassImagePath,
+                pending.StagingTerrainPath,
+                (float)pending.RasterMinX,
+                (float)pending.RasterMinY,
+                (float)pending.RasterMaxX,
+                (float)pending.RasterMaxY,
+                pending.ImportScale);
+        }
+
+        var backupPath = ReplaceTerrainDirectory(pending.StagingTerrainPath, pending.TerrainAbsolutePath);
+        var backupMessage = string.IsNullOrWhiteSpace(backupPath)
+            ? string.Empty
+            : $" Previous terrain was moved to {backupPath}.";
+        return new TerrainBuildResult(pending.TerrainProjectPath, backupPath,
+            $"Terrain built at {pending.TerrainProjectPath}.{backupMessage}");
+    }
+
+    private static TerrainBuildResult FinalizeCopyMode(
+        string stagingTerrainPath,
+        string terrainAbsolutePath,
+        string terrainProjectPath)
+    {
         var backupPath = ReplaceTerrainDirectory(stagingTerrainPath, terrainAbsolutePath);
         var backupMessage = string.IsNullOrWhiteSpace(backupPath)
             ? string.Empty
             : $" Previous terrain was moved to {backupPath}.";
-        return new TerrainBuildResult(terrainProjectPath, backupPath, $"Terrain built at {terrainProjectPath}.{backupMessage}");
+        return new TerrainBuildResult(terrainProjectPath, backupPath,
+            $"Terrain copied to {terrainProjectPath}.{backupMessage}");
     }
 
-    private static void BuildFromHeightmap(
-        GolfCourseProject project,
-        Node helperHost,
-        string terrainAbsolutePath,
-        string workspaceAbsolutePath)
+    private static (string HeightImagePath, string? ColorImagePath, float ImportScale, float HeightOffset, string? ClassImagePath, RasterGrid? Grid)
+        PrepareHeightmapPipeline(GolfCourseProject project, string workspaceAbsolutePath)
     {
         var profile = project.ImportProfile ?? new TerrainImportProfile();
         var sourceHeightmapPath = profile.SourceHeightmapPath.Trim();
         if (string.IsNullOrWhiteSpace(sourceHeightmapPath))
-        {
             throw new InvalidOperationException("Set Source heightmap before building terrain.");
-        }
 
         var sourceHeightmapAbsolutePath = CourseFileUtilities.ToAbsolutePath(sourceHeightmapPath);
         if (!File.Exists(sourceHeightmapAbsolutePath))
-        {
             throw new FileNotFoundException($"Heightmap not found: {sourceHeightmapPath}");
-        }
 
         var sourceBoundaryPath = profile.SourceBoundaryPath.Trim();
         var hasBoundary = !string.IsNullOrWhiteSpace(sourceBoundaryPath);
@@ -99,6 +184,7 @@ public static class TerrainImportService
             || !string.IsNullOrWhiteSpace(profile.SourceSpatialReference)
             || !string.IsNullOrWhiteSpace(profile.TargetSpatialReference);
         var preparedSource = sourceHeightmapAbsolutePath;
+
         if (shouldWarp)
         {
             string? sourceBoundaryAbsolutePath = null;
@@ -106,59 +192,48 @@ public static class TerrainImportService
             {
                 sourceBoundaryAbsolutePath = CourseFileUtilities.ToAbsolutePath(sourceBoundaryPath);
                 if (!File.Exists(sourceBoundaryAbsolutePath))
-                {
                     throw new FileNotFoundException($"Boundary not found: {sourceBoundaryPath}");
-                }
             }
 
             preparedSource = Path.Combine(workspaceAbsolutePath, "heightmap_prepared.tif");
             var arguments = new List<string>
             {
-                "-overwrite",
-                "-r", "bilinear",
-                "-dstnodata", "-9999"
+                "-overwrite", "-r", "bilinear", "-dstnodata", "-9999"
             };
 
             AddSpatialReferenceArguments(arguments, profile);
             AddRasterResolutionArguments(arguments, profile);
             if (!string.IsNullOrWhiteSpace(sourceBoundaryAbsolutePath))
-            {
                 arguments.AddRange(["-cutline", sourceBoundaryAbsolutePath, "-crop_to_cutline"]);
-            }
 
             arguments.AddRange([sourceHeightmapAbsolutePath, preparedSource]);
-
-            ExternalToolRunner.Run(
-                profile.GdalWarpCommand,
-                arguments,
-                workspaceAbsolutePath);
+            ExternalToolRunner.Run(profile.GdalWarpCommand, arguments, workspaceAbsolutePath);
         }
 
         var heightImagePath = BuildHeightExr(profile, preparedSource, workspaceAbsolutePath);
-
+        var grid = QueryRasterGrid(profile, preparedSource, workspaceAbsolutePath);
         var colorImagePath = PrepareColorImage(profile, workspaceAbsolutePath)
-            ?? BuildHoleOverlay(profile, preparedSource, workspaceAbsolutePath);
-        ImportWithTerrain3D(helperHost, terrainAbsolutePath, heightImagePath, colorImagePath, profile, workspaceAbsolutePath);
+            ?? BuildHoleOverlay(profile, preparedSource, workspaceAbsolutePath, project.Holes.Count);
+
+        var classImagePath = ExportClassIdsPng(profile, workspaceAbsolutePath);
+        var importScale = profile.MetersToGodotScale > 0.0f ? profile.MetersToGodotScale : 1.0f;
+        var minElevation = QueryRasterMinimum(profile, heightImagePath, workspaceAbsolutePath);
+        var heightOffset = profile.TerrainHeightOffset - minElevation * importScale;
+
+        return (heightImagePath, colorImagePath, importScale, heightOffset, classImagePath, grid);
     }
 
-    private static void BuildFromPointCloud(
-        GolfCourseProject project,
-        Node helperHost,
-        string terrainAbsolutePath,
-        string workspaceAbsolutePath)
+    private static (string HeightImagePath, string? ColorImagePath, float ImportScale, float HeightOffset, string? ClassImagePath, RasterGrid? Grid)
+        PreparePointCloudPipeline(GolfCourseProject project, string workspaceAbsolutePath)
     {
         var profile = project.ImportProfile ?? new TerrainImportProfile();
         var sourcePointCloudPath = profile.SourcePointCloudPath.Trim();
         if (string.IsNullOrWhiteSpace(sourcePointCloudPath))
-        {
             throw new InvalidOperationException("Set Source point cloud before building terrain.");
-        }
 
         var sourcePointCloudAbsolutePath = CourseFileUtilities.ToAbsolutePath(sourcePointCloudPath);
         if (!File.Exists(sourcePointCloudAbsolutePath))
-        {
             throw new FileNotFoundException($"Point cloud not found: {sourcePointCloudPath}");
-        }
 
         var heightTiffPath = Path.Combine(workspaceAbsolutePath, "height.tif");
         var pipelinePath = Path.Combine(workspaceAbsolutePath, "pdal_pipeline.json");
@@ -169,19 +244,19 @@ public static class TerrainImportService
             WriteIndented = true
         }));
 
-        ExternalToolRunner.Run(
-            profile.PdalCommand,
-            [
-                "pipeline",
-                pipelinePath
-            ],
-            workspaceAbsolutePath);
+        ExternalToolRunner.Run(profile.PdalCommand, ["pipeline", pipelinePath], workspaceAbsolutePath);
 
         var heightImagePath = BuildHeightExr(profile, heightTiffPath, workspaceAbsolutePath);
-
+        var grid = QueryRasterGrid(profile, heightTiffPath, workspaceAbsolutePath);
         var colorImagePath = PrepareColorImage(profile, workspaceAbsolutePath)
-            ?? BuildHoleOverlay(profile, heightTiffPath, workspaceAbsolutePath);
-        ImportWithTerrain3D(helperHost, terrainAbsolutePath, heightImagePath, colorImagePath, profile, workspaceAbsolutePath);
+            ?? BuildHoleOverlay(profile, heightTiffPath, workspaceAbsolutePath, project.Holes.Count);
+
+        var classImagePath = ExportClassIdsPng(profile, workspaceAbsolutePath);
+        var importScale = profile.MetersToGodotScale > 0.0f ? profile.MetersToGodotScale : 1.0f;
+        var minElevation = QueryRasterMinimum(profile, heightImagePath, workspaceAbsolutePath);
+        var heightOffset = profile.TerrainHeightOffset - minElevation * importScale;
+
+        return (heightImagePath, colorImagePath, importScale, heightOffset, classImagePath, grid);
     }
 
     private static string BuildHeightExr(
@@ -231,38 +306,6 @@ public static class TerrainImportService
         return heightExrPath;
     }
 
-    private static void ImportWithTerrain3D(
-        Node helperHost,
-        string terrainAbsolutePath,
-        string heightImagePath,
-        string? colorImagePath,
-        TerrainImportProfile profile,
-        string workspaceAbsolutePath)
-    {
-        var runner = GetOrCreateRunner(helperHost);
-        var colorPath = colorImagePath ?? string.Empty;
-
-        // Heights in the EXR are real-world meters. Convert to Godot units with MetersToGodotScale,
-        // then offset so the lowest elevation sits near y=0 (hole/tee markers are placed at small
-        // fixed heights, so a ~100 m absolute elevation would otherwise leave them buried far below).
-        var importScale = profile.MetersToGodotScale > 0.0f ? profile.MetersToGodotScale : 1.0f;
-        var minElevation = QueryRasterMinimum(profile, heightImagePath, workspaceAbsolutePath);
-        var heightOffset = profile.TerrainHeightOffset - minElevation * importScale;
-
-        var result = runner.Call(
-            "import_to_terrain",
-            heightImagePath,
-            colorPath,
-            terrainAbsolutePath,
-            importScale,
-            heightOffset);
-
-        if (result.VariantType == Variant.Type.Bool && !result.As<bool>())
-        {
-            throw new InvalidOperationException("Terrain3D import failed.");
-        }
-    }
-
     private static float QueryRasterMinimum(
         TerrainImportProfile profile,
         string rasterAbsolutePath,
@@ -278,9 +321,7 @@ public static class TerrainImportService
             && bands.GetArrayLength() > 0
             && bands[0].TryGetProperty("minimum", out var minimum)
             && minimum.TryGetDouble(out var minimumValue))
-        {
             return (float)minimumValue;
-        }
 
         return 0.0f;
     }
@@ -288,14 +329,13 @@ public static class TerrainImportService
     private static void DeleteIfExists(string absolutePath)
     {
         if (File.Exists(absolutePath))
-        {
             File.Delete(absolutePath);
-        }
     }
 
     private const int TeeClassId = 200;
     private const int GreenClassId = 201;
     private const int SandClassId = 202;
+    private const int OutlineClassId = 203;
 
     private sealed record RasterGrid(
         double MinX,
@@ -312,24 +352,19 @@ public static class TerrainImportService
     private static string? BuildHoleOverlay(
         TerrainImportProfile profile,
         string alignmentRasterAbsolutePath,
-        string workspaceAbsolutePath)
+        string workspaceAbsolutePath,
+        int holeCount)
     {
         if (!profile.GenerateHoleOverlay)
-        {
             return null;
-        }
 
         var holesGeoJsonPath = profile.SourceHolesGeoJsonPath.Trim();
         if (string.IsNullOrWhiteSpace(holesGeoJsonPath))
-        {
             return null;
-        }
 
         var holesAbsolutePath = CourseFileUtilities.ToAbsolutePath(holesGeoJsonPath);
         if (!File.Exists(holesAbsolutePath))
-        {
             throw new FileNotFoundException($"Holes GeoJSON not found: {holesGeoJsonPath}");
-        }
 
         ExternalToolRunner.EnsureCommandAvailable(profile.OgrCommand, "OGR (ogr2ogr)");
         ExternalToolRunner.EnsureCommandAvailable(profile.GdalRasterizeCommand, "GDAL rasterize");
@@ -353,9 +388,7 @@ public static class TerrainImportService
             "-f", "GPKG", basePath, holesAbsolutePath, "-nln", "holes"
         };
         if (!string.IsNullOrWhiteSpace(prjPath))
-        {
             convertArguments.AddRange(["-t_srs", prjPath]);
-        }
 
         ExternalToolRunner.Run(profile.OgrCommand, convertArguments, workspaceAbsolutePath);
 
@@ -366,9 +399,7 @@ public static class TerrainImportService
         {
             var bunkersAbsolutePath = CourseFileUtilities.ToAbsolutePath(bunkerSourcePath);
             if (!File.Exists(bunkersAbsolutePath))
-            {
                 throw new FileNotFoundException($"Bunkers GeoJSON not found: {bunkerSourcePath}");
-            }
 
             DeleteIfExists(bunkersPath);
             var bunkerArguments = new List<string>
@@ -376,9 +407,7 @@ public static class TerrainImportService
                 "-f", "GPKG", bunkersPath, bunkersAbsolutePath, "-nln", "bunkers"
             };
             if (!string.IsNullOrWhiteSpace(prjPath))
-            {
                 bunkerArguments.AddRange(["-t_srs", prjPath]);
-            }
 
             ExternalToolRunner.Run(profile.OgrCommand, bunkerArguments, workspaceAbsolutePath);
         }
@@ -402,6 +431,23 @@ public static class TerrainImportService
                 $"SELECT geom AS geom, {SandClassId} AS cid FROM bunkers");
         }
 
+        // Outline ring: every feature buffered outward by the outline width, all sharing the outline
+        // class id. Written to a separate GPKG to avoid overwriting featuresPath with its corridors layer.
+        var outlineWidth = 1.0f; // metres; could be promoted to TerrainImportProfile later
+        var outlinesPath = Path.Combine(workspaceAbsolutePath, "overlay_outlines.gpkg");
+        DeleteIfExists(outlinesPath);
+        RunOverlaySql(profile, outlinesPath, basePath, "outlines", false, workspaceAbsolutePath,
+            $"SELECT ST_Buffer(geom,{Inv(corridorRadius + outlineWidth)}) AS geom, {OutlineClassId} AS cid FROM holes");
+        RunOverlaySql(profile, outlinesPath, basePath, "outlines", true, workspaceAbsolutePath,
+            $"SELECT ST_Buffer(ST_StartPoint(geom),{Inv(teeRadius + outlineWidth)}) AS geom, {OutlineClassId} AS cid FROM holes");
+        RunOverlaySql(profile, outlinesPath, basePath, "outlines", true, workspaceAbsolutePath,
+            $"SELECT ST_Buffer(ST_EndPoint(geom),{Inv(greenRadius + outlineWidth)}) AS geom, {OutlineClassId} AS cid FROM holes");
+        if (hasBunkers)
+        {
+            RunOverlaySql(profile, outlinesPath, bunkersPath, "outlines", true, workspaceAbsolutePath,
+                $"SELECT ST_Buffer(geom,{Inv(outlineWidth)}) AS geom, {OutlineClassId} AS cid FROM bunkers");
+        }
+
         // Rasterize class ids aligned to the height grid. Corridors are first, then bunkers and markers.
         var classPath = Path.Combine(workspaceAbsolutePath, "overlay_class.tif");
         DeleteIfExists(classPath);
@@ -412,10 +458,17 @@ public static class TerrainImportService
             grid.Height.ToString(System.Globalization.CultureInfo.InvariantCulture)
         ];
 
-        var initArguments = new List<string> { "-burn", "0", "-init", "0", "-ot", "Byte", "-of", "GTiff" };
+        // Create the raster (background 0 = rough) and paint the outline ring under everything.
+        var initArguments = new List<string> { "-a", "cid", "-init", "0", "-ot", "Byte", "-of", "GTiff" };
         initArguments.AddRange(extentArguments);
-        initArguments.AddRange(["-l", "corridors", featuresPath, classPath]);
+        initArguments.AddRange(["-l", "outlines", outlinesPath, classPath]);
         ExternalToolRunner.Run(profile.GdalRasterizeCommand, initArguments, workspaceAbsolutePath);
+
+        // Paint corridors with their per-hole class id (restores the rainbow), then markers on top.
+        ExternalToolRunner.Run(
+            profile.GdalRasterizeCommand,
+            ["-a", "cid", "-l", "corridors", featuresPath, classPath],
+            workspaceAbsolutePath);
 
         var overlayLayers = hasBunkers
             ? new[] { "bunkers", "tees", "greens" }
@@ -430,7 +483,7 @@ public static class TerrainImportService
 
         // Map class ids to colours via a generated ramp and render the colour PNG.
         var rampPath = Path.Combine(workspaceAbsolutePath, "overlay_ramp.txt");
-        File.WriteAllText(rampPath, BuildColorRamp());
+        File.WriteAllText(rampPath, BuildColorRamp(holeCount));
         var colorPath = Path.Combine(workspaceAbsolutePath, "overlay_color.png");
         DeleteIfExists(colorPath);
         ExternalToolRunner.Run(
@@ -452,9 +505,7 @@ public static class TerrainImportService
     {
         var arguments = new List<string> { "-f", "GPKG" };
         if (append)
-        {
             arguments.AddRange(["-update", "-append"]);
-        }
 
         arguments.AddRange([outputPath, sourcePath, "-nln", layerName, "-dialect", "sqlite", "-sql", sql]);
         ExternalToolRunner.Run(profile.OgrCommand, arguments, workspaceAbsolutePath);
@@ -488,9 +539,7 @@ public static class TerrainImportService
         var wkt = string.Empty;
         if (root.TryGetProperty("coordinateSystem", out var coordinateSystem)
             && coordinateSystem.TryGetProperty("wkt", out var wktElement))
-        {
             wkt = wktElement.GetString() ?? string.Empty;
-        }
 
         return new RasterGrid(
             Math.Min(x0, x1),
@@ -502,22 +551,24 @@ public static class TerrainImportService
             wkt);
     }
 
-    private static string BuildColorRamp()
+    private static string BuildColorRamp(int holeCount)
     {
         var builder = new StringBuilder();
         builder.AppendLine("0 120 150 90"); // rough / outside corridor (light grass green)
 
-        // Distinct hue per hole id. 64 entries cover any realistic course numbering.
+        // Spread 64 class IDs evenly across the hue wheel based on the actual hole count so that
+        // all holes on any size course (9, 18, 27) occupy the full colour spectrum.
         for (var holeId = 1; holeId <= 64; holeId++)
         {
-            var hue = (holeId * 360.0 / 18.0) % 360.0;
+            var hue = (holeId * 360.0 / Math.Max(holeCount, 1)) % 360.0;
             var (red, green, blue) = HsvToRgb(hue, 0.65, 0.85);
             builder.AppendLine($"{holeId} {red} {green} {blue}");
         }
 
-        builder.AppendLine($"{TeeClassId} 40 110 230"); // tee disc (blue)
-        builder.AppendLine($"{GreenClassId} 245 245 245"); // green disc (white)
+        builder.AppendLine($"{TeeClassId} 12 97 0"); // tee disc (dark green #0C6100)
+        builder.AppendLine($"{GreenClassId} 64 143 51"); // green disc (bright green #408F33)
         builder.AppendLine($"{SandClassId} 216 190 135"); // sand / bunker (light brown)
+        builder.AppendLine($"{OutlineClassId} 64 56 13"); // fairway / feature outline (dark olive #40380D)
         return builder.ToString();
     }
 
@@ -550,27 +601,39 @@ public static class TerrainImportService
         return value.ToString("0.############", System.Globalization.CultureInfo.InvariantCulture);
     }
 
+    // Converts overlay_class.tif (byte-valued class-ID raster) to a greyscale PNG that GDScript
+    // can read without GDAL bindings. Returns the PNG path, or null if the class TIF does not exist
+    // (i.e. hole overlay generation was skipped or the user provided a pre-made colour overlay).
+    private static string? ExportClassIdsPng(TerrainImportProfile profile, string workspaceAbsolutePath)
+    {
+        var classTifPath = Path.Combine(workspaceAbsolutePath, "overlay_class.tif");
+        if (!File.Exists(classTifPath))
+            return null;
+
+        var classIdPngPath = Path.Combine(workspaceAbsolutePath, "overlay_class_ids.png");
+        DeleteIfExists(classIdPngPath);
+        ExternalToolRunner.Run(
+            profile.GdalTranslateCommand,
+            ["-of", "PNG", "-ot", "Byte", classTifPath, classIdPngPath],
+            workspaceAbsolutePath);
+
+        return File.Exists(classIdPngPath) ? classIdPngPath : null;
+    }
+
     private static string? PrepareColorImage(TerrainImportProfile profile, string workspaceAbsolutePath)
     {
         var sourceOverlayPath = profile.SourceOverlayPath.Trim();
         if (string.IsNullOrWhiteSpace(sourceOverlayPath))
-        {
             return null;
-        }
 
         var sourceOverlayAbsolutePath = CourseFileUtilities.ToAbsolutePath(sourceOverlayPath);
         if (!File.Exists(sourceOverlayAbsolutePath))
-        {
             throw new FileNotFoundException($"Overlay not found: {sourceOverlayPath}");
-        }
 
         var colorImagePath = Path.Combine(workspaceAbsolutePath, "color.png");
         ExternalToolRunner.Run(
             profile.GdalTranslateCommand,
-            [
-                sourceOverlayAbsolutePath,
-                colorImagePath
-            ],
+            [sourceOverlayAbsolutePath, colorImagePath],
             workspaceAbsolutePath);
 
         return colorImagePath;
@@ -580,9 +643,7 @@ public static class TerrainImportService
     {
         var outputFolderProjectPath = CourseFileUtilities.NormalizeProjectPath(project.OutputFolder);
         if (string.IsNullOrWhiteSpace(outputFolderProjectPath))
-        {
             throw new InvalidOperationException("Set an output folder before building terrain.");
-        }
 
         var outputFolderAbsolutePath = CourseFileUtilities.ToAbsolutePath(outputFolderProjectPath);
         var workspaceAbsolutePath = Path.Combine(outputFolderAbsolutePath, ".golf_course_design");
@@ -595,20 +656,14 @@ public static class TerrainImportService
     {
         var sourceTerrainPath = profile.SourceTerrainDirectory.Trim();
         if (string.IsNullOrWhiteSpace(sourceTerrainPath))
-        {
             sourceTerrainPath = RangeTerrainPath;
-        }
 
         var sourceTerrainAbsolutePath = CourseFileUtilities.ToAbsolutePath(sourceTerrainPath);
         if (!Directory.Exists(sourceTerrainAbsolutePath))
-        {
             throw new DirectoryNotFoundException($"Terrain source not found: {sourceTerrainPath}");
-        }
 
         if (CourseFileUtilities.ArePathsSame(sourceTerrainAbsolutePath, terrainAbsolutePath))
-        {
             return;
-        }
 
         CourseFileUtilities.CopyDirectory(sourceTerrainAbsolutePath, terrainAbsolutePath);
     }
@@ -629,9 +684,7 @@ public static class TerrainImportService
             };
 
             if (!string.IsNullOrWhiteSpace(profile.SourceSpatialReference))
-            {
                 reprojection["in_srs"] = profile.SourceSpatialReference.Trim();
-            }
 
             pipeline.Add(reprojection);
         }
@@ -683,22 +736,16 @@ public static class TerrainImportService
     private static void AddSpatialReferenceArguments(List<string> arguments, TerrainImportProfile profile)
     {
         if (!string.IsNullOrWhiteSpace(profile.SourceSpatialReference))
-        {
             arguments.AddRange(["-s_srs", profile.SourceSpatialReference.Trim()]);
-        }
 
         if (!string.IsNullOrWhiteSpace(profile.TargetSpatialReference))
-        {
             arguments.AddRange(["-t_srs", profile.TargetSpatialReference.Trim()]);
-        }
     }
 
     private static void AddRasterResolutionArguments(List<string> arguments, TerrainImportProfile profile)
     {
         if (profile.RasterResolutionMeters <= 0.0f)
-        {
             return;
-        }
 
         var resolution = profile.RasterResolutionMeters.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture);
         arguments.AddRange(["-tr", resolution, resolution]);
@@ -708,9 +755,7 @@ public static class TerrainImportService
     {
         var parent = Path.GetDirectoryName(terrainAbsolutePath);
         if (string.IsNullOrWhiteSpace(parent))
-        {
             throw new InvalidOperationException($"Invalid terrain path: {terrainAbsolutePath}");
-        }
 
         Directory.CreateDirectory(parent);
 
@@ -735,10 +780,7 @@ public static class TerrainImportService
         catch
         {
             if (!string.IsNullOrWhiteSpace(backupPath) && !Directory.Exists(terrainAbsolutePath))
-            {
                 Directory.Move(backupPath, terrainAbsolutePath);
-            }
-
             throw;
         }
 
@@ -762,21 +804,15 @@ public static class TerrainImportService
     {
         var existingRunner = helperHost.GetNodeOrNull<Node>("TerrainImportRunner");
         if (existingRunner != null)
-        {
             return existingRunner;
-        }
 
         var runnerScript = GD.Load<GDScript>(ImportRunnerPath);
         if (runnerScript == null)
-        {
             throw new InvalidOperationException("Could not load the terrain import helper.");
-        }
 
         var runnerObject = runnerScript.New().AsGodotObject();
         if (runnerObject is not Node runner)
-        {
             throw new InvalidOperationException("Could not create terrain import helper.");
-        }
 
         runner.Name = "TerrainImportRunner";
         helperHost.AddChild(runner);

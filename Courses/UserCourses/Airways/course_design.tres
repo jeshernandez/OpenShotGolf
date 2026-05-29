@@ -8,19 +8,9 @@
 [sub_resource type="Resource" id="Resource_sqjny"]
 script = ExtResource("2_jxn83")
 TeeColor = "White"
-Position = Vector2(371, 231.5)
-
-[sub_resource type="Resource" id="Resource_jxn83"]
-script = ExtResource("2_jxn83")
-TeeColor = "Red"
-Position = Vector2(371, 231.5)
-
-[sub_resource type="Resource" id="Resource_f0x0k"]
-script = ExtResource("2_jxn83")
-TeeColor = "White"
 Position = Vector2(25, 3)
 
-[sub_resource type="Resource" id="Resource_ffsxy"]
+[sub_resource type="Resource" id="Resource_jxn83"]
 script = ExtResource("2_jxn83")
 TeeColor = "Red"
 Position = Vector2(50, -5.5)
@@ -28,7 +18,7 @@ Position = Vector2(50, -5.5)
 [sub_resource type="Resource" id="Resource_55cja"]
 script = ExtResource("1_sqjny")
 HoleLocation = Vector2(666.5, 263)
-TeeBoxes = Array[ExtResource("2_jxn83")]([SubResource("Resource_sqjny"), SubResource("Resource_jxn83"), SubResource("Resource_f0x0k"), SubResource("Resource_ffsxy")])
+TeeBoxes = Array[ExtResource("2_jxn83")]([SubResource("Resource_sqjny"), SubResource("Resource_jxn83")])
 
 [sub_resource type="Resource" id="Resource_t137q"]
 script = ExtResource("2_jxn83")
@@ -317,7 +307,6 @@ SourceBunkersGeoJsonPath = "res://Courses/UserCourses/Airways/source_data/airway
 OriginLatitude = 36.777303
 OriginLongitude = -119.706169
 MetersToGodotScale = 1.001
-TerrainHeightScale = 1.001
 TargetSpatialReference = "EPSG:26911"
 
 [resource]

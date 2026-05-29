@@ -44,9 +44,6 @@ public partial class TerrainImportProfile : Resource
     public float RasterResolutionMeters { get; set; } = 1.0f;
 
     [Export]
-    public float TerrainHeightScale { get; set; } = 1.0f;
-
-    [Export]
     public float TerrainHeightOffset { get; set; } = 0.0f;
 
     [Export]
@@ -54,12 +51,6 @@ public partial class TerrainImportProfile : Resource
 
     [Export]
     public string TargetSpatialReference { get; set; } = string.Empty;
-
-    [Export]
-    public float InnerRadiusMeters { get; set; } = 750.0f;
-
-    [Export]
-    public float OuterRadiusMeters { get; set; } = 950.0f;
 
     [Export]
     public string GdalTranslateCommand { get; set; } = "gdal_translate";

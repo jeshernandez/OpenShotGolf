@@ -26,10 +26,13 @@ public static class CourseFileUtilities
 
     public static bool ArePathsSame(string left, string right)
     {
+        var comparison = OperatingSystem.IsWindows()
+            ? StringComparison.OrdinalIgnoreCase
+            : StringComparison.Ordinal;
         return string.Equals(
             Path.GetFullPath(left).TrimEnd(Path.DirectorySeparatorChar),
             Path.GetFullPath(right).TrimEnd(Path.DirectorySeparatorChar),
-            StringComparison.OrdinalIgnoreCase);
+            comparison);
     }
 
     public static void EnsureCleanDirectory(string absolutePath)

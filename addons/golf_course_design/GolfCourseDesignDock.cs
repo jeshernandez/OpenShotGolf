@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Threading.Tasks;
 using Godot;
 
 [Tool]
@@ -11,7 +12,6 @@ public partial class GolfCourseDesignDock : ScrollContainer
     private const float CoordinateStep = 0.5f;
     private const string DefaultProjectPath = "res://Courses/UserCourses/NewCourse/course_design.tres";
 
-    private EditorPlugin? _editorPlugin;
     private GolfCourseProject _project = GolfCourseProject.CreateDefault();
     private string _projectFilePath = DefaultProjectPath;
     private bool _isUpdatingUi;
@@ -48,32 +48,18 @@ public partial class GolfCourseDesignDock : ScrollContainer
     private SpinBox? _originLongitudeSpin;
     private SpinBox? _metersToGodotScaleSpin;
     private SpinBox? _rasterResolutionSpin;
-    private SpinBox? _terrainHeightScaleSpin;
     private SpinBox? _terrainHeightOffsetSpin;
     private LineEdit? _sourceSpatialReferenceEdit;
     private LineEdit? _targetSpatialReferenceEdit;
-    private SpinBox? _innerRadiusSpin;
-    private SpinBox? _outerRadiusSpin;
     private ItemList? _holeList;
     private LineEdit? _holeNameEdit;
     private SpinBox? _parSpin;
     private SpinBox? _holeXSpin;
     private SpinBox? _holeZSpin;
-    private readonly TeeRowControl[] _teeControls = new TeeRowControl[4];
+    private VBoxContainer? _teeGridContainer;
+    private readonly System.Collections.Generic.List<TeeRowControl> _teeControls = new();
+    private Button? _buildTerrainButton;
     private Label? _statusLabel;
-
-    public EditorPlugin? EditorPlugin
-    {
-        get => _editorPlugin;
-        set
-        {
-            _editorPlugin = value;
-            if (IsInsideTree())
-            {
-                UpdateStatus("Ready");
-            }
-        }
-    }
 
     public override void _Ready()
     {
@@ -146,7 +132,8 @@ public partial class GolfCourseDesignDock : ScrollContainer
         row.AddChild(MakeButton("New project", () => LoadProject(GolfCourseProject.CreateDefault())));
         row.AddChild(MakeButton("Load", LoadProjectFromDisk));
         row.AddChild(MakeButton("Save", SaveProjectToDisk));
-        row.AddChild(MakeButton("Build terrain", BuildTerrain));
+        _buildTerrainButton = MakeButton("Build terrain", BuildTerrain);
+        row.AddChild(_buildTerrainButton);
         row.AddChild(MakeButton("Export course", ExportCourse));
         row.AddChild(MakeButton("Open scene", OpenCourseScene));
         row.AddChild(MakeButton("Open output", OpenOutputFolder));
@@ -214,34 +201,12 @@ public partial class GolfCourseDesignDock : ScrollContainer
         holeLocationRow.AddChild(_holeZSpin);
         editorColumn.AddChild(holeLocationRow);
 
-        var teeHeader = new Label { Text = "Tee boxes", ThemeTypeVariation = "HeaderSmall" };
-        editorColumn.AddChild(teeHeader);
-
-        var teeGrid = new GridContainer
+        // Tee grid is rebuilt dynamically from the project's effective tee colors.
+        _teeGridContainer = new VBoxContainer
         {
-            Columns = 3,
             SizeFlagsHorizontal = SizeFlags.ExpandFill
         };
-        teeGrid.AddChild(new Label { Text = "Color" });
-        teeGrid.AddChild(new Label { Text = "X" });
-        teeGrid.AddChild(new Label { Text = "Z" });
-
-        var teeColors = new[] { "Black", "Blue", "White", "Red" };
-        for (var index = 0; index < teeColors.Length; index++)
-        {
-            var teeRow = new TeeRowControl(teeColors[index])
-            {
-                XSpin = MakeSpinBox(CoordinateMin, CoordinateMax, CoordinateStep, 0.0),
-                ZSpin = MakeSpinBox(CoordinateMin, CoordinateMax, CoordinateStep, 0.0)
-            };
-
-            teeGrid.AddChild(teeRow.MakeColorLabel());
-            teeGrid.AddChild(teeRow.XSpin);
-            teeGrid.AddChild(teeRow.ZSpin);
-            _teeControls[index] = teeRow;
-        }
-
-        editorColumn.AddChild(teeGrid);
+        editorColumn.AddChild(_teeGridContainer);
 
         ConnectHoleEditorSignals();
     }
@@ -287,12 +252,6 @@ public partial class GolfCourseDesignDock : ScrollContainer
         resolutionRow.AddChild(_rasterResolutionSpin);
         parent.AddChild(resolutionRow);
 
-        var heightScaleRow = new HBoxContainer();
-        heightScaleRow.AddChild(new Label { Text = "Terrain height scale", CustomMinimumSize = new Vector2(180, 0) });
-        _terrainHeightScaleSpin = MakeSpinBox(0.001, 10000.0, 0.1, 1.0);
-        heightScaleRow.AddChild(_terrainHeightScaleSpin);
-        parent.AddChild(heightScaleRow);
-
         var heightOffsetRow = new HBoxContainer();
         heightOffsetRow.AddChild(new Label { Text = "Terrain height offset", CustomMinimumSize = new Vector2(180, 0) });
         _terrainHeightOffsetSpin = MakeSpinBox(-10000.0, 10000.0, 0.1, 0.0);
@@ -301,18 +260,6 @@ public partial class GolfCourseDesignDock : ScrollContainer
 
         parent.AddChild(BuildFieldRow("Source CRS", out _sourceSpatialReferenceEdit));
         parent.AddChild(BuildFieldRow("Target CRS", out _targetSpatialReferenceEdit));
-
-        var innerRow = new HBoxContainer();
-        innerRow.AddChild(new Label { Text = "Inner radius (m)", CustomMinimumSize = new Vector2(180, 0) });
-        _innerRadiusSpin = MakeSpinBox(50.0, 10000.0, 10.0, 750.0);
-        innerRow.AddChild(_innerRadiusSpin);
-        parent.AddChild(innerRow);
-
-        var outerRow = new HBoxContainer();
-        outerRow.AddChild(new Label { Text = "Outer radius (m)", CustomMinimumSize = new Vector2(180, 0) });
-        _outerRadiusSpin = MakeSpinBox(50.0, 12000.0, 10.0, 950.0);
-        outerRow.AddChild(_outerRadiusSpin);
-        parent.AddChild(outerRow);
 
         var fillDistanceRow = new HBoxContainer();
         fillDistanceRow.AddChild(new Label { Text = "NoData fill distance (px)", CustomMinimumSize = new Vector2(180, 0) });
@@ -373,198 +320,108 @@ public partial class GolfCourseDesignDock : ScrollContainer
     private void ConnectHoleEditorSignals()
     {
         if (_holeNameEdit != null)
-        {
             _holeNameEdit.TextChanged += _ => ApplyHoleEditorToProject();
-        }
 
         if (_parSpin != null)
-        {
             _parSpin.ValueChanged += _ => ApplyHoleEditorToProject();
-        }
 
         if (_holeXSpin != null)
-        {
             _holeXSpin.ValueChanged += _ => ApplyHoleEditorToProject();
-        }
 
         if (_holeZSpin != null)
-        {
             _holeZSpin.ValueChanged += _ => ApplyHoleEditorToProject();
-        }
 
-        foreach (var teeRow in _teeControls)
-        {
-            if (teeRow == null)
-            {
-                continue;
-            }
-
-            teeRow.XSpin.ValueChanged += _ => ApplyHoleEditorToProject();
-            teeRow.ZSpin.ValueChanged += _ => ApplyHoleEditorToProject();
-        }
+        // Tee spin signals are connected per-row in RebuildTeeGrid().
     }
 
     private void ConnectImportSignals()
     {
         if (_importModeButton != null)
-        {
             _importModeButton.ItemSelected += _ => ApplyImportEditorToProject();
-        }
 
         if (_sourceTerrainDirectoryEdit != null)
-        {
             _sourceTerrainDirectoryEdit.TextChanged += _ => ApplyImportEditorToProject();
-        }
 
         if (_sourceHeightmapEdit != null)
-        {
             _sourceHeightmapEdit.TextChanged += _ => ApplyImportEditorToProject();
-        }
 
         if (_sourceOverlayEdit != null)
-        {
             _sourceOverlayEdit.TextChanged += _ => ApplyImportEditorToProject();
-        }
 
         if (_sourceBoundaryEdit != null)
-        {
             _sourceBoundaryEdit.TextChanged += _ => ApplyImportEditorToProject();
-        }
 
         if (_sourcePointCloudEdit != null)
-        {
             _sourcePointCloudEdit.TextChanged += _ => ApplyImportEditorToProject();
-        }
 
         if (_sourceHolesGeoJsonEdit != null)
-        {
             _sourceHolesGeoJsonEdit.TextChanged += _ => ApplyImportEditorToProject();
-        }
 
         if (_sourceBunkersGeoJsonEdit != null)
-        {
             _sourceBunkersGeoJsonEdit.TextChanged += _ => ApplyImportEditorToProject();
-        }
 
         if (_copyTerrainCheck != null)
-        {
             _copyTerrainCheck.Toggled += _ => ApplyImportEditorToProject();
-        }
 
         if (_originLatitudeSpin != null)
-        {
             _originLatitudeSpin.ValueChanged += _ => ApplyImportEditorToProject();
-        }
 
         if (_originLongitudeSpin != null)
-        {
             _originLongitudeSpin.ValueChanged += _ => ApplyImportEditorToProject();
-        }
 
         if (_metersToGodotScaleSpin != null)
-        {
             _metersToGodotScaleSpin.ValueChanged += _ => ApplyImportEditorToProject();
-        }
 
         if (_rasterResolutionSpin != null)
-        {
             _rasterResolutionSpin.ValueChanged += _ => ApplyImportEditorToProject();
-        }
-
-        if (_terrainHeightScaleSpin != null)
-        {
-            _terrainHeightScaleSpin.ValueChanged += _ => ApplyImportEditorToProject();
-        }
 
         if (_terrainHeightOffsetSpin != null)
-        {
             _terrainHeightOffsetSpin.ValueChanged += _ => ApplyImportEditorToProject();
-        }
 
         if (_sourceSpatialReferenceEdit != null)
-        {
             _sourceSpatialReferenceEdit.TextChanged += _ => ApplyImportEditorToProject();
-        }
 
         if (_targetSpatialReferenceEdit != null)
-        {
             _targetSpatialReferenceEdit.TextChanged += _ => ApplyImportEditorToProject();
-        }
-
-        if (_innerRadiusSpin != null)
-        {
-            _innerRadiusSpin.ValueChanged += _ => ApplyImportEditorToProject();
-        }
-
-        if (_outerRadiusSpin != null)
-        {
-            _outerRadiusSpin.ValueChanged += _ => ApplyImportEditorToProject();
-        }
 
         if (_gdalTranslateCommandEdit != null)
-        {
             _gdalTranslateCommandEdit.TextChanged += _ => ApplyImportEditorToProject();
-        }
 
         if (_gdalWarpCommandEdit != null)
-        {
             _gdalWarpCommandEdit.TextChanged += _ => ApplyImportEditorToProject();
-        }
 
         if (_gdalFillNodataCommandEdit != null)
-        {
             _gdalFillNodataCommandEdit.TextChanged += _ => ApplyImportEditorToProject();
-        }
 
         if (_gdalInfoCommandEdit != null)
-        {
             _gdalInfoCommandEdit.TextChanged += _ => ApplyImportEditorToProject();
-        }
 
         if (_noDataFillDistanceSpin != null)
-        {
             _noDataFillDistanceSpin.ValueChanged += _ => ApplyImportEditorToProject();
-        }
 
         if (_generateHoleOverlayCheck != null)
-        {
             _generateHoleOverlayCheck.Toggled += _ => ApplyImportEditorToProject();
-        }
 
         if (_holeCorridorWidthSpin != null)
-        {
             _holeCorridorWidthSpin.ValueChanged += _ => ApplyImportEditorToProject();
-        }
 
         if (_teeMarkerRadiusSpin != null)
-        {
             _teeMarkerRadiusSpin.ValueChanged += _ => ApplyImportEditorToProject();
-        }
 
         if (_greenMarkerRadiusSpin != null)
-        {
             _greenMarkerRadiusSpin.ValueChanged += _ => ApplyImportEditorToProject();
-        }
 
         if (_ogrCommandEdit != null)
-        {
             _ogrCommandEdit.TextChanged += _ => ApplyImportEditorToProject();
-        }
 
         if (_gdalRasterizeCommandEdit != null)
-        {
             _gdalRasterizeCommandEdit.TextChanged += _ => ApplyImportEditorToProject();
-        }
 
         if (_gdalDemCommandEdit != null)
-        {
             _gdalDemCommandEdit.TextChanged += _ => ApplyImportEditorToProject();
-        }
 
         if (_pdalCommandEdit != null)
-        {
             _pdalCommandEdit.TextChanged += _ => ApplyImportEditorToProject();
-        }
     }
 
     private void LoadProjectFromDisk()
@@ -620,24 +477,29 @@ public partial class GolfCourseDesignDock : ScrollContainer
         }
     }
 
-    private void BuildTerrain()
+    private async void BuildTerrain()
     {
         try
         {
             ApplyUiToProject();
             SaveProjectToDisk();
-            var result = BuildTerrainCore();
+            UpdateStatus("Building terrain... (this may take a while)");
+            if (_buildTerrainButton != null)
+                _buildTerrainButton.Disabled = true;
+
+            var staging = await Task.Run(() => TerrainImportService.RunBackgroundPipeline(_project));
+            var result = TerrainImportService.FinalizeOnMainThread(staging, this);
             UpdateStatus(result.Message);
         }
         catch (Exception exception)
         {
             UpdateStatus(exception.Message);
         }
-    }
-
-    private TerrainBuildResult BuildTerrainCore()
-    {
-        return TerrainImportService.BuildTerrain(_project, this);
+        finally
+        {
+            if (_buildTerrainButton != null)
+                _buildTerrainButton.Disabled = false;
+        }
     }
 
     private void ImportHolesFromGeoJson()
@@ -645,10 +507,17 @@ public partial class GolfCourseDesignDock : ScrollContainer
         try
         {
             ApplyUiToProject();
-            var importedCount = GeoJsonCourseLayoutImporter.ImportHoles(_project);
+            var result = GeoJsonCourseLayoutImporter.ImportHoles(_project);
+            // Apply detected origin to profile when it wasn't set — explicit here so the side
+            // effect is visible in the caller rather than hidden inside the importer.
+            if (result.DetectedOriginLatitude.HasValue)
+            {
+                _project.ImportProfile.OriginLatitude = result.DetectedOriginLatitude.Value;
+                _project.ImportProfile.OriginLongitude = result.DetectedOriginLongitude!.Value;
+            }
             _selectedHoleIndex = 0;
             RefreshAllUi();
-            UpdateStatus($"Imported {importedCount} holes from GeoJSON. Click Save to keep the updated course project.");
+            UpdateStatus($"Imported {result.HoleCount} holes from GeoJSON. Click Save to keep the updated course project.");
         }
         catch (Exception exception)
         {
@@ -719,9 +588,7 @@ public partial class GolfCourseDesignDock : ScrollContainer
     {
         ApplyUiToProject();
         if (_selectedHoleIndex < 0 || _selectedHoleIndex >= _project.Holes.Count)
-        {
             return;
-        }
 
         var copy = _project.Holes[_selectedHoleIndex].DuplicateHole();
         copy.HoleName = $"{copy.HoleName} Copy";
@@ -738,9 +605,7 @@ public partial class GolfCourseDesignDock : ScrollContainer
         }
 
         if (_selectedHoleIndex < 0 || _selectedHoleIndex >= _project.Holes.Count)
-        {
             return;
-        }
 
         _project.Holes.RemoveAt(_selectedHoleIndex);
         _selectedHoleIndex = Math.Clamp(_selectedHoleIndex, 0, _project.Holes.Count - 1);
@@ -750,9 +615,7 @@ public partial class GolfCourseDesignDock : ScrollContainer
     private void OnHoleSelected(long index)
     {
         if (_isUpdatingUi)
-        {
             return;
-        }
 
         ApplyUiToProject();
         _selectedHoleIndex = (int)index;
@@ -765,6 +628,7 @@ public partial class GolfCourseDesignDock : ScrollContainer
         _project.EnsureDefaults();
         _selectedHoleIndex = 0;
         RefreshAllUi();
+        UpdateStatus("Ready");
     }
 
     private void RefreshAllUi()
@@ -772,202 +636,163 @@ public partial class GolfCourseDesignDock : ScrollContainer
         _isUpdatingUi = true;
 
         if (_projectFilePathEdit != null)
-        {
             _projectFilePathEdit.Text = _projectFilePath;
-        }
 
         if (_courseTitleEdit != null)
-        {
             _courseTitleEdit.Text = _project.CourseTitle;
-        }
 
         if (_outputFolderEdit != null)
-        {
             _outputFolderEdit.Text = _project.OutputFolder;
-        }
 
         if (_terrainFolderEdit != null)
-        {
             _terrainFolderEdit.Text = _project.TerrainFolderName;
-        }
 
         if (_teeColorsEdit != null)
-        {
             _teeColorsEdit.Text = string.Join(", ", _project.GetEffectiveTeeColors());
-        }
 
         if (_importModeButton != null)
-        {
             _importModeButton.Selected = (int)_project.ImportProfile.Mode;
-        }
 
         if (_sourceTerrainDirectoryEdit != null)
-        {
             _sourceTerrainDirectoryEdit.Text = _project.ImportProfile.SourceTerrainDirectory;
-        }
 
         if (_sourceHeightmapEdit != null)
-        {
             _sourceHeightmapEdit.Text = _project.ImportProfile.SourceHeightmapPath;
-        }
 
         if (_sourceOverlayEdit != null)
-        {
             _sourceOverlayEdit.Text = _project.ImportProfile.SourceOverlayPath;
-        }
 
         if (_sourceBoundaryEdit != null)
-        {
             _sourceBoundaryEdit.Text = _project.ImportProfile.SourceBoundaryPath;
-        }
 
         if (_sourcePointCloudEdit != null)
-        {
             _sourcePointCloudEdit.Text = _project.ImportProfile.SourcePointCloudPath;
-        }
 
         if (_sourceHolesGeoJsonEdit != null)
-        {
             _sourceHolesGeoJsonEdit.Text = _project.ImportProfile.SourceHolesGeoJsonPath;
-        }
 
         if (_sourceBunkersGeoJsonEdit != null)
-        {
             _sourceBunkersGeoJsonEdit.Text = _project.ImportProfile.SourceBunkersGeoJsonPath;
-        }
 
         if (_copyTerrainCheck != null)
-        {
             _copyTerrainCheck.ButtonPressed = _project.ImportProfile.CopySourceTerrainData;
-        }
 
         if (_originLatitudeSpin != null)
-        {
             _originLatitudeSpin.Value = _project.ImportProfile.OriginLatitude;
-        }
 
         if (_originLongitudeSpin != null)
-        {
             _originLongitudeSpin.Value = _project.ImportProfile.OriginLongitude;
-        }
 
         if (_metersToGodotScaleSpin != null)
-        {
             _metersToGodotScaleSpin.Value = _project.ImportProfile.MetersToGodotScale;
-        }
 
         if (_rasterResolutionSpin != null)
-        {
             _rasterResolutionSpin.Value = _project.ImportProfile.RasterResolutionMeters;
-        }
-
-        if (_terrainHeightScaleSpin != null)
-        {
-            _terrainHeightScaleSpin.Value = _project.ImportProfile.TerrainHeightScale;
-        }
 
         if (_terrainHeightOffsetSpin != null)
-        {
             _terrainHeightOffsetSpin.Value = _project.ImportProfile.TerrainHeightOffset;
-        }
 
         if (_sourceSpatialReferenceEdit != null)
-        {
             _sourceSpatialReferenceEdit.Text = _project.ImportProfile.SourceSpatialReference;
-        }
 
         if (_targetSpatialReferenceEdit != null)
-        {
             _targetSpatialReferenceEdit.Text = _project.ImportProfile.TargetSpatialReference;
-        }
-
-        if (_innerRadiusSpin != null)
-        {
-            _innerRadiusSpin.Value = _project.ImportProfile.InnerRadiusMeters;
-        }
-
-        if (_outerRadiusSpin != null)
-        {
-            _outerRadiusSpin.Value = _project.ImportProfile.OuterRadiusMeters;
-        }
 
         if (_gdalTranslateCommandEdit != null)
-        {
             _gdalTranslateCommandEdit.Text = _project.ImportProfile.GdalTranslateCommand;
-        }
 
         if (_gdalWarpCommandEdit != null)
-        {
             _gdalWarpCommandEdit.Text = _project.ImportProfile.GdalWarpCommand;
-        }
 
         if (_gdalFillNodataCommandEdit != null)
-        {
             _gdalFillNodataCommandEdit.Text = _project.ImportProfile.GdalFillNodataCommand;
-        }
 
         if (_gdalInfoCommandEdit != null)
-        {
             _gdalInfoCommandEdit.Text = _project.ImportProfile.GdalInfoCommand;
-        }
 
         if (_noDataFillDistanceSpin != null)
-        {
             _noDataFillDistanceSpin.Value = _project.ImportProfile.NoDataFillDistancePixels;
-        }
 
         if (_generateHoleOverlayCheck != null)
-        {
             _generateHoleOverlayCheck.ButtonPressed = _project.ImportProfile.GenerateHoleOverlay;
-        }
 
         if (_holeCorridorWidthSpin != null)
-        {
             _holeCorridorWidthSpin.Value = _project.ImportProfile.HoleCorridorWidthMeters;
-        }
 
         if (_teeMarkerRadiusSpin != null)
-        {
             _teeMarkerRadiusSpin.Value = _project.ImportProfile.TeeMarkerRadiusMeters;
-        }
 
         if (_greenMarkerRadiusSpin != null)
-        {
             _greenMarkerRadiusSpin.Value = _project.ImportProfile.GreenMarkerRadiusMeters;
-        }
 
         if (_ogrCommandEdit != null)
-        {
             _ogrCommandEdit.Text = _project.ImportProfile.OgrCommand;
-        }
 
         if (_gdalRasterizeCommandEdit != null)
-        {
             _gdalRasterizeCommandEdit.Text = _project.ImportProfile.GdalRasterizeCommand;
-        }
 
         if (_gdalDemCommandEdit != null)
-        {
             _gdalDemCommandEdit.Text = _project.ImportProfile.GdalDemCommand;
-        }
 
         if (_pdalCommandEdit != null)
-        {
             _pdalCommandEdit.Text = _project.ImportProfile.PdalCommand;
-        }
 
+        RebuildTeeGrid();
         RefreshHoleList(_selectedHoleIndex);
         LoadHoleToUi();
 
         _isUpdatingUi = false;
     }
 
+    private void RebuildTeeGrid()
+    {
+        if (_teeGridContainer == null)
+            return;
+
+        foreach (var child in _teeGridContainer.GetChildren())
+        {
+            _teeGridContainer.RemoveChild(child);
+            child.QueueFree();
+        }
+
+        _teeControls.Clear();
+
+        _teeGridContainer.AddChild(new Label { Text = "Tee boxes", ThemeTypeVariation = "HeaderSmall" });
+
+        var teeGrid = new GridContainer
+        {
+            Columns = 3,
+            SizeFlagsHorizontal = SizeFlags.ExpandFill
+        };
+        teeGrid.AddChild(new Label { Text = "Color" });
+        teeGrid.AddChild(new Label { Text = "X" });
+        teeGrid.AddChild(new Label { Text = "Z" });
+
+        foreach (var color in _project.GetEffectiveTeeColors())
+        {
+            var teeRow = new TeeRowControl(color)
+            {
+                XSpin = MakeSpinBox(CoordinateMin, CoordinateMax, CoordinateStep, 0.0),
+                ZSpin = MakeSpinBox(CoordinateMin, CoordinateMax, CoordinateStep, 0.0)
+            };
+
+            teeGrid.AddChild(teeRow.MakeColorLabel());
+            teeGrid.AddChild(teeRow.XSpin);
+            teeGrid.AddChild(teeRow.ZSpin);
+
+            teeRow.XSpin.ValueChanged += _ => ApplyHoleEditorToProject();
+            teeRow.ZSpin.ValueChanged += _ => ApplyHoleEditorToProject();
+
+            _teeControls.Add(teeRow);
+        }
+
+        _teeGridContainer.AddChild(teeGrid);
+    }
+
     private void RefreshHoleList(int selectedIndex)
     {
         if (_holeList == null)
-        {
             return;
-        }
 
         _isUpdatingUi = true;
         _holeList.Clear();
@@ -978,9 +803,7 @@ public partial class GolfCourseDesignDock : ScrollContainer
         }
 
         if (_project.Holes.Count > 0)
-        {
             _holeList.Select(Math.Clamp(selectedIndex, 0, _project.Holes.Count - 1));
-        }
 
         _isUpdatingUi = false;
     }
@@ -988,46 +811,45 @@ public partial class GolfCourseDesignDock : ScrollContainer
     private void LoadHoleToUi()
     {
         if (_selectedHoleIndex < 0 || _selectedHoleIndex >= _project.Holes.Count)
-        {
             return;
-        }
 
         var hole = _project.Holes[_selectedHoleIndex];
         _isUpdatingUi = true;
 
         if (_holeNameEdit != null)
-        {
             _holeNameEdit.Text = hole.HoleName;
-        }
 
         if (_parSpin != null)
-        {
             _parSpin.Value = hole.Par;
-        }
 
         if (_holeXSpin != null)
-        {
             _holeXSpin.Value = hole.HoleLocation.X;
-        }
 
         if (_holeZSpin != null)
-        {
             _holeZSpin.Value = hole.HoleLocation.Y;
-        }
 
-        for (var index = 0; index < _teeControls.Length; index++)
+        // Match tee rows to tee boxes by color name so dynamic color lists work correctly.
+        foreach (var teeRow in _teeControls)
         {
-            var teeRow = _teeControls[index];
-            if (teeRow == null)
+            GolfTeeBoxDefinition? matching = null;
+            foreach (var teeBox in hole.TeeBoxes)
             {
-                continue;
+                if (string.Equals(teeBox.TeeColor?.Trim(), teeRow.TeeColor, StringComparison.OrdinalIgnoreCase))
+                {
+                    matching = teeBox;
+                    break;
+                }
             }
 
-            if (index < hole.TeeBoxes.Count)
+            if (matching != null)
             {
-                teeRow.TeeColor = hole.TeeBoxes[index].TeeColor;
-                teeRow.XSpin.Value = hole.TeeBoxes[index].Position.X;
-                teeRow.ZSpin.Value = hole.TeeBoxes[index].Position.Y;
+                teeRow.XSpin.Value = matching.Position.X;
+                teeRow.ZSpin.Value = matching.Position.Y;
+            }
+            else
+            {
+                teeRow.XSpin.Value = 0.0;
+                teeRow.ZSpin.Value = 0.0;
             }
         }
 
@@ -1037,36 +859,32 @@ public partial class GolfCourseDesignDock : ScrollContainer
     private void ApplyUiToProject()
     {
         if (_isUpdatingUi)
-        {
             return;
-        }
 
         if (_courseTitleEdit != null)
-        {
             _project.CourseTitle = _courseTitleEdit.Text.Trim();
-        }
 
         if (_outputFolderEdit != null)
-        {
             _project.OutputFolder = _outputFolderEdit.Text.Trim();
-        }
 
         if (_terrainFolderEdit != null)
-        {
             _project.TerrainFolderName = string.IsNullOrWhiteSpace(_terrainFolderEdit.Text) ? "Terrain" : _terrainFolderEdit.Text.Trim();
-        }
 
         if (_teeColorsEdit != null)
         {
             var parsed = new Godot.Collections.Array<string>();
             foreach (var token in _teeColorsEdit.Text.Split(',', System.StringSplitOptions.RemoveEmptyEntries | System.StringSplitOptions.TrimEntries))
-            {
                 parsed.Add(token);
-            }
 
             if (parsed.Count > 0)
             {
                 _project.TeeColors = parsed;
+                // Rebuild the tee grid when the effective colors differ from the current controls.
+                if (!TeeColorsMatchControls(_project.GetEffectiveTeeColors()))
+                {
+                    RebuildTeeGrid();
+                    LoadHoleToUi();
+                }
             }
         }
 
@@ -1074,37 +892,36 @@ public partial class GolfCourseDesignDock : ScrollContainer
         ApplyImportEditorToProject();
     }
 
+    private bool TeeColorsMatchControls(System.Collections.Generic.IReadOnlyList<string> colors)
+    {
+        if (colors.Count != _teeControls.Count)
+            return false;
+        for (var i = 0; i < colors.Count; i++)
+        {
+            if (!string.Equals(colors[i], _teeControls[i].TeeColor, StringComparison.OrdinalIgnoreCase))
+                return false;
+        }
+        return true;
+    }
+
     private void ApplyHoleEditorToProject()
     {
         if (_isUpdatingUi || _selectedHoleIndex < 0 || _selectedHoleIndex >= _project.Holes.Count)
-        {
             return;
-        }
 
         var hole = _project.Holes[_selectedHoleIndex];
         if (_holeNameEdit != null)
-        {
             hole.HoleName = _holeNameEdit.Text.Trim();
-        }
 
         if (_parSpin != null)
-        {
             hole.Par = (int)_parSpin.Value;
-        }
 
         if (_holeXSpin != null && _holeZSpin != null)
-        {
             hole.HoleLocation = new Vector2((float)_holeXSpin.Value, (float)_holeZSpin.Value);
-        }
 
         hole.TeeBoxes.Clear();
         foreach (var teeRow in _teeControls)
         {
-            if (teeRow == null)
-            {
-                continue;
-            }
-
             hole.TeeBoxes.Add(new GolfTeeBoxDefinition
             {
                 TeeColor = teeRow.TeeColor,
@@ -1118,170 +935,95 @@ public partial class GolfCourseDesignDock : ScrollContainer
     private void ApplyImportEditorToProject()
     {
         if (_isUpdatingUi)
-        {
             return;
-        }
 
         var profile = _project.ImportProfile ??= new TerrainImportProfile();
         if (_importModeButton != null)
-        {
             profile.Mode = (TerrainImportProfile.TerrainImportMode)_importModeButton.GetSelectedId();
-        }
 
         if (_sourceTerrainDirectoryEdit != null)
-        {
             profile.SourceTerrainDirectory = _sourceTerrainDirectoryEdit.Text.Trim();
-        }
 
         if (_sourceHeightmapEdit != null)
-        {
             profile.SourceHeightmapPath = _sourceHeightmapEdit.Text.Trim();
-        }
 
         if (_sourceOverlayEdit != null)
-        {
             profile.SourceOverlayPath = _sourceOverlayEdit.Text.Trim();
-        }
 
         if (_sourceBoundaryEdit != null)
-        {
             profile.SourceBoundaryPath = _sourceBoundaryEdit.Text.Trim();
-        }
 
         if (_sourcePointCloudEdit != null)
-        {
             profile.SourcePointCloudPath = _sourcePointCloudEdit.Text.Trim();
-        }
 
         if (_sourceHolesGeoJsonEdit != null)
-        {
             profile.SourceHolesGeoJsonPath = _sourceHolesGeoJsonEdit.Text.Trim();
-        }
 
         if (_sourceBunkersGeoJsonEdit != null)
-        {
             profile.SourceBunkersGeoJsonPath = _sourceBunkersGeoJsonEdit.Text.Trim();
-        }
 
         if (_copyTerrainCheck != null)
-        {
             profile.CopySourceTerrainData = _copyTerrainCheck.ButtonPressed;
-        }
 
         if (_originLatitudeSpin != null)
-        {
             profile.OriginLatitude = _originLatitudeSpin.Value;
-        }
 
         if (_originLongitudeSpin != null)
-        {
             profile.OriginLongitude = _originLongitudeSpin.Value;
-        }
 
         if (_metersToGodotScaleSpin != null)
-        {
             profile.MetersToGodotScale = (float)_metersToGodotScaleSpin.Value;
-        }
 
         if (_rasterResolutionSpin != null)
-        {
             profile.RasterResolutionMeters = (float)_rasterResolutionSpin.Value;
-        }
-
-        if (_terrainHeightScaleSpin != null)
-        {
-            profile.TerrainHeightScale = (float)_terrainHeightScaleSpin.Value;
-        }
 
         if (_terrainHeightOffsetSpin != null)
-        {
             profile.TerrainHeightOffset = (float)_terrainHeightOffsetSpin.Value;
-        }
 
         if (_sourceSpatialReferenceEdit != null)
-        {
             profile.SourceSpatialReference = _sourceSpatialReferenceEdit.Text.Trim();
-        }
 
         if (_targetSpatialReferenceEdit != null)
-        {
             profile.TargetSpatialReference = _targetSpatialReferenceEdit.Text.Trim();
-        }
-
-        if (_innerRadiusSpin != null)
-        {
-            profile.InnerRadiusMeters = (float)_innerRadiusSpin.Value;
-        }
-
-        if (_outerRadiusSpin != null)
-        {
-            profile.OuterRadiusMeters = (float)_outerRadiusSpin.Value;
-        }
 
         if (_gdalTranslateCommandEdit != null)
-        {
             profile.GdalTranslateCommand = string.IsNullOrWhiteSpace(_gdalTranslateCommandEdit.Text) ? "gdal_translate" : _gdalTranslateCommandEdit.Text.Trim();
-        }
 
         if (_gdalWarpCommandEdit != null)
-        {
             profile.GdalWarpCommand = string.IsNullOrWhiteSpace(_gdalWarpCommandEdit.Text) ? "gdalwarp" : _gdalWarpCommandEdit.Text.Trim();
-        }
 
         if (_gdalFillNodataCommandEdit != null)
-        {
             profile.GdalFillNodataCommand = string.IsNullOrWhiteSpace(_gdalFillNodataCommandEdit.Text) ? "gdal" : _gdalFillNodataCommandEdit.Text.Trim();
-        }
 
         if (_gdalInfoCommandEdit != null)
-        {
             profile.GdalInfoCommand = string.IsNullOrWhiteSpace(_gdalInfoCommandEdit.Text) ? "gdalinfo" : _gdalInfoCommandEdit.Text.Trim();
-        }
 
         if (_noDataFillDistanceSpin != null)
-        {
             profile.NoDataFillDistancePixels = (int)_noDataFillDistanceSpin.Value;
-        }
 
         if (_generateHoleOverlayCheck != null)
-        {
             profile.GenerateHoleOverlay = _generateHoleOverlayCheck.ButtonPressed;
-        }
 
         if (_holeCorridorWidthSpin != null)
-        {
             profile.HoleCorridorWidthMeters = (float)_holeCorridorWidthSpin.Value;
-        }
 
         if (_teeMarkerRadiusSpin != null)
-        {
             profile.TeeMarkerRadiusMeters = (float)_teeMarkerRadiusSpin.Value;
-        }
 
         if (_greenMarkerRadiusSpin != null)
-        {
             profile.GreenMarkerRadiusMeters = (float)_greenMarkerRadiusSpin.Value;
-        }
 
         if (_ogrCommandEdit != null)
-        {
             profile.OgrCommand = string.IsNullOrWhiteSpace(_ogrCommandEdit.Text) ? "ogr2ogr" : _ogrCommandEdit.Text.Trim();
-        }
 
         if (_gdalRasterizeCommandEdit != null)
-        {
             profile.GdalRasterizeCommand = string.IsNullOrWhiteSpace(_gdalRasterizeCommandEdit.Text) ? "gdal_rasterize" : _gdalRasterizeCommandEdit.Text.Trim();
-        }
 
         if (_gdalDemCommandEdit != null)
-        {
             profile.GdalDemCommand = string.IsNullOrWhiteSpace(_gdalDemCommandEdit.Text) ? "gdaldem" : _gdalDemCommandEdit.Text.Trim();
-        }
 
         if (_pdalCommandEdit != null)
-        {
             profile.PdalCommand = string.IsNullOrWhiteSpace(_pdalCommandEdit.Text) ? "pdal" : _pdalCommandEdit.Text.Trim();
-        }
 
         WarnIfModeIgnoresSources(profile);
     }
@@ -1306,9 +1048,7 @@ public partial class GolfCourseDesignDock : ScrollContainer
     {
         var path = _projectFilePathEdit?.Text.Trim();
         if (!string.IsNullOrWhiteSpace(path))
-        {
             _projectFilePath = path;
-        }
 
         return string.IsNullOrWhiteSpace(_projectFilePath) ? DefaultProjectPath : _projectFilePath;
     }
@@ -1317,9 +1057,7 @@ public partial class GolfCourseDesignDock : ScrollContainer
     {
         var parent = Path.GetDirectoryName(ProjectSettings.GlobalizePath(path));
         if (!string.IsNullOrWhiteSpace(parent))
-        {
             Directory.CreateDirectory(parent);
-        }
     }
 
     private static Control BuildFieldRow(string labelText, out LineEdit lineEdit)
@@ -1346,10 +1084,7 @@ public partial class GolfCourseDesignDock : ScrollContainer
 
     private static Button MakeButton(string text, Action pressed)
     {
-        var button = new Button
-        {
-            Text = text
-        };
+        var button = new Button { Text = text };
         button.Pressed += pressed;
         return button;
     }
@@ -1370,9 +1105,7 @@ public partial class GolfCourseDesignDock : ScrollContainer
     private void UpdateStatus(string message)
     {
         if (_statusLabel != null)
-        {
             _statusLabel.Text = message;
-        }
     }
 
     private sealed class TeeRowControl

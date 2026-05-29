@@ -1,9 +1,13 @@
 [gd_resource type="Terrain3DAssets" format=3 uid="uid://bkouexowbjh50"]
 
-[ext_resource type="Texture2D" uid="uid://btxo07ji1qkds" path="res://Courses/Environments/grassy-meadow1-bl/grassy-meadow1_alb_ht.png" id="1"]
-[ext_resource type="Texture2D" uid="uid://hk4xmhkr52oj" path="res://Courses/Environments/grassy-meadow1-bl/grassy-meadow1_nrm_rgh-ogl.png" id="2"]
-[ext_resource type="Texture2D" uid="uid://d0rwenwcn4gmi" path="res://Courses/Environments/jagged-rocky-ground1-bl/jagged-rocky-ground_alb_ht.png" id="3"]
-[ext_resource type="Texture2D" uid="uid://c5hf6u54l2tpo" path="res://Courses/Environments/jagged-rocky-ground1-bl/jagged-rocky-ground_nrm_rgh-ogl.png" id="4"]
+[ext_resource type="Texture2D" uid="uid://cm0i471w5reba" path="res://Courses/_shared/texture_images/Grass008_1K_alb_hgt.dds" id="1"]
+[ext_resource type="Texture2D" uid="uid://dllwjwq4ib3gu" path="res://Courses/_shared/texture_images/Grass008_1K_nrm_rgh.dds" id="2"]
+[ext_resource type="Texture2D" uid="uid://8k2ytrpsecnm" path="res://Courses/_shared/texture_images/graass_005_alb_ht.dds" id="3"]
+[ext_resource type="Texture2D" uid="uid://c2qavkihptb00" path="res://Courses/_shared/texture_images/graass_005_nrm_rgh.dds" id="4"]
+[ext_resource type="Texture2D" uid="uid://de50nh2rr0knp" path="res://Courses/_shared/texture_images/grass_path_2_1k_alb_hgt.dds" id="5"]
+[ext_resource type="Texture2D" uid="uid://b0bbsi1o62jxa" path="res://Courses/_shared/texture_images/grass_path_2_1k_nrm_rgh.dds" id="6"]
+[ext_resource type="Texture2D" uid="uid://cocmkbjpiplyp" path="res://Courses/_shared/texture_images/ground055S_Sand_alb_ht.dds" id="7"]
+[ext_resource type="Texture2D" uid="uid://d2tui1hymyy1e" path="res://Courses/_shared/texture_images/ground055S_Sand_nrm_rgh.dds" id="8"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_oe2rx"]
 transparency = 4
@@ -23,19 +27,37 @@ last_lod = 0
 last_shadow_lod = 0
 lod0_range = 128.0
 
-[sub_resource type="Terrain3DTextureAsset" id="Terrain3DTextureAsset_gefem"]
-name = "grassy-meadow1_alb_ht"
+[sub_resource type="Terrain3DTextureAsset" id="Terrain3DTextureAsset_green"]
+name = "Green"
 albedo_texture = ExtResource("1")
 normal_texture = ExtResource("2")
-uv_scale = 0.4
-detiling_shift = 0.09
+uv_scale = 0.2
+detiling_shift = 0.05
 
-[sub_resource type="Terrain3DTextureAsset" id="Terrain3DTextureAsset_oe2rx"]
-name = "jagged-rocky-ground_alb_ht"
+[sub_resource type="Terrain3DTextureAsset" id="Terrain3DTextureAsset_fairway"]
+name = "Fairway"
 id = 1
 albedo_texture = ExtResource("3")
 normal_texture = ExtResource("4")
+uv_scale = 0.3
+detiling_shift = 0.07
+
+[sub_resource type="Terrain3DTextureAsset" id="Terrain3DTextureAsset_rough"]
+name = "Rough"
+id = 2
+albedo_texture = ExtResource("5")
+normal_texture = ExtResource("6")
+uv_scale = 0.4
+detiling_shift = 0.09
+
+[sub_resource type="Terrain3DTextureAsset" id="Terrain3DTextureAsset_sand"]
+name = "Sand"
+id = 3
+albedo_texture = ExtResource("7")
+normal_texture = ExtResource("8")
+uv_scale = 0.35
+detiling_shift = 0.06
 
 [resource]
 mesh_list = Array[Terrain3DMeshAsset]([SubResource("Terrain3DMeshAsset_ocquq")])
-texture_list = Array[Terrain3DTextureAsset]([SubResource("Terrain3DTextureAsset_gefem"), SubResource("Terrain3DTextureAsset_oe2rx")])
+texture_list = Array[Terrain3DTextureAsset]([SubResource("Terrain3DTextureAsset_green"), SubResource("Terrain3DTextureAsset_fairway"), SubResource("Terrain3DTextureAsset_rough"), SubResource("Terrain3DTextureAsset_sand")])

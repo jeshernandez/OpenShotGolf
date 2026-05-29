@@ -40,4 +40,3 @@ _shader_parameters = {
 &"noise_texture": SubResource("NoiseTexture2D_emsks"),
 &"projection_threshold": 0.8
 }
-show_colormap = true
