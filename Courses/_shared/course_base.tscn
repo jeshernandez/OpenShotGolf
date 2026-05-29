@@ -1,0 +1,101 @@
+[gd_scene load_steps=16 format=3 uid="uid://c0ursebasescene0"]
+
+[ext_resource type="Script" uid="uid://c4whkfuiysonu" path="res://Courses/Range/range.gd" id="1_range"]
+[ext_resource type="PackedScene" uid="uid://w55fmvo7ly8g" path="res://Player/player.tscn" id="2_player"]
+[ext_resource type="PackedScene" uid="uid://da1vsfwmbk8vw" path="res://UI/range_ui.tscn" id="3_ui"]
+[ext_resource type="Environment" uid="uid://cskyenv0course00" path="res://Courses/_shared/sky_environment.tres" id="4_env"]
+[ext_resource type="Terrain3DMaterial" uid="uid://cterrain0materil0" path="res://Courses/_shared/terrain_material.tres" id="5_mat"]
+[ext_resource type="Terrain3DAssets" uid="uid://cterrain0assets0" path="res://Courses/_shared/terrain_assets.tres" id="6_assets"]
+[ext_resource type="Script" uid="uid://deo0gxkmk2ahd" path="res://addons/sky_3d/src/Sky3D.gd" id="7_sky3d"]
+[ext_resource type="Script" uid="uid://b4tkplvh7fq40" path="res://addons/sky_3d/src/Skydome.gd" id="8_skydome"]
+[ext_resource type="Script" uid="uid://cjmkcj8hwm7ts" path="res://addons/sky_3d/src/TimeOfDay.gd" id="9_tod"]
+[ext_resource type="Script" uid="uid://csjccrhj5wnx7" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3d.gd" id="10_pcam"]
+[ext_resource type="Script" uid="uid://8umksf8e80fw" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="11_tween"]
+[ext_resource type="Script" uid="uid://bd046eokvcnu2" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="12_pcamhost"]
+[ext_resource type="Script" uid="uid://c521mpxrgwa74" path="res://SessionRecorder/session_recorder.gd" id="13_rec"]
+
+[sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_ainke"]
+
+[sub_resource type="Resource" id="Resource_hbh3r"]
+script = ExtResource("11_tween")
+
+[node name="CourseBase" type="Node3D"]
+script = ExtResource("1_range")
+
+[node name="Player" parent="." instance=ExtResource("2_player")]
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 174.334, 165.881, 0)
+light_indirect_energy = 6.592
+
+[node name="RangeUI" parent="." instance=ExtResource("3_ui")]
+
+[node name="Terrain3D" type="Terrain3D" parent="."]
+material = ExtResource("5_mat")
+assets = ExtResource("6_assets")
+collision_mode = 3
+collision_shape_size = 48
+top_level = true
+metadata/_edit_lock_ = true
+
+[node name="Sky3D" type="WorldEnvironment" parent="."]
+environment = ExtResource("4_env")
+camera_attributes = SubResource("CameraAttributesPractical_ainke")
+script = ExtResource("7_sky3d")
+enable_editor_time = false
+current_time = 15.682
+metadata/_custom_type_script = "uid://deo0gxkmk2ahd"
+
+[node name="SunLight" type="DirectionalLight3D" parent="Sky3D"]
+transform = Transform3D(0, -0.6049699, -0.7962483, -0.36520752, -0.7412484, 0.5631823, -0.9309262, 0.29079586, -0.22093955, -0.7962483, 0.5631823, -0.22093955)
+shadow_enabled = true
+
+[node name="MoonLight" type="DirectionalLight3D" parent="Sky3D"]
+transform = Transform3D(0, -0.51897305, -0.8547907, -0.35659954, 0.79859453, -0.48485434, 0.9342574, 0.30481797, -0.18506554, -0.8547906, -0.4848543, -0.18506552)
+light_color = Color(0.572549, 0.776471, 0.956863, 1)
+light_energy = 0.0
+
+[node name="Skydome" type="Node" parent="Sky3D"]
+script = ExtResource("8_skydome")
+sun_azimuth = -285.5079178078127
+sun_altitude = -55.72381487797508
+moon_azimuth = -282.21609447769833
+moon_altitude = -119.00287765558052
+
+[node name="TimeOfDay" type="Node" parent="Sky3D"]
+script = ExtResource("9_tod")
+update_in_editor = false
+dome_path = NodePath("../Skydome")
+total_hours = 15.682
+day = 28
+month = 5
+
+[node name="PhantomCamera3D" type="Node3D" parent="."]
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, -6.04467, 3.02244, 0)
+script = ExtResource("10_pcam")
+tween_resource = SubResource("Resource_hbh3r")
+follow_offset = Vector3(-2.5, 1.5, 0)
+follow_damping = true
+follow_damping_value = Vector3(0.4, 0.1, 0.1)
+dead_zone_height = 0.204
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, -6.04467, 3.02244, 0)
+
+[node name="PhantomCameraHost" type="Node" parent="Camera3D"]
+process_priority = 300
+process_physics_priority = 300
+script = ExtResource("12_pcamhost")
+
+[node name="SessionRecorder" type="Node" parent="."]
+script = ExtResource("13_rec")
+
+[connection signal="manual_hit" from="Player" to="." method="_on_player_manual_hit"]
+[connection signal="rest" from="Player" to="." method="_on_golf_ball_rest"]
+[connection signal="rest" from="Player" to="SessionRecorder" method="_on_golf_ball_rest"]
+[connection signal="hit_shot" from="RangeUI" to="." method="_on_range_ui_hit_shot"]
+[connection signal="hit_shot" from="RangeUI" to="Player" method="_on_range_ui_hit_shot"]
+[connection signal="rec_button_pressed" from="RangeUI" to="SessionRecorder" method="toggle_recording"]
+[connection signal="set_session" from="RangeUI" to="SessionRecorder" method="_on_range_ui_set_session"]
+[connection signal="recording_state" from="SessionRecorder" to="RangeUI" method="_on_session_recorder_recording_state"]
+[connection signal="set_session" from="SessionRecorder" to="RangeUI" method="_on_session_recorder_set_session"]

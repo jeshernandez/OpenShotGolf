@@ -1,321 +1,616 @@
-[gd_scene format=3 uid="uid://ecp4h3om36dt"]
+[gd_scene format=3 uid="uid://ccnysx8rmg613"]
 
-[ext_resource type="Script" uid="uid://c4whkfuiysonu" path="res://Courses/UserCourses/Airways/course.gd" id="1_sunpe"]
-[ext_resource type="Script" uid="uid://bg5tbfjpq3flx" path="res://addons/launch_monitors/common/tcp_server/TcpServer.cs" id="2_d1a0v"]
-[ext_resource type="PackedScene" uid="uid://w55fmvo7ly8g" path="res://Player/player.tscn" id="3_4jr3s"]
-[ext_resource type="PackedScene" uid="uid://da1vsfwmbk8vw" path="res://UI/range_ui.tscn" id="4_d1a0v"]
-[ext_resource type="Texture2D" uid="uid://btxo07ji1qkds" path="res://Courses/Environments/grassy-meadow1-bl/grassy-meadow1_alb_ht.png" id="5_6rpr1"]
-[ext_resource type="Shader" uid="uid://cvd0x7lon1ur6" path="res://addons/sky_3d/shaders/SkyMaterial.gdshader" id="5_k478i"]
-[ext_resource type="Texture2D" uid="uid://dfrpctfpmv3c7" path="res://addons/sky_3d/assets/thirdparty/textures/milkyway/Milkyway.jpg" id="6_1cdky"]
-[ext_resource type="Texture2D" uid="uid://hk4xmhkr52oj" path="res://Courses/Environments/grassy-meadow1-bl/grassy-meadow1_nrm_rgh-ogl.png" id="6_til7k"]
-[ext_resource type="Texture2D" uid="uid://cfqk60lpl5ljv" path="res://addons/sky_3d/assets/resources/SNoise.tres" id="7_lv8u7"]
-[ext_resource type="Texture2D" uid="uid://d0rwenwcn4gmi" path="res://Courses/Environments/jagged-rocky-ground1-bl/jagged-rocky-ground_alb_ht.png" id="7_oe2rx"]
-[ext_resource type="Texture2D" uid="uid://dtt1t7bd56iol" path="res://addons/sky_3d/assets/textures/noiseClouds.png" id="8_oal5e"]
-[ext_resource type="Texture2D" uid="uid://c5hf6u54l2tpo" path="res://Courses/Environments/jagged-rocky-ground1-bl/jagged-rocky-ground_nrm_rgh-ogl.png" id="8_ocquq"]
-[ext_resource type="Texture2D" uid="uid://c0wjs755653c1" path="res://addons/sky_3d/assets/thirdparty/textures/moon/MoonMap.png" id="9_i3bow"]
-[ext_resource type="Texture2D" uid="uid://b1k4d6vag2lrf" path="res://addons/sky_3d/assets/textures/noise.jpg" id="10_gqfs3"]
-[ext_resource type="Texture2D" uid="uid://c7pfa3rh2dip2" path="res://addons/sky_3d/assets/thirdparty/textures/milkyway/StarField.jpg" id="11_hbh3r"]
-[ext_resource type="Script" uid="uid://deo0gxkmk2ahd" path="res://addons/sky_3d/src/Sky3D.gd" id="12_6rpr1"]
-[ext_resource type="Script" uid="uid://b4tkplvh7fq40" path="res://addons/sky_3d/src/Skydome.gd" id="13_til7k"]
-[ext_resource type="Script" uid="uid://cjmkcj8hwm7ts" path="res://addons/sky_3d/src/TimeOfDay.gd" id="14_oe2rx"]
-[ext_resource type="Script" uid="uid://csjccrhj5wnx7" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3d.gd" id="17_i3bow"]
-[ext_resource type="Script" uid="uid://8umksf8e80fw" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="18_gqfs3"]
-[ext_resource type="Script" uid="uid://bd046eokvcnu2" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="19_gqfs3"]
-[ext_resource type="Texture2D" uid="uid://bm5ic1m84j5cd" path="res://Courses/Range/Range_Distances.png" id="20_hbh3r"]
-[ext_resource type="Script" uid="uid://c521mpxrgwa74" path="res://SessionRecorder/session_recorder.gd" id="21_6rpr1"]
+[ext_resource type="PackedScene" uid="uid://cxfmki7gy8qgb" path="res://Courses/_shared/course_base.tscn" id="1_base"]
+[ext_resource type="Script" uid="uid://bvjjlg8waqry0" path="res://Courses/UserCourses/Airways/course.gd" id="2_course"]
 
-[sub_resource type="Gradient" id="Gradient_ocquq"]
-offsets = PackedFloat32Array(0.2, 1)
-colors = PackedColorArray(1, 1, 1, 1, 0, 0, 0, 1)
+[sub_resource type="CylinderMesh" id="PinPostMesh"]
+top_radius = 0.12
+bottom_radius = 0.12
+height = 6.0
 
-[sub_resource type="FastNoiseLite" id="FastNoiseLite_gefem"]
-noise_type = 2
-frequency = 0.03
-cellular_jitter = 3.0
-cellular_return_type = 0
-domain_warp_enabled = true
-domain_warp_type = 1
-domain_warp_amplitude = 50.0
-domain_warp_fractal_type = 2
-domain_warp_fractal_lacunarity = 1.5
-domain_warp_fractal_gain = 1.0
+[sub_resource type="StandardMaterial3D" id="PinPostMat"]
+albedo_color = Color(0.85, 0.12, 0.12, 1)
+emission_enabled = true
+emission = Color(0.85, 0.12, 0.12, 1)
+emission_energy_multiplier = 0.35
 
-[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_emsks"]
-noise = SubResource("FastNoiseLite_gefem")
-color_ramp = SubResource("Gradient_ocquq")
-seamless = true
+[sub_resource type="SphereMesh" id="TeeMesh"]
 
-[sub_resource type="Terrain3DMaterial" id="Terrain3DMaterial_ls2bl"]
-_shader_parameters = {
-&"bias_distance": 512.0,
-&"blend_sharpness": 0.87,
-&"depth_blur": 0.0,
-&"enable_macro_variation": true,
-&"enable_projection": true,
-&"flat_terrain_normals": false,
-&"macro_variation1": Color(1, 1, 1, 1),
-&"macro_variation2": Color(1, 1, 1, 1),
-&"macro_variation_slope": 0.333,
-&"mipmap_bias": 1.0,
-&"noise1_angle": 0.0,
-&"noise1_offset": Vector2(0.5, 0.5),
-&"noise1_scale": 0.04,
-&"noise2_scale": 0.076,
-&"noise_texture": SubResource("NoiseTexture2D_emsks"),
-&"projection_threshold": 0.8
-}
+[sub_resource type="StandardMaterial3D" id="TeeMat_White"]
+albedo_color = Color(0.95, 0.95, 0.95, 1)
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_oe2rx"]
-transparency = 4
-cull_mode = 2
-vertex_color_use_as_albedo = true
-backlight_enabled = true
-backlight = Color(0.5, 0.5, 0.5, 1)
-distance_fade_mode = 1
-distance_fade_min_distance = 128.0
-distance_fade_max_distance = 96.0
+[sub_resource type="StandardMaterial3D" id="TeeMat_Red"]
+albedo_color = Color(0.85, 0.15, 0.15, 1)
 
-[sub_resource type="Terrain3DMeshAsset" id="Terrain3DMeshAsset_ocquq"]
-generated_type = 1
-height_offset = 0.5
-material_override = SubResource("StandardMaterial3D_oe2rx")
-last_lod = 0
-last_shadow_lod = 0
-lod0_range = 128.0
+[node name="Course" unique_id=611519530 instance=ExtResource("1_base")]
+script = ExtResource("2_course")
 
-[sub_resource type="Terrain3DTextureAsset" id="Terrain3DTextureAsset_gefem"]
-name = "grassy-meadow1_alb_ht"
-albedo_texture = ExtResource("5_6rpr1")
-normal_texture = ExtResource("6_til7k")
-uv_scale = 0.4
-detiling_shift = 0.09
-
-[sub_resource type="Terrain3DTextureAsset" id="Terrain3DTextureAsset_oe2rx"]
-name = "jagged-rocky-ground_alb_ht"
-id = 1
-albedo_texture = ExtResource("7_oe2rx")
-normal_texture = ExtResource("8_ocquq")
-
-[sub_resource type="Terrain3DAssets" id="Terrain3DAssets_emsks"]
-mesh_list = Array[Terrain3DMeshAsset]([SubResource("Terrain3DMeshAsset_ocquq")])
-texture_list = Array[Terrain3DTextureAsset]([SubResource("Terrain3DTextureAsset_gefem"), SubResource("Terrain3DTextureAsset_oe2rx")])
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_0yxxa"]
-shader = ExtResource("5_k478i")
-shader_parameter/sky_visible = true
-shader_parameter/show_azimuthal_grid = false
-shader_parameter/azimuthal_grid_color = Vector4(0.871, 0.722, 0.529, 1)
-shader_parameter/show_equatorial_grid = false
-shader_parameter/equatorial_grid_color = Vector4(0, 0.75, 1, 1)
-shader_parameter/color_correction_params = Vector2(0, 1)
-shader_parameter/ground_color = Color(0.3, 0.3, 0.3, 1)
-shader_parameter/horizon_level = 0.0
-shader_parameter/atm_darkness = 0.5
-shader_parameter/atm_sun_intensity = 18.0
-shader_parameter/atm_day_tint = Color(0.807843, 0.909804, 1, 1)
-shader_parameter/atm_horizon_light_tint = Color(0.980392, 0.635294, 0.462745, 1)
-shader_parameter/atm_night_tint = Color(0, 0, 0, 0)
-shader_parameter/atm_level_params = Vector3(1, 0, 0)
-shader_parameter/atm_thickness = 0.7
-shader_parameter/atm_beta_ray = Vector3(5.804544e-06, 1.3562913e-05, 3.311258e-05)
-shader_parameter/atm_beta_mie = Vector3(3.038e-08, 3.038e-08, 3.038e-08)
-shader_parameter/sun_disk_color = Color(0.996094, 0.541334, 0.140076, 1)
-shader_parameter/sun_disk_intensity = 30.0
-shader_parameter/sun_disk_size = 0.02
-shader_parameter/atm_sun_mie_tint = Color(1, 1, 1, 1)
-shader_parameter/atm_sun_mie_intensity = 1.0
-shader_parameter/atm_sun_partial_mie_phase = Vector3(0.36, 1.64, 1.6)
-shader_parameter/moon_color = Color(1, 1, 1, 1)
-shader_parameter/moon_texture = ExtResource("9_i3bow")
-shader_parameter/moon_texture_alignment = Vector3(7, 1.4, 4.8)
-shader_parameter/moon_texture_flip_u = false
-shader_parameter/moon_texture_flip_v = false
-shader_parameter/moon_size = 0.07
-shader_parameter/atm_moon_mie_tint = Color(0.137255, 0.184314, 0.292196, 1)
-shader_parameter/atm_moon_mie_intensity = 0.0
-shader_parameter/atm_moon_partial_mie_phase = Vector3(0.36, 1.64, 1.6)
-shader_parameter/background_texture = ExtResource("6_1cdky")
-shader_parameter/background_color = Color(0.709804, 0.709804, 0.709804, 0.854902)
-shader_parameter/stars_field_color = Color(1, 1, 1, 1)
-shader_parameter/stars_field_texture = ExtResource("11_hbh3r")
-shader_parameter/sky_alignment = Vector3(2.6555, -0.23935, 0.4505)
-shader_parameter/sky_rotation = -8.458832173170284
-shader_parameter/sky_tilt = -1.2915436464758039
-shader_parameter/stars_scintillation = 0.75
-shader_parameter/stars_scintillation_speed = 0.01
-shader_parameter/noise_tex = ExtResource("10_gqfs3")
-shader_parameter/clouds_visible = true
-shader_parameter/clouds_coverage = 0.5
-shader_parameter/clouds_thickness = 1.7
-shader_parameter/clouds_absorption = 2.0
-shader_parameter/clouds_sky_tint_fade = 0.5
-shader_parameter/clouds_intensity = 10.0
-shader_parameter/clouds_size = 2.0
-shader_parameter/clouds_uv = Vector2(0.16, 0.11)
-shader_parameter/clouds_speed = 0.07
-shader_parameter/clouds_direction = Vector2(0.25, 0.25)
-shader_parameter/clouds_day_color = Color(0.823529, 0.87451, 1, 1)
-shader_parameter/clouds_horizon_light_color = Color(0.98, 0.43, 0.15, 1)
-shader_parameter/clouds_night_color = Color(0.090196, 0.094118, 0.129412, 1)
-shader_parameter/clouds_texture = ExtResource("7_lv8u7")
-shader_parameter/cumulus_clouds_visible = true
-shader_parameter/cumulus_clouds_coverage = 0.55
-shader_parameter/cumulus_clouds_thickness = 0.0243
-shader_parameter/cumulus_clouds_absorption = 2.0
-shader_parameter/cumulus_clouds_noise_freq = 2.7
-shader_parameter/cumulus_clouds_sky_tint_fade = 0.0
-shader_parameter/cumulus_clouds_intensity = 0.6
-shader_parameter/cumulus_clouds_size = 0.5
-shader_parameter/cumulus_clouds_speed = 0.05
-shader_parameter/cumulus_clouds_direction = Vector3(0.25, 0.1, 0.25)
-shader_parameter/cumulus_clouds_texture = ExtResource("8_oal5e")
-shader_parameter/cumulus_clouds_day_color = Color(0.823529, 0.87451, 1, 1)
-shader_parameter/cumulus_clouds_horizon_light_color = Color(0.98, 0.43, 0.15, 1)
-shader_parameter/cumulus_clouds_night_color = Color(0.090196, 0.094118, 0.129412, 1)
-shader_parameter/cumulus_clouds_partial_mie_phase = Vector3(0.957564, 1.042436, 0.412)
-shader_parameter/cumulus_clouds_mie_intensity = 1.0
-shader_parameter/moon_matrix = Basis(0, -0.35659954, 0.93425727, -0.518973, 0.7985944, 0.30481794, -0.85479057, -0.48485428, -0.18506552)
-shader_parameter/deep_space_matrix = Basis(0.5686409, -0.82258594, -2.9802322e-08, -0.2267361, -0.15673912, -0.9612615, 0.7907201, 0.5466126, -0.27563822)
-
-[sub_resource type="Sky" id="Sky_rybw1"]
-sky_material = SubResource("ShaderMaterial_0yxxa")
-
-[sub_resource type="Environment" id="Environment_2xe6u"]
-background_mode = 2
-sky = SubResource("Sky_rybw1")
-ambient_light_source = 3
-ambient_light_color = Color(0.9631823, 0.9631823, 0.9631823, 1)
-reflected_light_source = 2
-tonemap_mode = 3
-tonemap_white = 6.0
-
-[sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_ainke"]
-
-[sub_resource type="Resource" id="Resource_hbh3r"]
-script = ExtResource("18_gqfs3")
-
-[node name="Range" type="Node3D" unique_id=639527421]
-script = ExtResource("1_sunpe")
-
-[node name="TCPServer" type="Node" parent="." unique_id=1693664298]
-script = ExtResource("2_d1a0v")
-
-[node name="Player" parent="." unique_id=1089437952 instance=ExtResource("3_4jr3s")]
-
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1789725117]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 174.334, 165.881, 0)
-light_indirect_energy = 6.592
-
-[node name="RangeUI" parent="." unique_id=1289874115 instance=ExtResource("4_d1a0v")]
-
-[node name="Terrain3D" type="Terrain3D" parent="." unique_id=115405078]
+[node name="Terrain3D" parent="." index="3"]
 data_directory = "res://Courses/UserCourses/Airways/Terrain"
-material = SubResource("Terrain3DMaterial_ls2bl")
-assets = SubResource("Terrain3DAssets_emsks")
-collision_mode = 3
-collision_shape_size = 48
-top_level = true
-metadata/_edit_lock_ = true
+show_colormap = true
 
-[node name="Sky3D" type="WorldEnvironment" parent="." unique_id=295672964]
-environment = SubResource("Environment_2xe6u")
-camera_attributes = SubResource("CameraAttributesPractical_ainke")
-script = ExtResource("12_6rpr1")
-enable_editor_time = false
-current_time = 15.682
-metadata/_custom_type_script = "uid://deo0gxkmk2ahd"
+[node name="PhantomCamera3D" parent="." index="5"]
+transform = Transform3D(-0.10579, 0, 0.994389, 0.076266, 0.997055, 0.008114, -0.99146, 0.076697, -0.105478, 364.8271, 3, 230.715)
+follow_offset = Vector3(-2.485971, 1.5, -0.264475)
 
-[node name="SunLight" type="DirectionalLight3D" parent="Sky3D" unique_id=889199116]
-transform = Transform3D(0, -0.6049699, -0.7962483, -0.36520752, -0.7412484, 0.5631823, -0.9309262, 0.29079586, -0.22093955, -0.7962483, 0.5631823, -0.22093955)
-shadow_enabled = true
+[node name="Camera3D" parent="." index="6"]
+transform = Transform3D(-0.10579, 0, 0.994389, 0.076266, 0.997055, 0.008114, -0.99146, 0.076697, -0.105478, 364.8271, 3, 230.715)
+far = 8000.0
 
-[node name="MoonLight" type="DirectionalLight3D" parent="Sky3D" unique_id=1624375170]
-transform = Transform3D(0, -0.51897305, -0.8547907, -0.35659954, 0.79859453, -0.48485434, 0.9342574, 0.30481797, -0.18506554, -0.8547906, -0.4848543, -0.18506552)
-light_color = Color(0.572549, 0.776471, 0.956863, 1)
-light_energy = 0.0
+[node name="HoleMarkers" type="Node3D" parent="." index="8" unique_id=1142113176]
 
-[node name="Skydome" type="Node" parent="Sky3D" unique_id=1305888805]
-script = ExtResource("13_til7k")
-sun_azimuth = -285.5079178078127
-sun_altitude = -55.72381487797508
-moon_azimuth = -282.21609447769833
-moon_altitude = -119.00287765558052
+[node name="Hole 1" type="Node3D" parent="HoleMarkers" index="0" unique_id=992137009]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 666.592, 0, 262.819)
 
-[node name="TimeOfDay" type="Node" parent="Sky3D" unique_id=1966364158]
-script = ExtResource("14_oe2rx")
-update_in_editor = false
-dome_path = NodePath("../Skydome")
-total_hours = 15.682
-day = 28
-month = 5
+[node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 1" index="0" unique_id=1293178101]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
+mesh = SubResource("PinPostMesh")
+surface_material_override/0 = SubResource("PinPostMat")
 
-[node name="PhantomCamera3D" type="Node3D" parent="." unique_id=482822968]
-transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, -6.04467, 3.02244, 0)
-script = ExtResource("17_i3bow")
-tween_resource = SubResource("Resource_hbh3r")
-follow_offset = Vector3(-2.5, 1.5, 0)
-follow_damping = true
-follow_damping_value = Vector3(0.4, 0.1, 0.1)
-dead_zone_height = 0.204
+[node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 1" index="1" unique_id=1617955104]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -295.799, 0, -31.469)
 
-[node name="Camera3D" type="Camera3D" parent="." unique_id=574000253]
-transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, -6.04467, 3.02244, 0)
+[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 1/White Tee" index="0" unique_id=1771542671]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+mesh = SubResource("TeeMesh")
+surface_material_override/0 = SubResource("TeeMat_White")
 
-[node name="PhantomCameraHost" type="Node" parent="Camera3D" unique_id=1886001609]
-process_priority = 300
-process_physics_priority = 300
-script = ExtResource("19_gqfs3")
+[node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 1/White Tee" index="1" unique_id=2057388574]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.25, 0)
+pixel_size = 0.08
+billboard = 1
+text = "1"
+font_size = 80
+outline_size = 18
 
-[node name="CenterLine" type="Decal" parent="." unique_id=1930229983]
-transform = Transform3D(1.19249e-08, 0, -1, 0, 1, 0, 1, 0, 1.19249e-08, 182.88, 0, 0)
-size = Vector3(5, 2, 365.76)
-texture_albedo = ExtResource("20_hbh3r")
-modulate = Color(1, 1, 1, 0.25098)
+[node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 1" index="2" unique_id=64982786]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -294.299, 0, -31.469)
 
-[node name="YardMarkers" type="Node3D" parent="." unique_id=1211939616]
+[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 1/Red Tee" index="0" unique_id=1371635355]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+mesh = SubResource("TeeMesh")
+surface_material_override/0 = SubResource("TeeMat_Red")
 
-[node name="50Yards" type="Label3D" parent="YardMarkers" unique_id=1257972579]
-transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 45.72, 0.379, -0.5)
-pixel_size = 0.02
-text = "50"
+[node name="Hole 2" type="Node3D" parent="HoleMarkers" index="1" unique_id=437481527]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 548.887, 0, 514.968)
 
-[node name="100Yards" type="Label3D" parent="YardMarkers" unique_id=1257043098]
-transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 91.4, 0.379, -0.7)
-pixel_size = 0.02
-text = "100
-"
+[node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 2" index="0" unique_id=1406837758]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
+mesh = SubResource("PinPostMesh")
+surface_material_override/0 = SubResource("PinPostMat")
 
-[node name="150Yards" type="Label3D" parent="YardMarkers" unique_id=881875828]
-transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 137.16, 0.379, -0.7)
-pixel_size = 0.02
-text = "150
-"
+[node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 2" index="1" unique_id=451978487]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 149.336, 0, -245.563)
 
-[node name="200" type="Label3D" parent="YardMarkers" unique_id=1554265224]
-transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 182.88, 0.379, -0.7)
-pixel_size = 0.02
-text = "200
-"
+[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 2/White Tee" index="0" unique_id=2018258507]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+mesh = SubResource("TeeMesh")
+surface_material_override/0 = SubResource("TeeMat_White")
 
-[node name="250" type="Label3D" parent="YardMarkers" unique_id=2053921063]
-transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 228.6, 0.379, -0.7)
-pixel_size = 0.02
-text = "250
-"
+[node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 2/White Tee" index="1" unique_id=447256607]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.25, 0)
+pixel_size = 0.08
+billboard = 1
+text = "2"
+font_size = 80
+outline_size = 18
 
-[node name="SessionRecorder" type="Node" parent="." unique_id=18851557]
-script = ExtResource("21_6rpr1")
+[node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 2" index="2" unique_id=2041236463]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 150.836, 0, -245.563)
 
-[connection signal="HitBall" from="TCPServer" to="." method="_on_tcp_client_hit_ball"]
-[connection signal="HitBall" from="TCPServer" to="Player" method="_on_tcp_client_hit_ball"]
-[connection signal="bad_data" from="Player" to="TCPServer" method="_on_player_bad_data"]
-[connection signal="good_data" from="Player" to="TCPServer" method="_on_golf_ball_good_data"]
-[connection signal="manual_hit" from="Player" to="." method="_on_player_manual_hit"]
-[connection signal="rest" from="Player" to="." method="_on_golf_ball_rest"]
-[connection signal="rest" from="Player" to="SessionRecorder" method="_on_golf_ball_rest"]
-[connection signal="hit_shot" from="RangeUI" to="." method="_on_range_ui_hit_shot"]
-[connection signal="hit_shot" from="RangeUI" to="Player" method="_on_range_ui_hit_shot"]
-[connection signal="rec_button_pressed" from="RangeUI" to="SessionRecorder" method="toggle_recording"]
-[connection signal="set_session" from="RangeUI" to="SessionRecorder" method="_on_range_ui_set_session"]
-[connection signal="recording_state" from="SessionRecorder" to="RangeUI" method="_on_session_recorder_recording_state"]
-[connection signal="set_session" from="SessionRecorder" to="RangeUI" method="_on_session_recorder_set_session"]
+[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 2/Red Tee" index="0" unique_id=243884046]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+mesh = SubResource("TeeMesh")
+surface_material_override/0 = SubResource("TeeMat_Red")
+
+[node name="Hole 3" type="Node3D" parent="HoleMarkers" index="2" unique_id=303339629]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 157.053, 0, 373.067)
+
+[node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 3" index="0" unique_id=2100166180]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
+mesh = SubResource("PinPostMesh")
+surface_material_override/0 = SubResource("PinPostMat")
+
+[node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 3" index="1" unique_id=713461004]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 355.037, 0, 120.05)
+
+[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 3/White Tee" index="0" unique_id=708170987]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+mesh = SubResource("TeeMesh")
+surface_material_override/0 = SubResource("TeeMat_White")
+
+[node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 3/White Tee" index="1" unique_id=936662221]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.25, 0)
+pixel_size = 0.08
+billboard = 1
+text = "3"
+font_size = 80
+outline_size = 18
+
+[node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 3" index="2" unique_id=1749244469]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 356.537, 0, 120.05)
+
+[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 3/Red Tee" index="0" unique_id=1120692294]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+mesh = SubResource("TeeMesh")
+surface_material_override/0 = SubResource("TeeMat_Red")
+
+[node name="Hole 4" type="Node3D" parent="HoleMarkers" index="3" unique_id=975687927]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 374.395, 0, 470.544)
+
+[node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 4" index="0" unique_id=293372680]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
+mesh = SubResource("PinPostMesh")
+surface_material_override/0 = SubResource("PinPostMat")
+
+[node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 4" index="1" unique_id=468958960]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -282.422, 0, -76.166)
+
+[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 4/White Tee" index="0" unique_id=179249009]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+mesh = SubResource("TeeMesh")
+surface_material_override/0 = SubResource("TeeMat_White")
+
+[node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 4/White Tee" index="1" unique_id=335581338]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.25, 0)
+pixel_size = 0.08
+billboard = 1
+text = "4"
+font_size = 80
+outline_size = 18
+
+[node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 4" index="2" unique_id=1415893234]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -280.922, 0, -76.166)
+
+[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 4/Red Tee" index="0" unique_id=1407858506]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+mesh = SubResource("TeeMesh")
+surface_material_override/0 = SubResource("TeeMat_Red")
+
+[node name="Hole 5" type="Node3D" parent="HoleMarkers" index="4" unique_id=520785453]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 318.206, 0, 581.496)
+
+[node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 5" index="0" unique_id=126358311]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
+mesh = SubResource("PinPostMesh")
+surface_material_override/0 = SubResource("PinPostMat")
+
+[node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 5" index="1" unique_id=286882567]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 89.18, 0, -93.944)
+
+[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 5/White Tee" index="0" unique_id=874352086]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+mesh = SubResource("TeeMesh")
+surface_material_override/0 = SubResource("TeeMat_White")
+
+[node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 5/White Tee" index="1" unique_id=696780384]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.25, 0)
+pixel_size = 0.08
+billboard = 1
+text = "5"
+font_size = 80
+outline_size = 18
+
+[node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 5" index="2" unique_id=2025337451]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 90.68, 0, -93.944)
+
+[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 5/Red Tee" index="0" unique_id=1131940653]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+mesh = SubResource("TeeMesh")
+surface_material_override/0 = SubResource("TeeMat_Red")
+
+[node name="Hole 6" type="Node3D" parent="HoleMarkers" index="5" unique_id=1865914916]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 53.475, 0, 383.983)
+
+[node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 6" index="0" unique_id=2051371277]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
+mesh = SubResource("PinPostMesh")
+surface_material_override/0 = SubResource("PinPostMat")
+
+[node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 6" index="1" unique_id=2042861171]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 244.913, 0, 164.07)
+
+[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 6/White Tee" index="0" unique_id=477273641]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+mesh = SubResource("TeeMesh")
+surface_material_override/0 = SubResource("TeeMat_White")
+
+[node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 6/White Tee" index="1" unique_id=1009159778]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.25, 0)
+pixel_size = 0.08
+billboard = 1
+text = "6"
+font_size = 80
+outline_size = 18
+
+[node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 6" index="2" unique_id=1039920273]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 246.413, 0, 164.07)
+
+[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 6/Red Tee" index="0" unique_id=1300653486]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+mesh = SubResource("TeeMesh")
+surface_material_override/0 = SubResource("TeeMat_Red")
+
+[node name="Hole 7" type="Node3D" parent="HoleMarkers" index="6" unique_id=1408170156]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 79.739, 0, 253.697)
+
+[node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 7" index="0" unique_id=1298099922]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
+mesh = SubResource("PinPostMesh")
+surface_material_override/0 = SubResource("PinPostMat")
+
+[node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 7" index="1" unique_id=1193786313]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 45.98, 0, 95.682)
+
+[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 7/White Tee" index="0" unique_id=1546526636]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+mesh = SubResource("TeeMesh")
+surface_material_override/0 = SubResource("TeeMat_White")
+
+[node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 7/White Tee" index="1" unique_id=1263274449]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.25, 0)
+pixel_size = 0.08
+billboard = 1
+text = "7"
+font_size = 80
+outline_size = 18
+
+[node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 7" index="2" unique_id=802646471]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 47.48, 0, 95.682)
+
+[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 7/Red Tee" index="0" unique_id=935815376]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+mesh = SubResource("TeeMesh")
+surface_material_override/0 = SubResource("TeeMat_Red")
+
+[node name="Hole 8" type="Node3D" parent="HoleMarkers" index="7" unique_id=2111591230]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 532.413, 0, 453.695)
+
+[node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 8" index="0" unique_id=226577023]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
+mesh = SubResource("PinPostMesh")
+surface_material_override/0 = SubResource("PinPostMat")
+
+[node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 8" index="1" unique_id=1724907873]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -420.059, 0, -207.644)
+
+[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 8/White Tee" index="0" unique_id=2140431048]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+mesh = SubResource("TeeMesh")
+surface_material_override/0 = SubResource("TeeMat_White")
+
+[node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 8/White Tee" index="1" unique_id=711556005]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.25, 0)
+pixel_size = 0.08
+billboard = 1
+text = "8"
+font_size = 80
+outline_size = 18
+
+[node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 8" index="2" unique_id=209512287]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -418.559, 0, -207.644)
+
+[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 8/Red Tee" index="0" unique_id=1054532698]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+mesh = SubResource("TeeMesh")
+surface_material_override/0 = SubResource("TeeMat_Red")
+
+[node name="Hole 9" type="Node3D" parent="HoleMarkers" index="8" unique_id=264050901]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 367.265, 0, 275.76)
+
+[node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 9" index="0" unique_id=652349962]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
+mesh = SubResource("PinPostMesh")
+surface_material_override/0 = SubResource("PinPostMat")
+
+[node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 9" index="1" unique_id=172412288]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 187.72, 0, 101.414)
+
+[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 9/White Tee" index="0" unique_id=736145483]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+mesh = SubResource("TeeMesh")
+surface_material_override/0 = SubResource("TeeMat_White")
+
+[node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 9/White Tee" index="1" unique_id=1819132677]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.25, 0)
+pixel_size = 0.08
+billboard = 1
+text = "9"
+font_size = 80
+outline_size = 18
+
+[node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 9" index="2" unique_id=160592525]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 189.22, 0, 101.414)
+
+[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 9/Red Tee" index="0" unique_id=2085439566]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+mesh = SubResource("TeeMesh")
+surface_material_override/0 = SubResource("TeeMat_Red")
+
+[node name="Hole 10" type="Node3D" parent="HoleMarkers" index="9" unique_id=2037304148]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 695.489, 0, 213.012)
+
+[node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 10" index="0" unique_id=559095453]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
+mesh = SubResource("PinPostMesh")
+surface_material_override/0 = SubResource("PinPostMat")
+
+[node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 10" index="1" unique_id=355301004]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -327.809, 0, 5.421)
+
+[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 10/White Tee" index="0" unique_id=468200666]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+mesh = SubResource("TeeMesh")
+surface_material_override/0 = SubResource("TeeMat_White")
+
+[node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 10/White Tee" index="1" unique_id=1785322731]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.25, 0)
+pixel_size = 0.08
+billboard = 1
+text = "10"
+font_size = 80
+outline_size = 18
+
+[node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 10" index="2" unique_id=2096252195]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -326.309, 0, 5.421)
+
+[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 10/Red Tee" index="0" unique_id=1230352395]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+mesh = SubResource("TeeMesh")
+surface_material_override/0 = SubResource("TeeMat_Red")
+
+[node name="Hole 11" type="Node3D" parent="HoleMarkers" index="10" unique_id=1576088211]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 688.984, 0, 418.115)
+
+[node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 11" index="0" unique_id=1157437247]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
+mesh = SubResource("PinPostMesh")
+surface_material_override/0 = SubResource("PinPostMat")
+
+[node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 11" index="1" unique_id=306049610]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 24.43, 0, -147.058)
+
+[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 11/White Tee" index="0" unique_id=1920240959]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+mesh = SubResource("TeeMesh")
+surface_material_override/0 = SubResource("TeeMat_White")
+
+[node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 11/White Tee" index="1" unique_id=1437377608]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.25, 0)
+pixel_size = 0.08
+billboard = 1
+text = "11"
+font_size = 80
+outline_size = 18
+
+[node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 11" index="2" unique_id=1912095061]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25.93, 0, -147.058)
+
+[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 11/Red Tee" index="0" unique_id=291799614]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+mesh = SubResource("TeeMesh")
+surface_material_override/0 = SubResource("TeeMat_Red")
+
+[node name="Hole 12" type="Node3D" parent="HoleMarkers" index="11" unique_id=1559270345]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 766.548, 0, 215.743)
+
+[node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 12" index="0" unique_id=1764971711]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
+mesh = SubResource("PinPostMesh")
+surface_material_override/0 = SubResource("PinPostMat")
+
+[node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 12" index="1" unique_id=1723730170]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -21.617, 0, 257.345)
+
+[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 12/White Tee" index="0" unique_id=1778461779]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+mesh = SubResource("TeeMesh")
+surface_material_override/0 = SubResource("TeeMat_White")
+
+[node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 12/White Tee" index="1" unique_id=1628860352]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.25, 0)
+pixel_size = 0.08
+billboard = 1
+text = "12"
+font_size = 80
+outline_size = 18
+
+[node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 12" index="2" unique_id=576763903]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20.117, 0, 257.345)
+
+[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 12/Red Tee" index="0" unique_id=2118785800]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+mesh = SubResource("TeeMesh")
+surface_material_override/0 = SubResource("TeeMat_Red")
+
+[node name="Hole 13" type="Node3D" parent="HoleMarkers" index="12" unique_id=1539812483]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 799.914, 0, 457.712)
+
+[node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 13" index="0" unique_id=1555479316]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
+mesh = SubResource("PinPostMesh")
+surface_material_override/0 = SubResource("PinPostMat")
+
+[node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 13" index="1" unique_id=1415170968]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21.354, 0, -277.184)
+
+[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 13/White Tee" index="0" unique_id=576480323]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+mesh = SubResource("TeeMesh")
+surface_material_override/0 = SubResource("TeeMat_White")
+
+[node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 13/White Tee" index="1" unique_id=1878628342]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.25, 0)
+pixel_size = 0.08
+billboard = 1
+text = "13"
+font_size = 80
+outline_size = 18
+
+[node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 13" index="2" unique_id=734965914]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22.854, 0, -277.184)
+
+[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 13/Red Tee" index="0" unique_id=1925359648]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+mesh = SubResource("TeeMesh")
+surface_material_override/0 = SubResource("TeeMat_Red")
+
+[node name="Hole 14" type="Node3D" parent="HoleMarkers" index="13" unique_id=444313952]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 898.743, 0, 149.534)
+
+[node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 14" index="0" unique_id=925326838]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
+mesh = SubResource("PinPostMesh")
+surface_material_override/0 = SubResource("PinPostMat")
+
+[node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 14" index="1" unique_id=214665838]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -65.06, 0, 329.03)
+
+[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 14/White Tee" index="0" unique_id=2538536]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+mesh = SubResource("TeeMesh")
+surface_material_override/0 = SubResource("TeeMat_White")
+
+[node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 14/White Tee" index="1" unique_id=1586269390]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.25, 0)
+pixel_size = 0.08
+billboard = 1
+text = "14"
+font_size = 80
+outline_size = 18
+
+[node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 14" index="2" unique_id=651977920]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -63.56, 0, 329.03)
+
+[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 14/Red Tee" index="0" unique_id=1561285995]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+mesh = SubResource("TeeMesh")
+surface_material_override/0 = SubResource("TeeMat_Red")
+
+[node name="Hole 15" type="Node3D" parent="HoleMarkers" index="14" unique_id=42839477]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 764.601, 0, 173.568)
+
+[node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 15" index="0" unique_id=1552701535]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
+mesh = SubResource("PinPostMesh")
+surface_material_override/0 = SubResource("PinPostMat")
+
+[node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 15" index="1" unique_id=913568132]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 156.445, 0, -62.367)
+
+[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 15/White Tee" index="0" unique_id=408183283]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+mesh = SubResource("TeeMesh")
+surface_material_override/0 = SubResource("TeeMat_White")
+
+[node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 15/White Tee" index="1" unique_id=1051046033]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.25, 0)
+pixel_size = 0.08
+billboard = 1
+text = "15"
+font_size = 80
+outline_size = 18
+
+[node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 15" index="2" unique_id=317631785]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 157.945, 0, -62.367)
+
+[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 15/Red Tee" index="0" unique_id=1240700841]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+mesh = SubResource("TeeMesh")
+surface_material_override/0 = SubResource("TeeMat_Red")
+
+[node name="Hole 16" type="Node3D" parent="HoleMarkers" index="15" unique_id=622955438]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 314.834, 0, 110.675)
+
+[node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 16" index="0" unique_id=242511399]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
+mesh = SubResource("PinPostMesh")
+surface_material_override/0 = SubResource("PinPostMat")
+
+[node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 16" index="1" unique_id=272396900]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 410.314, 0, 67.67)
+
+[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 16/White Tee" index="0" unique_id=539530376]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+mesh = SubResource("TeeMesh")
+surface_material_override/0 = SubResource("TeeMat_White")
+
+[node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 16/White Tee" index="1" unique_id=1142096917]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.25, 0)
+pixel_size = 0.08
+billboard = 1
+text = "16"
+font_size = 80
+outline_size = 18
+
+[node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 16" index="2" unique_id=1076172082]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 411.814, 0, 67.67)
+
+[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 16/Red Tee" index="0" unique_id=525582077]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+mesh = SubResource("TeeMesh")
+surface_material_override/0 = SubResource("TeeMat_Red")
+
+[node name="Hole 17" type="Node3D" parent="HoleMarkers" index="16" unique_id=44237178]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 52.874, 0, 110.856)
+
+[node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 17" index="0" unique_id=442592386]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
+mesh = SubResource("PinPostMesh")
+surface_material_override/0 = SubResource("PinPostMat")
+
+[node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 17" index="1" unique_id=501394070]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 226.838, 0, 4.093)
+
+[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 17/White Tee" index="0" unique_id=896489197]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+mesh = SubResource("TeeMesh")
+surface_material_override/0 = SubResource("TeeMat_White")
+
+[node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 17/White Tee" index="1" unique_id=57757364]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.25, 0)
+pixel_size = 0.08
+billboard = 1
+text = "17"
+font_size = 80
+outline_size = 18
+
+[node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 17" index="2" unique_id=661567613]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 228.338, 0, 4.093)
+
+[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 17/Red Tee" index="0" unique_id=1017161013]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+mesh = SubResource("TeeMesh")
+surface_material_override/0 = SubResource("TeeMat_Red")
+
+[node name="Hole 18" type="Node3D" parent="HoleMarkers" index="17" unique_id=1934538064]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 317.177, 0, 155.807)
+
+[node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 18" index="0" unique_id=548864432]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
+mesh = SubResource("PinPostMesh")
+surface_material_override/0 = SubResource("PinPostMat")
+
+[node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 18" index="1" unique_id=2059555279]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -272.307, 0, -5.803)
+
+[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 18/White Tee" index="0" unique_id=1401103582]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+mesh = SubResource("TeeMesh")
+surface_material_override/0 = SubResource("TeeMat_White")
+
+[node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 18/White Tee" index="1" unique_id=1083455461]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.25, 0)
+pixel_size = 0.08
+billboard = 1
+text = "18"
+font_size = 80
+outline_size = 18
+
+[node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 18" index="2" unique_id=658427858]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -270.807, 0, -5.803)
+
+[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 18/Red Tee" index="0" unique_id=2111454905]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+mesh = SubResource("TeeMesh")
+surface_material_override/0 = SubResource("TeeMat_Red")

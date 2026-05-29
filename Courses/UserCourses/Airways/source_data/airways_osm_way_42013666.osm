@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<osm version="0.6" generator="openstreetmap-cgimap 2.1.0 (1317 spike-06.openstreetmap.org)" copyright="OpenStreetMap and contributors" attribution="http://www.openstreetmap.org/copyright" license="http://opendatacommons.org/licenses/odbl/1-0/">
+ <node id="521080295" visible="true" version="1" changeset="2745723" timestamp="2009-10-05T06:41:42Z" user="nmixter" uid="55774" lat="36.7799504" lon="-119.7106073"/>
+ <node id="521080296" visible="true" version="2" changeset="174623691" timestamp="2025-11-13T21:21:47Z" user="AnnDee4444" uid="15494682" lat="36.7793465" lon="-119.7090731"/>
+ <node id="521080297" visible="true" version="2" changeset="33420715" timestamp="2015-08-18T17:17:13Z" user="oc_123" uid="3087005" lat="36.7774975" lon="-119.7106741"/>
+ <node id="521080298" visible="true" version="2" changeset="26357831" timestamp="2014-10-27T11:23:29Z" user="nmixter" uid="55774" lat="36.7787704" lon="-119.7110325"/>
+ <node id="521080299" visible="true" version="2" changeset="33420715" timestamp="2015-08-18T17:17:13Z" user="oc_123" uid="3087005" lat="36.7764994" lon="-119.7113617"/>
+ <node id="521080300" visible="true" version="2" changeset="33420715" timestamp="2015-08-18T17:17:13Z" user="oc_123" uid="3087005" lat="36.7768795" lon="-119.7103874"/>
+ <node id="521080302" visible="true" version="1" changeset="2745723" timestamp="2009-10-05T06:41:48Z" user="nmixter" uid="55774" lat="36.7745459" lon="-119.7079407"/>
+ <node id="521083492" visible="true" version="1" changeset="2745723" timestamp="2009-10-05T06:49:00Z" user="nmixter" uid="55774" lat="36.7757541" lon="-119.7041316"/>
+ <node id="521083494" visible="true" version="1" changeset="2745723" timestamp="2009-10-05T06:49:01Z" user="nmixter" uid="55774" lat="36.7755824" lon="-119.7045210"/>
+ <node id="521083502" visible="true" version="1" changeset="2745723" timestamp="2009-10-05T06:49:02Z" user="nmixter" uid="55774" lat="36.7750225" lon="-119.7050875"/>
+ <node id="521083521" visible="true" version="2" changeset="26357831" timestamp="2014-10-27T11:23:30Z" user="nmixter" uid="55774" lat="36.7756076" lon="-119.7066016"/>
+ <node id="521083552" visible="true" version="2" changeset="33420308" timestamp="2015-08-18T17:01:39Z" user="oc_123" uid="3087005" lat="36.7792887" lon="-119.7010159"/>
+ <node id="521083568" visible="true" version="2" changeset="33420308" timestamp="2015-08-18T17:01:39Z" user="oc_123" uid="3087005" lat="36.7757548" lon="-119.7017512"/>
+ <node id="561083621" visible="true" version="2" changeset="33420715" timestamp="2015-08-18T17:17:12Z" user="oc_123" uid="3087005" lat="36.7758837" lon="-119.7108406"/>
+ <node id="561083636" visible="true" version="2" changeset="33420715" timestamp="2015-08-18T17:17:12Z" user="oc_123" uid="3087005" lat="36.7750989" lon="-119.7094054"/>
+ <node id="3152039958" visible="true" version="1" changeset="26356220" timestamp="2014-10-27T06:00:02Z" user="nmixter" uid="55774" lat="36.7745231" lon="-119.7076065"/>
+ <node id="3152039959" visible="true" version="1" changeset="26356220" timestamp="2014-10-27T06:00:03Z" user="nmixter" uid="55774" lat="36.7756178" lon="-119.7062730"/>
+ <node id="3152039960" visible="true" version="1" changeset="26356220" timestamp="2014-10-27T06:00:03Z" user="nmixter" uid="55774" lat="36.7756711" lon="-119.7064430"/>
+ <node id="3152040770" visible="true" version="1" changeset="26356220" timestamp="2014-10-27T06:00:03Z" user="nmixter" uid="55774" lat="36.7793842" lon="-119.7110049"/>
+ <node id="3703217976" visible="true" version="1" changeset="33420308" timestamp="2015-08-18T17:01:36Z" user="oc_123" uid="3087005" lat="36.7768119" lon="-119.7012496"/>
+ <node id="3703217977" visible="true" version="1" changeset="33420308" timestamp="2015-08-18T17:01:36Z" user="oc_123" uid="3087005" lat="36.7784189" lon="-119.7010938"/>
+ <node id="3703256472" visible="true" version="1" changeset="33420715" timestamp="2015-08-18T17:17:11Z" user="oc_123" uid="3087005" lat="36.7753773" lon="-119.7047969"/>
+ <node id="3703256479" visible="true" version="1" changeset="33420715" timestamp="2015-08-18T17:17:12Z" user="oc_123" uid="3087005" lat="36.7749750" lon="-119.7090240"/>
+ <node id="3703256480" visible="true" version="1" changeset="33420715" timestamp="2015-08-18T17:17:12Z" user="oc_123" uid="3087005" lat="36.7779333" lon="-119.7108565"/>
+ <node id="3703256481" visible="true" version="1" changeset="33420715" timestamp="2015-08-18T17:17:12Z" user="oc_123" uid="3087005" lat="36.7779816" lon="-119.7107910"/>
+ <node id="3703256482" visible="true" version="1" changeset="33420715" timestamp="2015-08-18T17:17:12Z" user="oc_123" uid="3087005" lat="36.7780403" lon="-119.7107596"/>
+ <node id="3703256483" visible="true" version="1" changeset="33420715" timestamp="2015-08-18T17:17:12Z" user="oc_123" uid="3087005" lat="36.7781074" lon="-119.7107648"/>
+ <node id="3703256484" visible="true" version="1" changeset="33420715" timestamp="2015-08-18T17:17:12Z" user="oc_123" uid="3087005" lat="36.7781599" lon="-119.7108225"/>
+ <node id="3703256485" visible="true" version="1" changeset="33420715" timestamp="2015-08-18T17:17:12Z" user="oc_123" uid="3087005" lat="36.7781830" lon="-119.7109010"/>
+ <node id="3703256486" visible="true" version="1" changeset="33420715" timestamp="2015-08-18T17:17:12Z" user="oc_123" uid="3087005" lat="36.7782123" lon="-119.7109299"/>
+ <node id="3703256491" visible="true" version="1" changeset="33420715" timestamp="2015-08-18T17:17:12Z" user="oc_123" uid="3087005" lat="36.7769164" lon="-119.7103520"/>
+ <node id="3703256492" visible="true" version="1" changeset="33420715" timestamp="2015-08-18T17:17:12Z" user="oc_123" uid="3087005" lat="36.7769674" lon="-119.7103520"/>
+ <node id="13302468333" visible="true" version="1" changeset="174623691" timestamp="2025-11-13T21:21:47Z" user="AnnDee4444" uid="15494682" lat="36.7796827" lon="-119.7101627"/>
+ <node id="13302468334" visible="true" version="1" changeset="174623691" timestamp="2025-11-13T21:21:47Z" user="AnnDee4444" uid="15494682" lat="36.7795048" lon="-119.7097561"/>
+ <node id="13302468335" visible="true" version="1" changeset="174623691" timestamp="2025-11-13T21:21:47Z" user="AnnDee4444" uid="15494682" lat="36.7794175" lon="-119.7094451"/>
+ <node id="13302468336" visible="true" version="1" changeset="174623691" timestamp="2025-11-13T21:21:47Z" user="AnnDee4444" uid="15494682" lat="36.7793286" lon="-119.7085335"/>
+ <node id="13302468337" visible="true" version="1" changeset="174623691" timestamp="2025-11-13T21:21:47Z" user="AnnDee4444" uid="15494682" lat="36.7793343" lon="-119.7088297"/>
+ <way id="42013666" visible="true" version="8" changeset="183324705" timestamp="2026-05-28T21:02:39Z" user="Fresno map" uid="18864067">
+  <nd ref="521083552"/>
+  <nd ref="3703217977"/>
+  <nd ref="3703217976"/>
+  <nd ref="521083568"/>
+  <nd ref="521083492"/>
+  <nd ref="521083494"/>
+  <nd ref="3703256472"/>
+  <nd ref="521083502"/>
+  <nd ref="3152039959"/>
+  <nd ref="3152039960"/>
+  <nd ref="521083521"/>
+  <nd ref="3152039958"/>
+  <nd ref="521080302"/>
+  <nd ref="3703256479"/>
+  <nd ref="561083636"/>
+  <nd ref="561083621"/>
+  <nd ref="521080299"/>
+  <nd ref="521080300"/>
+  <nd ref="3703256491"/>
+  <nd ref="3703256492"/>
+  <nd ref="521080297"/>
+  <nd ref="3703256480"/>
+  <nd ref="3703256481"/>
+  <nd ref="3703256482"/>
+  <nd ref="3703256483"/>
+  <nd ref="3703256484"/>
+  <nd ref="3703256485"/>
+  <nd ref="3703256486"/>
+  <nd ref="521080298"/>
+  <nd ref="3152040770"/>
+  <nd ref="521080295"/>
+  <nd ref="13302468333"/>
+  <nd ref="13302468334"/>
+  <nd ref="13302468335"/>
+  <nd ref="521080296"/>
+  <nd ref="13302468337"/>
+  <nd ref="13302468336"/>
+  <nd ref="521083552"/>
+  <tag k="addr:city" v="Fresno"/>
+  <tag k="addr:housenumber" v="5440"/>
+  <tag k="addr:postcode" v="93727"/>
+  <tag k="addr:state" v="CA"/>
+  <tag k="addr:street" v="E Airways Blvd"/>
+  <tag k="leisure" v="golf_course"/>
+  <tag k="name" v="Airways Golf Course"/>
+  <tag k="operator" v="Sierra Golf Management"/>
+  <tag k="Park_No" v="34"/>
+  <tag k="Parks_ID" v="6658"/>
+  <tag k="perimeter" v="9685.70478"/>
+  <tag k="website" v="https://airways.golf/"/>
+ </way>
+</osm>

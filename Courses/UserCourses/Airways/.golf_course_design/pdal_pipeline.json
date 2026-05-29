@@ -1,0 +1,12 @@
+[
+  "/home/jesher/Code/Github/jeshernandez/OpenShotGolf/Courses/UserCourses/Airways/source_data/airways_lidar_clipped.laz",
+  {
+    "type": "writers.gdal",
+    "filename": "/home/jesher/Code/Github/jeshernandez/OpenShotGolf/Courses/UserCourses/Airways/.golf_course_design/height.tif",
+    "resolution": 1,
+    "output_type": "mean",
+    "data_type": "Float32",
+    "allow_empty": true,
+    "window_size": 3
+  }
+]

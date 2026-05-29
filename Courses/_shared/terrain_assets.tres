@@ -1,0 +1,41 @@
+[gd_resource type="Terrain3DAssets" format=3 uid="uid://bkouexowbjh50"]
+
+[ext_resource type="Texture2D" uid="uid://btxo07ji1qkds" path="res://Courses/Environments/grassy-meadow1-bl/grassy-meadow1_alb_ht.png" id="1"]
+[ext_resource type="Texture2D" uid="uid://hk4xmhkr52oj" path="res://Courses/Environments/grassy-meadow1-bl/grassy-meadow1_nrm_rgh-ogl.png" id="2"]
+[ext_resource type="Texture2D" uid="uid://d0rwenwcn4gmi" path="res://Courses/Environments/jagged-rocky-ground1-bl/jagged-rocky-ground_alb_ht.png" id="3"]
+[ext_resource type="Texture2D" uid="uid://c5hf6u54l2tpo" path="res://Courses/Environments/jagged-rocky-ground1-bl/jagged-rocky-ground_nrm_rgh-ogl.png" id="4"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_oe2rx"]
+transparency = 4
+cull_mode = 2
+vertex_color_use_as_albedo = true
+backlight_enabled = true
+backlight = Color(0.5, 0.5, 0.5, 1)
+distance_fade_mode = 1
+distance_fade_min_distance = 128.0
+distance_fade_max_distance = 96.0
+
+[sub_resource type="Terrain3DMeshAsset" id="Terrain3DMeshAsset_ocquq"]
+generated_type = 1
+height_offset = 0.5
+material_override = SubResource("StandardMaterial3D_oe2rx")
+last_lod = 0
+last_shadow_lod = 0
+lod0_range = 128.0
+
+[sub_resource type="Terrain3DTextureAsset" id="Terrain3DTextureAsset_gefem"]
+name = "grassy-meadow1_alb_ht"
+albedo_texture = ExtResource("1")
+normal_texture = ExtResource("2")
+uv_scale = 0.4
+detiling_shift = 0.09
+
+[sub_resource type="Terrain3DTextureAsset" id="Terrain3DTextureAsset_oe2rx"]
+name = "jagged-rocky-ground_alb_ht"
+id = 1
+albedo_texture = ExtResource("3")
+normal_texture = ExtResource("4")
+
+[resource]
+mesh_list = Array[Terrain3DMeshAsset]([SubResource("Terrain3DMeshAsset_ocquq")])
+texture_list = Array[Terrain3DTextureAsset]([SubResource("Terrain3DTextureAsset_gefem"), SubResource("Terrain3DTextureAsset_oe2rx")])

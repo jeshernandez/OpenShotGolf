@@ -1,0 +1,63 @@
+@startuml
+title Golf Course Design Pipeline
+
+left to right direction
+skinparam backgroundColor #1E1E1E
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam ArrowColor #EAEAEA
+skinparam ArrowFontColor white
+skinparam ArrowFontSize 22
+skinparam defaultFontColor white
+skinparam defaultFontSize 22
+skinparam defaultTextAlignment center
+skinparam NoteBackgroundColor #2A2A2A
+skinparam NoteBorderColor #BBBBBB
+skinparam NoteFontColor white
+skinparam NoteFontSize 22
+
+rectangle "Designer" as Designer #33415C
+rectangle "Source Data\nOSM, USGS 3DEP,\nOpenTopography,\nQGIS" as SourceData #4A3B24
+rectangle "Prepared Files\nboundary.geojson\nholes.geojson\ndem.tif\nlidar.laz" as Prepared #4A3B24
+rectangle "Golf Course\nDesign Dock" as Dock #30445A
+rectangle "course_design.tres" as ProjectFile #2F4A3E
+rectangle "GDAL + PDAL" as Tools #46314F
+rectangle "Staged Terrain\n.golf_course_design" as Staging #294E4A
+rectangle "Terrain3D\nTerrain/" as TerrainFolder #2F3F57
+rectangle "Hole Markers\ntees + pins" as Holes #34523D
+rectangle "course.tscn" as SceneFile #3C3C3C
+rectangle "course.json" as JsonFile #3C3C3C
+rectangle "Godot 3D View" as GodotView #274A5A
+
+Designer --> SourceData : choose course\nand licenses
+SourceData --> Prepared : clip, trace,\nclean data
+Designer --> Dock : set output,\nterrain, holes
+Prepared --> Dock : hole GeoJSON
+Prepared --> Tools : DEM or lidar,\nboundary, overlay
+Dock --> ProjectFile : save editable\nproject
+ProjectFile --> Tools : import settings
+Tools --> Staging : height and\ncolor images
+Staging --> TerrainFolder : replace after\nsuccessful build
+TerrainFolder --> SceneFile : referenced by
+Dock --> Holes : import or edit\none hole at a time
+Holes --> SceneFile : marker nodes
+Dock --> JsonFile : course metadata
+Dock --> SceneFile : export playable\ncourse scene
+SceneFile --> GodotView : open scene\nfor preview
+
+note bottom of Staging
+Existing terrain is moved to a backup folder
+before the staged build replaces it.
+end note
+
+note bottom of Holes
+One course can contain many holes.
+Each imported line becomes one hole.
+end note
+
+note right of SceneFile
+The export is one scene for the full course,
+not one scene per hole.
+end note
+
+@enduml

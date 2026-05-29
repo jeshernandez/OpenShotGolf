@@ -1,0 +1,35 @@
+<PAMDataset>
+  <Metadata>
+    <MDI key="AREA_OR_POINT">Area</MDI>
+  </Metadata>
+  <Metadata domain="IMAGE_STRUCTURE">
+    <MDI key="COMPRESSION">ZIP</MDI>
+  </Metadata>
+  <PAMRasterBand band="1">
+    <Metadata>
+      <MDI key="STATISTICS_MINIMUM">100.88645935059</MDI>
+      <MDI key="STATISTICS_MAXIMUM">104.15440368652</MDI>
+      <MDI key="STATISTICS_MEAN">102.12590814999</MDI>
+      <MDI key="STATISTICS_STDDEV">0.4893991332196</MDI>
+      <MDI key="STATISTICS_VALID_PERCENT">100</MDI>
+    </Metadata>
+  </PAMRasterBand>
+  <PAMRasterBand band="2">
+    <Metadata>
+      <MDI key="STATISTICS_MINIMUM">100.88645935059</MDI>
+      <MDI key="STATISTICS_MAXIMUM">104.15440368652</MDI>
+      <MDI key="STATISTICS_MEAN">102.12590814999</MDI>
+      <MDI key="STATISTICS_STDDEV">0.4893991332196</MDI>
+      <MDI key="STATISTICS_VALID_PERCENT">100</MDI>
+    </Metadata>
+  </PAMRasterBand>
+  <PAMRasterBand band="3">
+    <Metadata>
+      <MDI key="STATISTICS_MINIMUM">100.88645935059</MDI>
+      <MDI key="STATISTICS_MAXIMUM">104.15440368652</MDI>
+      <MDI key="STATISTICS_MEAN">102.12590814999</MDI>
+      <MDI key="STATISTICS_STDDEV">0.4893991332196</MDI>
+      <MDI key="STATISTICS_VALID_PERCENT">100</MDI>
+    </Metadata>
+  </PAMRasterBand>
+</PAMDataset>

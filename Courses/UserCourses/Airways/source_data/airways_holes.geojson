@@ -1,0 +1,534 @@
+{
+  "type": "FeatureCollection",
+  "name": "airways_holes",
+  "crs": {
+    "type": "name",
+    "properties": {
+      "name": "urn:ogc:def:crs:OGC:1.3:CRS84"
+    }
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": "1147439521",
+        "z_order": 0,
+        "other_tags": "\"golf\"=>\"hole\",\"par\"=>\"4\",\"ref\"=>\"1\"",
+        "golf": "hole",
+        "ref": "1",
+        "par": 4,
+        "name": "Hole 1"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -119.7072628,
+            36.7779438
+          ],
+          [
+            -119.7051955,
+            36.7774012
+          ],
+          [
+            -119.703945,
+            36.777736
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": "1147439530",
+        "z_order": 0,
+        "other_tags": "\"golf\"=>\"hole\",\"par\"=>\"4\",\"ref\"=>\"2\"",
+        "golf": "hole",
+        "ref": "2",
+        "par": 4,
+        "name": "Hole 2"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -119.7035892,
+            36.7776848
+          ],
+          [
+            -119.7043835,
+            36.7763857
+          ],
+          [
+            -119.7051815,
+            36.7754378
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": "1147446843",
+        "z_order": 0,
+        "other_tags": "\"golf\"=>\"hole\",\"par\"=>\"4\",\"ref\"=>\"3\"",
+        "golf": "hole",
+        "ref": "3",
+        "par": 4,
+        "name": "Hole 3"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -119.7055999,
+            36.775625
+          ],
+          [
+            -119.7070273,
+            36.7763334
+          ],
+          [
+            -119.7085883,
+            36.7765983
+          ],
+          [
+            -119.7096081,
+            36.7766145
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": "1147446849",
+        "z_order": 0,
+        "other_tags": "\"golf\"=>\"hole\",\"par\"=>\"4\",\"ref\"=>\"4\"",
+        "golf": "hole",
+        "ref": "4",
+        "par": 4,
+        "name": "Hole 4"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -119.7103291,
+            36.7764062
+          ],
+          [
+            -119.70875,
+            36.7759548
+          ],
+          [
+            -119.7071468,
+            36.775793
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": "1147446855",
+        "z_order": 0,
+        "other_tags": "\"golf\"=>\"hole\",\"par\"=>\"3\",\"ref\"=>\"5\"",
+        "golf": "hole",
+        "ref": "5",
+        "par": 3,
+        "name": "Hole 5"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -119.7067725,
+            36.7756484
+          ],
+          [
+            -119.70774,
+            36.7747806
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": "1147446861",
+        "z_order": 0,
+        "other_tags": "\"golf\"=>\"hole\",\"par\"=>\"4\",\"ref\"=>\"6\"",
+        "golf": "hole",
+        "ref": "6",
+        "par": 4,
+        "name": "Hole 6"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -119.7079722,
+            36.7750764
+          ],
+          [
+            -119.7101194,
+            36.7758744
+          ],
+          [
+            -119.7107629,
+            36.7764899
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": "1244966234",
+        "z_order": 0,
+        "other_tags": "\"golf\"=>\"hole\",\"par\"=>\"3\",\"ref\"=>\"7\"",
+        "golf": "hole",
+        "ref": "7",
+        "par": 3,
+        "name": "Hole 7"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -119.709966,
+            36.7768196
+          ],
+          [
+            -119.7105105,
+            36.7776686
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": "1147446871",
+        "z_order": 0,
+        "other_tags": "\"golf\"=>\"hole\",\"par\"=>\"5\",\"ref\"=>\"8\"",
+        "golf": "hole",
+        "ref": "8",
+        "par": 5,
+        "name": "Hole 8"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -119.7101482,
+            36.7777457
+          ],
+          [
+            -119.7083868,
+            36.7770611
+          ],
+          [
+            -119.7065546,
+            36.7767961
+          ],
+          [
+            -119.7056004,
+            36.7763458
+          ],
+          [
+            -119.7053851,
+            36.7759848
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": "1147452564",
+        "z_order": 0,
+        "other_tags": "\"golf\"=>\"hole\",\"par\"=>\"3\",\"ref\"=>\"9\"",
+        "golf": "hole",
+        "ref": "9",
+        "par": 3,
+        "name": "Hole 9"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -119.7051569,
+            36.7766789
+          ],
+          [
+            -119.7072882,
+            36.7775434
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": "1147452570",
+        "z_order": 0,
+        "other_tags": "\"golf\"=>\"hole\",\"par\"=>\"4\",\"ref\"=>\"10\"",
+        "golf": "hole",
+        "ref": "10",
+        "par": 4,
+        "name": "Hole 10"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -119.7073017,
+            36.7780592
+          ],
+          [
+            -119.7049196,
+            36.7782665
+          ],
+          [
+            -119.7036376,
+            36.7781914
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": "1147452581",
+        "z_order": 0,
+        "other_tags": "\"golf\"=>\"hole\",\"par\"=>\"4\",\"ref\"=>\"11\"",
+        "golf": "hole",
+        "ref": "11",
+        "par": 4,
+        "name": "Hole 11"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -119.7034188,
+            36.7776738
+          ],
+          [
+            -119.7034955,
+            36.7767823
+          ],
+          [
+            -119.7036455,
+            36.7763447
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": "1147452588",
+        "z_order": 0,
+        "other_tags": "\"golf\"=>\"hole\",\"par\"=>\"4\",\"ref\"=>\"12\"",
+        "golf": "hole",
+        "ref": "12",
+        "par": 4,
+        "name": "Hole 12"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -119.7030025,
+            36.7758644
+          ],
+          [
+            -119.7028298,
+            36.7774383
+          ],
+          [
+            -119.7028421,
+            36.7781849
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": "1147452593",
+        "z_order": 0,
+        "other_tags": "\"golf\"=>\"hole\",\"par\"=>\"4\",\"ref\"=>\"13\"",
+        "golf": "hole",
+        "ref": "13",
+        "par": 4,
+        "name": "Hole 13"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -119.7022413,
+            36.7785156
+          ],
+          [
+            -119.7022615,
+            36.7767146
+          ],
+          [
+            -119.7023925,
+            36.7760167
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": "1147457396",
+        "z_order": 0,
+        "other_tags": "\"golf\"=>\"hole\",\"par\"=>\"4\",\"ref\"=>\"14\"",
+        "golf": "hole",
+        "ref": "14",
+        "par": 4,
+        "name": "Hole 14"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -119.7020083,
+            36.7758377
+          ],
+          [
+            -119.7015509,
+            36.7777046
+          ],
+          [
+            -119.7013847,
+            36.7788141
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": "1147457399",
+        "z_order": 0,
+        "other_tags": "\"golf\"=>\"hole\",\"par\"=>\"3\",\"ref\"=>\"15\"",
+        "golf": "hole",
+        "ref": "15",
+        "par": 3,
+        "name": "Hole 15"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -119.7011474,
+            36.7791646
+          ],
+          [
+            -119.7028772,
+            36.7785638
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": "1147485940",
+        "z_order": 0,
+        "other_tags": "\"golf\"=>\"hole\",\"par\"=>\"5\",\"ref\"=>\"16\"",
+        "golf": "hole",
+        "ref": "16",
+        "par": 5,
+        "name": "Hole 16"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -119.7033169,
+            36.7785108
+          ],
+          [
+            -119.7049253,
+            36.7787477
+          ],
+          [
+            -119.707232,
+            36.7789798
+          ],
+          [
+            -119.7079268,
+            36.7790151
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": "1147485943",
+        "z_order": 0,
+        "other_tags": "\"golf\"=>\"hole\",\"par\"=>\"4\",\"ref\"=>\"17\"",
+        "golf": "hole",
+        "ref": "17",
+        "par": 4,
+        "name": "Hole 17"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -119.7083182,
+            36.7789677
+          ],
+          [
+            -119.7101902,
+            36.7790228
+          ],
+          [
+            -119.7108562,
+            36.7789467
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "osm_id": "1147485947",
+        "z_order": 0,
+        "other_tags": "\"golf\"=>\"hole\",\"par\"=>\"4\",\"ref\"=>\"18\"",
+        "golf": "hole",
+        "ref": "18",
+        "par": 4,
+        "name": "Hole 18"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -119.7109333,
+            36.7785925
+          ],
+          [
+            -119.7090625,
+            36.7786648
+          ],
+          [
+            -119.7078863,
+            36.7786097
+          ]
+        ]
+      }
+    }
+  ]
+}
