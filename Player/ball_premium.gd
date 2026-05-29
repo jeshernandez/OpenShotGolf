@@ -10,7 +10,7 @@ var _aero
 var _surface
 var _shot_setup
 
-var state: int = PhysicsEnums.BallState.Rest
+var state: int = PhysicsEnums.BallState.REST
 var omega := Vector3.ZERO  # Angular velocity (rad/s)
 var on_ground := false
 var floor_normal := Vector3.UP
@@ -18,7 +18,7 @@ var _settings_connected := false
 
 # Surface parameters (base values from C# Surface addon, then multiplied below).
 # Change the *_mult values to tune this ball independently of global settings.
-var surface_type: int = PhysicsEnums.SurfaceType.Fairway
+var surface_type: int = PhysicsEnums.SurfaceType.FAIRWAY
 var _kinetic_friction := 0.0
 var _rolling_friction := 0.0
 var _grass_viscosity := 0.0
@@ -239,7 +239,7 @@ func get_downrange_yards() -> float:
 func _physics_process(delta: float) -> void:
 	if not _init_openfairway_instances():
 		return
-	if state == PhysicsEnums.BallState.Rest:
+	if state == PhysicsEnums.BallState.REST:
 		return
 
 	var was_on_ground := on_ground
@@ -262,7 +262,7 @@ func _physics_process(delta: float) -> void:
 	var collision := move_and_collide(velocity * delta)
 	_handle_collision(collision, was_on_ground, prev_velocity)
 
-	if velocity.length() < 0.1 and state != PhysicsEnums.BallState.Rest:
+	if velocity.length() < 0.1 and state != PhysicsEnums.BallState.REST:
 		_enter_rest_state()
 
 
@@ -304,10 +304,10 @@ func _handle_collision(collision: KinematicCollision3D, was_on_ground: bool, pre
 
 		if _is_ground_normal(normal):
 			floor_normal = normal
-			var is_landing := (state == PhysicsEnums.BallState.Flight) or prev_velocity.y < -0.5
+			var is_landing: bool = (state == PhysicsEnums.BallState.FLIGHT) or prev_velocity.y < -0.5
 
 			if is_landing:
-				if state == PhysicsEnums.BallState.Flight:
+				if state == PhysicsEnums.BallState.FLIGHT:
 					_print_impact_debug()
 
 				var params = _create_physics_params()
@@ -331,7 +331,7 @@ func _handle_collision(collision: KinematicCollision3D, was_on_ground: bool, pre
 			floor_normal = Vector3.UP
 			velocity = velocity.bounce(normal) * 0.30
 	else:
-		if state != PhysicsEnums.BallState.Flight and was_on_ground and position.y < 0.02 and velocity.y <= 0.0:
+		if state != PhysicsEnums.BallState.FLIGHT and was_on_ground and position.y < 0.02 and velocity.y <= 0.0:
 			on_ground = true
 		else:
 			on_ground = false
@@ -350,7 +350,7 @@ func _print_impact_debug() -> void:
 
 
 func _enter_rest_state() -> void:
-	state = PhysicsEnums.BallState.Rest
+	state = PhysicsEnums.BallState.REST
 	velocity = Vector3.ZERO
 	omega = Vector3.ZERO
 	rest.emit()
@@ -361,7 +361,7 @@ func reset() -> void:
 	velocity = Vector3.ZERO
 	omega = Vector3.ZERO
 	launch_spin_rpm = 0.0
-	state = PhysicsEnums.BallState.Rest
+	state = PhysicsEnums.BallState.REST
 	on_ground = false
 
 
@@ -395,7 +395,7 @@ func hit_from_data(data: Dictionary) -> void:
 	var total_spin: float = spin_data.total
 	var spin_axis: float = spin_data.axis
 
-	state = PhysicsEnums.BallState.Flight
+	state = PhysicsEnums.BallState.FLIGHT
 	on_ground = false
 	position = Vector3(0.0, START_HEIGHT, 0.0)
 

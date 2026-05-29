@@ -1,7 +1,7 @@
-[gd_scene load_steps=9 format=3]
+[gd_scene format=3 uid="uid://ckw0mcuqfhe4s"]
 
 [ext_resource type="PackedScene" uid="uid://cxfmki7gy8qgb" path="res://Courses/_shared/course_base.tscn" id="1_base"]
-[ext_resource type="Script" path="res://Courses/UserCourses/Airways/course.gd" id="2_course"]
+[ext_resource type="Script" uid="uid://bvjjlg8waqry0" path="res://Courses/UserCourses/Airways/course.gd" id="2_course"]
 
 [sub_resource type="CylinderMesh" id="PinPostMesh"]
 top_radius = 0.12
@@ -15,8 +15,6 @@ emission = Color(0.85, 0.12, 0.12, 1)
 emission_energy_multiplier = 0.35
 
 [sub_resource type="SphereMesh" id="TeeMesh"]
-radius = 0.5
-height = 1.0
 
 [sub_resource type="StandardMaterial3D" id="TeeBodyMat"]
 albedo_color = Color(0.047059, 0.380392, 0, 1)
@@ -37,774 +35,774 @@ emission_enabled = true
 emission = Color(0.85, 0.15, 0.15, 1)
 emission_energy_multiplier = 0.3
 
-[node name="Course" instance=ExtResource("1_base")]
+[node name="Course" unique_id=471398379 instance=ExtResource("1_base")]
 script = ExtResource("2_course")
 
-[node name="Terrain3D" parent="."]
+[node name="Terrain3D" parent="." index="3"]
 data_directory = "res://Courses/UserCourses/Airways/Terrain"
 
-[node name="PhantomCamera3D" parent="."]
+[node name="PhantomCamera3D" parent="." index="5"]
 transform = Transform3D(-0.375621, 0, 0.926773, 0.07108, 0.997055, 0.028809, -0.924043, 0.076697, -0.374515, 19.43936, 3, 0.746273)
 follow_offset = Vector3(-2.316933, 1.5, -0.939053)
 
-[node name="Camera3D" parent="."]
+[node name="Camera3D" parent="." index="6"]
 transform = Transform3D(-0.375621, 0, 0.926773, 0.07108, 0.997055, 0.028809, -0.924043, 0.076697, -0.374515, 19.43936, 3, 0.746273)
 far = 8000.0
 
-[node name="HoleMarkers" type="Node3D" parent="."]
+[node name="HoleMarkers" type="Node3D" parent="." index="8" unique_id=241744093]
 
-[node name="Hole 1" type="Node3D" parent="HoleMarkers"]
+[node name="Hole 1" type="Node3D" parent="HoleMarkers" index="0" unique_id=102911716]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 666.5, 0, 263)
 
-[node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 1"]
+[node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 1" index="0" unique_id=1039378423]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
 mesh = SubResource("PinPostMesh")
 surface_material_override/0 = SubResource("PinPostMat")
 
-[node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 1"]
+[node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 1" index="1" unique_id=1848793773]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -641.5, 0, -260)
 
-[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 1/White Tee"]
+[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 1/White Tee" index="0" unique_id=2028010141]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 mesh = SubResource("TeeMesh")
 surface_material_override/0 = SubResource("TeeBodyMat")
 
-[node name="ColorIndicator" type="MeshInstance3D" parent="HoleMarkers/Hole 1/White Tee/Marker"]
+[node name="ColorIndicator" type="MeshInstance3D" parent="HoleMarkers/Hole 1/White Tee/Marker" index="0" unique_id=2092241303]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.65, 0)
 mesh = SubResource("TeeIndicatorMesh")
 surface_material_override/0 = SubResource("TeeMat_White")
 
-[node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 1/White Tee"]
+[node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 1/White Tee" index="1" unique_id=451688571]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.25, 0)
 pixel_size = 0.08
 billboard = 1
+text = "1"
 font_size = 80
 outline_size = 18
-text = "1"
 
-[node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 1"]
+[node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 1" index="2" unique_id=2129638147]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -615, 0, -268.5)
 
-[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 1/Red Tee"]
+[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 1/Red Tee" index="0" unique_id=510972558]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 mesh = SubResource("TeeMesh")
 surface_material_override/0 = SubResource("TeeBodyMat")
 
-[node name="ColorIndicator" type="MeshInstance3D" parent="HoleMarkers/Hole 1/Red Tee/Marker"]
+[node name="ColorIndicator" type="MeshInstance3D" parent="HoleMarkers/Hole 1/Red Tee/Marker" index="0" unique_id=650218948]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.65, 0)
 mesh = SubResource("TeeIndicatorMesh")
 surface_material_override/0 = SubResource("TeeMat_Red")
 
-[node name="Hole 2" type="Node3D" parent="HoleMarkers"]
+[node name="Hole 2" type="Node3D" parent="HoleMarkers" index="1" unique_id=844795786]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 548.887, 0, 514.968)
 
-[node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 2"]
+[node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 2" index="0" unique_id=18687472]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
 mesh = SubResource("PinPostMesh")
 surface_material_override/0 = SubResource("PinPostMat")
 
-[node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 2"]
+[node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 2" index="1" unique_id=2064942215]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 149.336, 0, -245.563)
 
-[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 2/White Tee"]
+[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 2/White Tee" index="0" unique_id=643088117]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 mesh = SubResource("TeeMesh")
 surface_material_override/0 = SubResource("TeeBodyMat")
 
-[node name="ColorIndicator" type="MeshInstance3D" parent="HoleMarkers/Hole 2/White Tee/Marker"]
+[node name="ColorIndicator" type="MeshInstance3D" parent="HoleMarkers/Hole 2/White Tee/Marker" index="0" unique_id=2032884491]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.65, 0)
 mesh = SubResource("TeeIndicatorMesh")
 surface_material_override/0 = SubResource("TeeMat_White")
 
-[node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 2/White Tee"]
+[node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 2/White Tee" index="1" unique_id=1846175920]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.25, 0)
 pixel_size = 0.08
 billboard = 1
+text = "2"
 font_size = 80
 outline_size = 18
-text = "2"
 
-[node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 2"]
+[node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 2" index="2" unique_id=1830367144]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 150.836, 0, -245.563)
 
-[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 2/Red Tee"]
+[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 2/Red Tee" index="0" unique_id=407505835]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 mesh = SubResource("TeeMesh")
 surface_material_override/0 = SubResource("TeeBodyMat")
 
-[node name="ColorIndicator" type="MeshInstance3D" parent="HoleMarkers/Hole 2/Red Tee/Marker"]
+[node name="ColorIndicator" type="MeshInstance3D" parent="HoleMarkers/Hole 2/Red Tee/Marker" index="0" unique_id=202346873]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.65, 0)
 mesh = SubResource("TeeIndicatorMesh")
 surface_material_override/0 = SubResource("TeeMat_Red")
 
-[node name="Hole 3" type="Node3D" parent="HoleMarkers"]
+[node name="Hole 3" type="Node3D" parent="HoleMarkers" index="2" unique_id=752886294]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 157.053, 0, 373.067)
 
-[node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 3"]
+[node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 3" index="0" unique_id=46433386]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
 mesh = SubResource("PinPostMesh")
 surface_material_override/0 = SubResource("PinPostMat")
 
-[node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 3"]
+[node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 3" index="1" unique_id=181857424]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 355.037, 0, 120.05)
 
-[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 3/White Tee"]
+[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 3/White Tee" index="0" unique_id=1380942558]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 mesh = SubResource("TeeMesh")
 surface_material_override/0 = SubResource("TeeBodyMat")
 
-[node name="ColorIndicator" type="MeshInstance3D" parent="HoleMarkers/Hole 3/White Tee/Marker"]
+[node name="ColorIndicator" type="MeshInstance3D" parent="HoleMarkers/Hole 3/White Tee/Marker" index="0" unique_id=134078670]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.65, 0)
 mesh = SubResource("TeeIndicatorMesh")
 surface_material_override/0 = SubResource("TeeMat_White")
 
-[node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 3/White Tee"]
+[node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 3/White Tee" index="1" unique_id=1585658633]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.25, 0)
 pixel_size = 0.08
 billboard = 1
+text = "3"
 font_size = 80
 outline_size = 18
-text = "3"
 
-[node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 3"]
+[node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 3" index="2" unique_id=1044735322]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 356.537, 0, 120.05)
 
-[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 3/Red Tee"]
+[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 3/Red Tee" index="0" unique_id=1206179778]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 mesh = SubResource("TeeMesh")
 surface_material_override/0 = SubResource("TeeBodyMat")
 
-[node name="ColorIndicator" type="MeshInstance3D" parent="HoleMarkers/Hole 3/Red Tee/Marker"]
+[node name="ColorIndicator" type="MeshInstance3D" parent="HoleMarkers/Hole 3/Red Tee/Marker" index="0" unique_id=1852600907]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.65, 0)
 mesh = SubResource("TeeIndicatorMesh")
 surface_material_override/0 = SubResource("TeeMat_Red")
 
-[node name="Hole 4" type="Node3D" parent="HoleMarkers"]
+[node name="Hole 4" type="Node3D" parent="HoleMarkers" index="3" unique_id=301742507]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 374.395, 0, 470.544)
 
-[node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 4"]
+[node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 4" index="0" unique_id=166828073]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
 mesh = SubResource("PinPostMesh")
 surface_material_override/0 = SubResource("PinPostMat")
 
-[node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 4"]
+[node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 4" index="1" unique_id=63100103]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -282.422, 0, -76.166)
 
-[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 4/White Tee"]
+[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 4/White Tee" index="0" unique_id=359800148]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 mesh = SubResource("TeeMesh")
 surface_material_override/0 = SubResource("TeeBodyMat")
 
-[node name="ColorIndicator" type="MeshInstance3D" parent="HoleMarkers/Hole 4/White Tee/Marker"]
+[node name="ColorIndicator" type="MeshInstance3D" parent="HoleMarkers/Hole 4/White Tee/Marker" index="0" unique_id=113564208]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.65, 0)
 mesh = SubResource("TeeIndicatorMesh")
 surface_material_override/0 = SubResource("TeeMat_White")
 
-[node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 4/White Tee"]
+[node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 4/White Tee" index="1" unique_id=1051093590]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.25, 0)
 pixel_size = 0.08
 billboard = 1
+text = "4"
 font_size = 80
 outline_size = 18
-text = "4"
 
-[node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 4"]
+[node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 4" index="2" unique_id=1330974669]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -280.922, 0, -76.166)
 
-[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 4/Red Tee"]
+[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 4/Red Tee" index="0" unique_id=1804708808]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 mesh = SubResource("TeeMesh")
 surface_material_override/0 = SubResource("TeeBodyMat")
 
-[node name="ColorIndicator" type="MeshInstance3D" parent="HoleMarkers/Hole 4/Red Tee/Marker"]
+[node name="ColorIndicator" type="MeshInstance3D" parent="HoleMarkers/Hole 4/Red Tee/Marker" index="0" unique_id=1154755145]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.65, 0)
 mesh = SubResource("TeeIndicatorMesh")
 surface_material_override/0 = SubResource("TeeMat_Red")
 
-[node name="Hole 5" type="Node3D" parent="HoleMarkers"]
+[node name="Hole 5" type="Node3D" parent="HoleMarkers" index="4" unique_id=1209055836]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 318.206, 0, 581.496)
 
-[node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 5"]
+[node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 5" index="0" unique_id=545891894]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
 mesh = SubResource("PinPostMesh")
 surface_material_override/0 = SubResource("PinPostMat")
 
-[node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 5"]
+[node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 5" index="1" unique_id=202754313]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 89.18, 0, -93.944)
 
-[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 5/White Tee"]
+[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 5/White Tee" index="0" unique_id=764245863]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 mesh = SubResource("TeeMesh")
 surface_material_override/0 = SubResource("TeeBodyMat")
 
-[node name="ColorIndicator" type="MeshInstance3D" parent="HoleMarkers/Hole 5/White Tee/Marker"]
+[node name="ColorIndicator" type="MeshInstance3D" parent="HoleMarkers/Hole 5/White Tee/Marker" index="0" unique_id=981511633]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.65, 0)
 mesh = SubResource("TeeIndicatorMesh")
 surface_material_override/0 = SubResource("TeeMat_White")
 
-[node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 5/White Tee"]
+[node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 5/White Tee" index="1" unique_id=598667784]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.25, 0)
 pixel_size = 0.08
 billboard = 1
+text = "5"
 font_size = 80
 outline_size = 18
-text = "5"
 
-[node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 5"]
+[node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 5" index="2" unique_id=2044350251]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 90.68, 0, -93.944)
 
-[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 5/Red Tee"]
+[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 5/Red Tee" index="0" unique_id=1176730582]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 mesh = SubResource("TeeMesh")
 surface_material_override/0 = SubResource("TeeBodyMat")
 
-[node name="ColorIndicator" type="MeshInstance3D" parent="HoleMarkers/Hole 5/Red Tee/Marker"]
+[node name="ColorIndicator" type="MeshInstance3D" parent="HoleMarkers/Hole 5/Red Tee/Marker" index="0" unique_id=604624189]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.65, 0)
 mesh = SubResource("TeeIndicatorMesh")
 surface_material_override/0 = SubResource("TeeMat_Red")
 
-[node name="Hole 6" type="Node3D" parent="HoleMarkers"]
+[node name="Hole 6" type="Node3D" parent="HoleMarkers" index="5" unique_id=1066518431]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 53.475, 0, 383.983)
 
-[node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 6"]
+[node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 6" index="0" unique_id=1476911392]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
 mesh = SubResource("PinPostMesh")
 surface_material_override/0 = SubResource("PinPostMat")
 
-[node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 6"]
+[node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 6" index="1" unique_id=593761776]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 244.913, 0, 164.07)
 
-[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 6/White Tee"]
+[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 6/White Tee" index="0" unique_id=2058556035]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 mesh = SubResource("TeeMesh")
 surface_material_override/0 = SubResource("TeeBodyMat")
 
-[node name="ColorIndicator" type="MeshInstance3D" parent="HoleMarkers/Hole 6/White Tee/Marker"]
+[node name="ColorIndicator" type="MeshInstance3D" parent="HoleMarkers/Hole 6/White Tee/Marker" index="0" unique_id=1716222203]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.65, 0)
 mesh = SubResource("TeeIndicatorMesh")
 surface_material_override/0 = SubResource("TeeMat_White")
 
-[node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 6/White Tee"]
+[node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 6/White Tee" index="1" unique_id=1068907397]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.25, 0)
 pixel_size = 0.08
 billboard = 1
+text = "6"
 font_size = 80
 outline_size = 18
-text = "6"
 
-[node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 6"]
+[node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 6" index="2" unique_id=1610340836]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 246.413, 0, 164.07)
 
-[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 6/Red Tee"]
+[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 6/Red Tee" index="0" unique_id=189650650]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 mesh = SubResource("TeeMesh")
 surface_material_override/0 = SubResource("TeeBodyMat")
 
-[node name="ColorIndicator" type="MeshInstance3D" parent="HoleMarkers/Hole 6/Red Tee/Marker"]
+[node name="ColorIndicator" type="MeshInstance3D" parent="HoleMarkers/Hole 6/Red Tee/Marker" index="0" unique_id=1999237970]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.65, 0)
 mesh = SubResource("TeeIndicatorMesh")
 surface_material_override/0 = SubResource("TeeMat_Red")
 
-[node name="Hole 7" type="Node3D" parent="HoleMarkers"]
+[node name="Hole 7" type="Node3D" parent="HoleMarkers" index="6" unique_id=1014509618]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 79.739, 0, 253.697)
 
-[node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 7"]
+[node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 7" index="0" unique_id=1331004986]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
 mesh = SubResource("PinPostMesh")
 surface_material_override/0 = SubResource("PinPostMat")
 
-[node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 7"]
+[node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 7" index="1" unique_id=578905802]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 45.98, 0, 95.682)
 
-[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 7/White Tee"]
+[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 7/White Tee" index="0" unique_id=1088972172]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 mesh = SubResource("TeeMesh")
 surface_material_override/0 = SubResource("TeeBodyMat")
 
-[node name="ColorIndicator" type="MeshInstance3D" parent="HoleMarkers/Hole 7/White Tee/Marker"]
+[node name="ColorIndicator" type="MeshInstance3D" parent="HoleMarkers/Hole 7/White Tee/Marker" index="0" unique_id=1119467788]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.65, 0)
 mesh = SubResource("TeeIndicatorMesh")
 surface_material_override/0 = SubResource("TeeMat_White")
 
-[node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 7/White Tee"]
+[node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 7/White Tee" index="1" unique_id=99214266]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.25, 0)
 pixel_size = 0.08
 billboard = 1
+text = "7"
 font_size = 80
 outline_size = 18
-text = "7"
 
-[node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 7"]
+[node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 7" index="2" unique_id=1528044696]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 47.48, 0, 95.682)
 
-[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 7/Red Tee"]
+[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 7/Red Tee" index="0" unique_id=984600320]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 mesh = SubResource("TeeMesh")
 surface_material_override/0 = SubResource("TeeBodyMat")
 
-[node name="ColorIndicator" type="MeshInstance3D" parent="HoleMarkers/Hole 7/Red Tee/Marker"]
+[node name="ColorIndicator" type="MeshInstance3D" parent="HoleMarkers/Hole 7/Red Tee/Marker" index="0" unique_id=1951691486]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.65, 0)
 mesh = SubResource("TeeIndicatorMesh")
 surface_material_override/0 = SubResource("TeeMat_Red")
 
-[node name="Hole 8" type="Node3D" parent="HoleMarkers"]
+[node name="Hole 8" type="Node3D" parent="HoleMarkers" index="7" unique_id=1176986774]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 532.413, 0, 453.695)
 
-[node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 8"]
+[node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 8" index="0" unique_id=1672677903]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
 mesh = SubResource("PinPostMesh")
 surface_material_override/0 = SubResource("PinPostMat")
 
-[node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 8"]
+[node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 8" index="1" unique_id=830587003]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -420.059, 0, -207.644)
 
-[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 8/White Tee"]
+[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 8/White Tee" index="0" unique_id=1976141685]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 mesh = SubResource("TeeMesh")
 surface_material_override/0 = SubResource("TeeBodyMat")
 
-[node name="ColorIndicator" type="MeshInstance3D" parent="HoleMarkers/Hole 8/White Tee/Marker"]
+[node name="ColorIndicator" type="MeshInstance3D" parent="HoleMarkers/Hole 8/White Tee/Marker" index="0" unique_id=2141225431]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.65, 0)
 mesh = SubResource("TeeIndicatorMesh")
 surface_material_override/0 = SubResource("TeeMat_White")
 
-[node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 8/White Tee"]
+[node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 8/White Tee" index="1" unique_id=418460343]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.25, 0)
 pixel_size = 0.08
 billboard = 1
+text = "8"
 font_size = 80
 outline_size = 18
-text = "8"
 
-[node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 8"]
+[node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 8" index="2" unique_id=1309521682]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -418.559, 0, -207.644)
 
-[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 8/Red Tee"]
+[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 8/Red Tee" index="0" unique_id=684237892]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 mesh = SubResource("TeeMesh")
 surface_material_override/0 = SubResource("TeeBodyMat")
 
-[node name="ColorIndicator" type="MeshInstance3D" parent="HoleMarkers/Hole 8/Red Tee/Marker"]
+[node name="ColorIndicator" type="MeshInstance3D" parent="HoleMarkers/Hole 8/Red Tee/Marker" index="0" unique_id=1075869138]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.65, 0)
 mesh = SubResource("TeeIndicatorMesh")
 surface_material_override/0 = SubResource("TeeMat_Red")
 
-[node name="Hole 9" type="Node3D" parent="HoleMarkers"]
+[node name="Hole 9" type="Node3D" parent="HoleMarkers" index="8" unique_id=168900283]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 367.265, 0, 275.76)
 
-[node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 9"]
+[node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 9" index="0" unique_id=1909761471]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
 mesh = SubResource("PinPostMesh")
 surface_material_override/0 = SubResource("PinPostMat")
 
-[node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 9"]
+[node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 9" index="1" unique_id=1478766080]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 187.72, 0, 101.414)
 
-[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 9/White Tee"]
+[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 9/White Tee" index="0" unique_id=66323285]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 mesh = SubResource("TeeMesh")
 surface_material_override/0 = SubResource("TeeBodyMat")
 
-[node name="ColorIndicator" type="MeshInstance3D" parent="HoleMarkers/Hole 9/White Tee/Marker"]
+[node name="ColorIndicator" type="MeshInstance3D" parent="HoleMarkers/Hole 9/White Tee/Marker" index="0" unique_id=611894901]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.65, 0)
 mesh = SubResource("TeeIndicatorMesh")
 surface_material_override/0 = SubResource("TeeMat_White")
 
-[node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 9/White Tee"]
+[node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 9/White Tee" index="1" unique_id=330085078]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.25, 0)
 pixel_size = 0.08
 billboard = 1
+text = "9"
 font_size = 80
 outline_size = 18
-text = "9"
 
-[node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 9"]
+[node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 9" index="2" unique_id=1840139593]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 189.22, 0, 101.414)
 
-[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 9/Red Tee"]
+[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 9/Red Tee" index="0" unique_id=530498985]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 mesh = SubResource("TeeMesh")
 surface_material_override/0 = SubResource("TeeBodyMat")
 
-[node name="ColorIndicator" type="MeshInstance3D" parent="HoleMarkers/Hole 9/Red Tee/Marker"]
+[node name="ColorIndicator" type="MeshInstance3D" parent="HoleMarkers/Hole 9/Red Tee/Marker" index="0" unique_id=258677560]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.65, 0)
 mesh = SubResource("TeeIndicatorMesh")
 surface_material_override/0 = SubResource("TeeMat_Red")
 
-[node name="Hole 10" type="Node3D" parent="HoleMarkers"]
+[node name="Hole 10" type="Node3D" parent="HoleMarkers" index="9" unique_id=557205342]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 695.489, 0, 213.012)
 
-[node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 10"]
+[node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 10" index="0" unique_id=1966484779]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
 mesh = SubResource("PinPostMesh")
 surface_material_override/0 = SubResource("PinPostMat")
 
-[node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 10"]
+[node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 10" index="1" unique_id=1088808825]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -327.809, 0, 5.421)
 
-[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 10/White Tee"]
+[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 10/White Tee" index="0" unique_id=2071615607]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 mesh = SubResource("TeeMesh")
 surface_material_override/0 = SubResource("TeeBodyMat")
 
-[node name="ColorIndicator" type="MeshInstance3D" parent="HoleMarkers/Hole 10/White Tee/Marker"]
+[node name="ColorIndicator" type="MeshInstance3D" parent="HoleMarkers/Hole 10/White Tee/Marker" index="0" unique_id=333672771]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.65, 0)
 mesh = SubResource("TeeIndicatorMesh")
 surface_material_override/0 = SubResource("TeeMat_White")
 
-[node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 10/White Tee"]
+[node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 10/White Tee" index="1" unique_id=966702080]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.25, 0)
 pixel_size = 0.08
 billboard = 1
+text = "10"
 font_size = 80
 outline_size = 18
-text = "10"
 
-[node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 10"]
+[node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 10" index="2" unique_id=368068819]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -326.309, 0, 5.421)
 
-[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 10/Red Tee"]
+[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 10/Red Tee" index="0" unique_id=1482850601]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 mesh = SubResource("TeeMesh")
 surface_material_override/0 = SubResource("TeeBodyMat")
 
-[node name="ColorIndicator" type="MeshInstance3D" parent="HoleMarkers/Hole 10/Red Tee/Marker"]
+[node name="ColorIndicator" type="MeshInstance3D" parent="HoleMarkers/Hole 10/Red Tee/Marker" index="0" unique_id=1680968383]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.65, 0)
 mesh = SubResource("TeeIndicatorMesh")
 surface_material_override/0 = SubResource("TeeMat_Red")
 
-[node name="Hole 11" type="Node3D" parent="HoleMarkers"]
+[node name="Hole 11" type="Node3D" parent="HoleMarkers" index="10" unique_id=2145924612]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 688.984, 0, 418.115)
 
-[node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 11"]
+[node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 11" index="0" unique_id=2099378339]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
 mesh = SubResource("PinPostMesh")
 surface_material_override/0 = SubResource("PinPostMat")
 
-[node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 11"]
+[node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 11" index="1" unique_id=1925288293]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 24.43, 0, -147.058)
 
-[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 11/White Tee"]
+[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 11/White Tee" index="0" unique_id=2049192237]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 mesh = SubResource("TeeMesh")
 surface_material_override/0 = SubResource("TeeBodyMat")
 
-[node name="ColorIndicator" type="MeshInstance3D" parent="HoleMarkers/Hole 11/White Tee/Marker"]
+[node name="ColorIndicator" type="MeshInstance3D" parent="HoleMarkers/Hole 11/White Tee/Marker" index="0" unique_id=360801543]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.65, 0)
 mesh = SubResource("TeeIndicatorMesh")
 surface_material_override/0 = SubResource("TeeMat_White")
 
-[node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 11/White Tee"]
+[node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 11/White Tee" index="1" unique_id=785781176]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.25, 0)
 pixel_size = 0.08
 billboard = 1
+text = "11"
 font_size = 80
 outline_size = 18
-text = "11"
 
-[node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 11"]
+[node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 11" index="2" unique_id=628739284]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25.93, 0, -147.058)
 
-[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 11/Red Tee"]
+[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 11/Red Tee" index="0" unique_id=1049663104]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 mesh = SubResource("TeeMesh")
 surface_material_override/0 = SubResource("TeeBodyMat")
 
-[node name="ColorIndicator" type="MeshInstance3D" parent="HoleMarkers/Hole 11/Red Tee/Marker"]
+[node name="ColorIndicator" type="MeshInstance3D" parent="HoleMarkers/Hole 11/Red Tee/Marker" index="0" unique_id=173488230]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.65, 0)
 mesh = SubResource("TeeIndicatorMesh")
 surface_material_override/0 = SubResource("TeeMat_Red")
 
-[node name="Hole 12" type="Node3D" parent="HoleMarkers"]
+[node name="Hole 12" type="Node3D" parent="HoleMarkers" index="11" unique_id=629256308]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 766.548, 0, 215.743)
 
-[node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 12"]
+[node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 12" index="0" unique_id=867748917]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
 mesh = SubResource("PinPostMesh")
 surface_material_override/0 = SubResource("PinPostMat")
 
-[node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 12"]
+[node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 12" index="1" unique_id=7031641]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -21.617, 0, 257.345)
 
-[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 12/White Tee"]
+[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 12/White Tee" index="0" unique_id=1757314416]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 mesh = SubResource("TeeMesh")
 surface_material_override/0 = SubResource("TeeBodyMat")
 
-[node name="ColorIndicator" type="MeshInstance3D" parent="HoleMarkers/Hole 12/White Tee/Marker"]
+[node name="ColorIndicator" type="MeshInstance3D" parent="HoleMarkers/Hole 12/White Tee/Marker" index="0" unique_id=1163462789]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.65, 0)
 mesh = SubResource("TeeIndicatorMesh")
 surface_material_override/0 = SubResource("TeeMat_White")
 
-[node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 12/White Tee"]
+[node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 12/White Tee" index="1" unique_id=84359778]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.25, 0)
 pixel_size = 0.08
 billboard = 1
+text = "12"
 font_size = 80
 outline_size = 18
-text = "12"
 
-[node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 12"]
+[node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 12" index="2" unique_id=1952652258]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20.117, 0, 257.345)
 
-[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 12/Red Tee"]
+[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 12/Red Tee" index="0" unique_id=1248860157]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 mesh = SubResource("TeeMesh")
 surface_material_override/0 = SubResource("TeeBodyMat")
 
-[node name="ColorIndicator" type="MeshInstance3D" parent="HoleMarkers/Hole 12/Red Tee/Marker"]
+[node name="ColorIndicator" type="MeshInstance3D" parent="HoleMarkers/Hole 12/Red Tee/Marker" index="0" unique_id=809896014]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.65, 0)
 mesh = SubResource("TeeIndicatorMesh")
 surface_material_override/0 = SubResource("TeeMat_Red")
 
-[node name="Hole 13" type="Node3D" parent="HoleMarkers"]
+[node name="Hole 13" type="Node3D" parent="HoleMarkers" index="12" unique_id=1621545867]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 799.914, 0, 457.712)
 
-[node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 13"]
+[node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 13" index="0" unique_id=621407271]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
 mesh = SubResource("PinPostMesh")
 surface_material_override/0 = SubResource("PinPostMat")
 
-[node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 13"]
+[node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 13" index="1" unique_id=1300513503]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21.354, 0, -277.184)
 
-[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 13/White Tee"]
+[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 13/White Tee" index="0" unique_id=1914898767]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 mesh = SubResource("TeeMesh")
 surface_material_override/0 = SubResource("TeeBodyMat")
 
-[node name="ColorIndicator" type="MeshInstance3D" parent="HoleMarkers/Hole 13/White Tee/Marker"]
+[node name="ColorIndicator" type="MeshInstance3D" parent="HoleMarkers/Hole 13/White Tee/Marker" index="0" unique_id=294386369]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.65, 0)
 mesh = SubResource("TeeIndicatorMesh")
 surface_material_override/0 = SubResource("TeeMat_White")
 
-[node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 13/White Tee"]
+[node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 13/White Tee" index="1" unique_id=1994936548]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.25, 0)
 pixel_size = 0.08
 billboard = 1
+text = "13"
 font_size = 80
 outline_size = 18
-text = "13"
 
-[node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 13"]
+[node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 13" index="2" unique_id=740321854]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22.854, 0, -277.184)
 
-[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 13/Red Tee"]
+[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 13/Red Tee" index="0" unique_id=1229103106]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 mesh = SubResource("TeeMesh")
 surface_material_override/0 = SubResource("TeeBodyMat")
 
-[node name="ColorIndicator" type="MeshInstance3D" parent="HoleMarkers/Hole 13/Red Tee/Marker"]
+[node name="ColorIndicator" type="MeshInstance3D" parent="HoleMarkers/Hole 13/Red Tee/Marker" index="0" unique_id=159883337]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.65, 0)
 mesh = SubResource("TeeIndicatorMesh")
 surface_material_override/0 = SubResource("TeeMat_Red")
 
-[node name="Hole 14" type="Node3D" parent="HoleMarkers"]
+[node name="Hole 14" type="Node3D" parent="HoleMarkers" index="13" unique_id=1034225955]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 898.743, 0, 149.534)
 
-[node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 14"]
+[node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 14" index="0" unique_id=1582542536]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
 mesh = SubResource("PinPostMesh")
 surface_material_override/0 = SubResource("PinPostMat")
 
-[node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 14"]
+[node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 14" index="1" unique_id=209304252]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -65.06, 0, 329.03)
 
-[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 14/White Tee"]
+[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 14/White Tee" index="0" unique_id=1408062287]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 mesh = SubResource("TeeMesh")
 surface_material_override/0 = SubResource("TeeBodyMat")
 
-[node name="ColorIndicator" type="MeshInstance3D" parent="HoleMarkers/Hole 14/White Tee/Marker"]
+[node name="ColorIndicator" type="MeshInstance3D" parent="HoleMarkers/Hole 14/White Tee/Marker" index="0" unique_id=2126757236]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.65, 0)
 mesh = SubResource("TeeIndicatorMesh")
 surface_material_override/0 = SubResource("TeeMat_White")
 
-[node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 14/White Tee"]
+[node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 14/White Tee" index="1" unique_id=1892043390]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.25, 0)
 pixel_size = 0.08
 billboard = 1
+text = "14"
 font_size = 80
 outline_size = 18
-text = "14"
 
-[node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 14"]
+[node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 14" index="2" unique_id=1962070946]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -63.56, 0, 329.03)
 
-[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 14/Red Tee"]
+[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 14/Red Tee" index="0" unique_id=1514001346]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 mesh = SubResource("TeeMesh")
 surface_material_override/0 = SubResource("TeeBodyMat")
 
-[node name="ColorIndicator" type="MeshInstance3D" parent="HoleMarkers/Hole 14/Red Tee/Marker"]
+[node name="ColorIndicator" type="MeshInstance3D" parent="HoleMarkers/Hole 14/Red Tee/Marker" index="0" unique_id=2015842361]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.65, 0)
 mesh = SubResource("TeeIndicatorMesh")
 surface_material_override/0 = SubResource("TeeMat_Red")
 
-[node name="Hole 15" type="Node3D" parent="HoleMarkers"]
+[node name="Hole 15" type="Node3D" parent="HoleMarkers" index="14" unique_id=647182536]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 764.601, 0, 173.568)
 
-[node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 15"]
+[node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 15" index="0" unique_id=983556324]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
 mesh = SubResource("PinPostMesh")
 surface_material_override/0 = SubResource("PinPostMat")
 
-[node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 15"]
+[node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 15" index="1" unique_id=1117353092]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 156.445, 0, -62.367)
 
-[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 15/White Tee"]
+[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 15/White Tee" index="0" unique_id=1880866174]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 mesh = SubResource("TeeMesh")
 surface_material_override/0 = SubResource("TeeBodyMat")
 
-[node name="ColorIndicator" type="MeshInstance3D" parent="HoleMarkers/Hole 15/White Tee/Marker"]
+[node name="ColorIndicator" type="MeshInstance3D" parent="HoleMarkers/Hole 15/White Tee/Marker" index="0" unique_id=8132048]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.65, 0)
 mesh = SubResource("TeeIndicatorMesh")
 surface_material_override/0 = SubResource("TeeMat_White")
 
-[node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 15/White Tee"]
+[node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 15/White Tee" index="1" unique_id=1307410864]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.25, 0)
 pixel_size = 0.08
 billboard = 1
+text = "15"
 font_size = 80
 outline_size = 18
-text = "15"
 
-[node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 15"]
+[node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 15" index="2" unique_id=1579832571]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 157.945, 0, -62.367)
 
-[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 15/Red Tee"]
+[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 15/Red Tee" index="0" unique_id=2138946360]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 mesh = SubResource("TeeMesh")
 surface_material_override/0 = SubResource("TeeBodyMat")
 
-[node name="ColorIndicator" type="MeshInstance3D" parent="HoleMarkers/Hole 15/Red Tee/Marker"]
+[node name="ColorIndicator" type="MeshInstance3D" parent="HoleMarkers/Hole 15/Red Tee/Marker" index="0" unique_id=360234823]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.65, 0)
 mesh = SubResource("TeeIndicatorMesh")
 surface_material_override/0 = SubResource("TeeMat_Red")
 
-[node name="Hole 16" type="Node3D" parent="HoleMarkers"]
+[node name="Hole 16" type="Node3D" parent="HoleMarkers" index="15" unique_id=368290173]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 314.834, 0, 110.675)
 
-[node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 16"]
+[node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 16" index="0" unique_id=1075935357]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
 mesh = SubResource("PinPostMesh")
 surface_material_override/0 = SubResource("PinPostMat")
 
-[node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 16"]
+[node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 16" index="1" unique_id=751237481]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 410.314, 0, 67.67)
 
-[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 16/White Tee"]
+[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 16/White Tee" index="0" unique_id=1095897678]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 mesh = SubResource("TeeMesh")
 surface_material_override/0 = SubResource("TeeBodyMat")
 
-[node name="ColorIndicator" type="MeshInstance3D" parent="HoleMarkers/Hole 16/White Tee/Marker"]
+[node name="ColorIndicator" type="MeshInstance3D" parent="HoleMarkers/Hole 16/White Tee/Marker" index="0" unique_id=746158524]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.65, 0)
 mesh = SubResource("TeeIndicatorMesh")
 surface_material_override/0 = SubResource("TeeMat_White")
 
-[node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 16/White Tee"]
+[node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 16/White Tee" index="1" unique_id=1497175169]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.25, 0)
 pixel_size = 0.08
 billboard = 1
+text = "16"
 font_size = 80
 outline_size = 18
-text = "16"
 
-[node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 16"]
+[node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 16" index="2" unique_id=368589800]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 411.814, 0, 67.67)
 
-[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 16/Red Tee"]
+[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 16/Red Tee" index="0" unique_id=1026851416]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 mesh = SubResource("TeeMesh")
 surface_material_override/0 = SubResource("TeeBodyMat")
 
-[node name="ColorIndicator" type="MeshInstance3D" parent="HoleMarkers/Hole 16/Red Tee/Marker"]
+[node name="ColorIndicator" type="MeshInstance3D" parent="HoleMarkers/Hole 16/Red Tee/Marker" index="0" unique_id=1557818780]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.65, 0)
 mesh = SubResource("TeeIndicatorMesh")
 surface_material_override/0 = SubResource("TeeMat_Red")
 
-[node name="Hole 17" type="Node3D" parent="HoleMarkers"]
+[node name="Hole 17" type="Node3D" parent="HoleMarkers" index="16" unique_id=1301504178]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 52.874, 0, 110.856)
 
-[node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 17"]
+[node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 17" index="0" unique_id=425179854]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
 mesh = SubResource("PinPostMesh")
 surface_material_override/0 = SubResource("PinPostMat")
 
-[node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 17"]
+[node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 17" index="1" unique_id=1070009502]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 226.838, 0, 4.093)
 
-[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 17/White Tee"]
+[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 17/White Tee" index="0" unique_id=1582019419]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 mesh = SubResource("TeeMesh")
 surface_material_override/0 = SubResource("TeeBodyMat")
 
-[node name="ColorIndicator" type="MeshInstance3D" parent="HoleMarkers/Hole 17/White Tee/Marker"]
+[node name="ColorIndicator" type="MeshInstance3D" parent="HoleMarkers/Hole 17/White Tee/Marker" index="0" unique_id=942687375]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.65, 0)
 mesh = SubResource("TeeIndicatorMesh")
 surface_material_override/0 = SubResource("TeeMat_White")
 
-[node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 17/White Tee"]
+[node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 17/White Tee" index="1" unique_id=1511488884]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.25, 0)
 pixel_size = 0.08
 billboard = 1
+text = "17"
 font_size = 80
 outline_size = 18
-text = "17"
 
-[node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 17"]
+[node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 17" index="2" unique_id=1072098748]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 228.338, 0, 4.093)
 
-[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 17/Red Tee"]
+[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 17/Red Tee" index="0" unique_id=1641329050]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 mesh = SubResource("TeeMesh")
 surface_material_override/0 = SubResource("TeeBodyMat")
 
-[node name="ColorIndicator" type="MeshInstance3D" parent="HoleMarkers/Hole 17/Red Tee/Marker"]
+[node name="ColorIndicator" type="MeshInstance3D" parent="HoleMarkers/Hole 17/Red Tee/Marker" index="0" unique_id=314679697]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.65, 0)
 mesh = SubResource("TeeIndicatorMesh")
 surface_material_override/0 = SubResource("TeeMat_Red")
 
-[node name="Hole 18" type="Node3D" parent="HoleMarkers"]
+[node name="Hole 18" type="Node3D" parent="HoleMarkers" index="17" unique_id=126293701]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 317.177, 0, 155.807)
 
-[node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 18"]
+[node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 18" index="0" unique_id=821369533]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
 mesh = SubResource("PinPostMesh")
 surface_material_override/0 = SubResource("PinPostMat")
 
-[node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 18"]
+[node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 18" index="1" unique_id=230967588]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -272.307, 0, -5.803)
 
-[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 18/White Tee"]
+[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 18/White Tee" index="0" unique_id=267416399]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 mesh = SubResource("TeeMesh")
 surface_material_override/0 = SubResource("TeeBodyMat")
 
-[node name="ColorIndicator" type="MeshInstance3D" parent="HoleMarkers/Hole 18/White Tee/Marker"]
+[node name="ColorIndicator" type="MeshInstance3D" parent="HoleMarkers/Hole 18/White Tee/Marker" index="0" unique_id=846871732]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.65, 0)
 mesh = SubResource("TeeIndicatorMesh")
 surface_material_override/0 = SubResource("TeeMat_White")
 
-[node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 18/White Tee"]
+[node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 18/White Tee" index="1" unique_id=463873025]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.25, 0)
 pixel_size = 0.08
 billboard = 1
+text = "18"
 font_size = 80
 outline_size = 18
-text = "18"
 
-[node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 18"]
+[node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 18" index="2" unique_id=1030165198]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -270.807, 0, -5.803)
 
-[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 18/Red Tee"]
+[node name="Marker" type="MeshInstance3D" parent="HoleMarkers/Hole 18/Red Tee" index="0" unique_id=1544038568]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 mesh = SubResource("TeeMesh")
 surface_material_override/0 = SubResource("TeeBodyMat")
 
-[node name="ColorIndicator" type="MeshInstance3D" parent="HoleMarkers/Hole 18/Red Tee/Marker"]
+[node name="ColorIndicator" type="MeshInstance3D" parent="HoleMarkers/Hole 18/Red Tee/Marker" index="0" unique_id=100120605]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.65, 0)
 mesh = SubResource("TeeIndicatorMesh")
 surface_material_override/0 = SubResource("TeeMat_Red")
