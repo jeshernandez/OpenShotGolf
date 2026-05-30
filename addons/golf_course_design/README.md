@@ -73,13 +73,13 @@ res://Courses/UserCourses/Airways/
   course.tscn
 ```
 
-Only `course_design.tres`, `Terrain/`, `course.json`, and `course.tscn` are needed by the game. The `source_data/` files are the raw design inputs.
+Only `course_design.tres`, `Terrain/`, `course.gd`, `course.json`, and `course.tscn` are needed by the game. The `source_data/` files are the raw design inputs.
 
 ### Step 1: Get The Boundary And Hole Lines
 The committed Airways source data was fetched from OpenStreetMap with these commands:
 
 ```bash
-cd /home/jesher/Code/Github/jeshernandez/OpenShotGolf/Courses/UserCourses/Airways/source_data
+cd Courses/UserCourses/Airways/source_data
 curl -L -o airways_osm_way_42013666.osm https://www.openstreetmap.org/api/0.6/way/42013666/full
 ogr2ogr -f GeoJSON airways_boundary.geojson airways_osm_way_42013666.osm multipolygons
 curl -A OpenShotGolfCourseDesign/1.0 -X POST --data-urlencode 'data=[out:xml][timeout:25];(way(around:1200,36.77724,-119.70619)["golf"="hole"];relation(around:1200,36.77724,-119.70619)["route"="golf"];node(around:1200,36.77724,-119.70619)["golf"="pin"];);out body;>;out skel qt;' -o airways_osm_golf_features.osm https://overpass-api.de/api/interpreter
@@ -119,7 +119,7 @@ par=4
 The committed Airways DEM was fetched from USGS 3DEP and cropped with GDAL:
 
 ```bash
-cd /home/jesher/Code/Github/jeshernandez/OpenShotGolf/Courses/UserCourses/Airways/source_data
+cd Courses/UserCourses/Airways/source_data
 curl -L -o usgs_dem_products.json 'https://tnmaccess.nationalmap.gov/api/v1/products?datasets=Digital%20Elevation%20Model%20%28DEM%29%201%20meter&bbox=-119.712,36.774,-119.701,36.781&prodFormats=GeoTIFF&outputFormat=JSON'
 gdalwarp -overwrite -r bilinear -cutline airways_boundary.geojson -crop_to_cutline -dstnodata -9999 -t_srs EPSG:26911 -tr 1 1 /vsicurl/https://prd-tnm.s3.amazonaws.com/StagedProducts/Elevation/1m/Projects/CA_SanJoaquin_2021_A21/TIFF/USGS_1M_11_x25y408_CA_SanJoaquin_2021_A21.tif airways_dem.tif
 gdalinfo -stats airways_dem.tif
@@ -132,7 +132,7 @@ Optional point cloud path:
 The committed Airways lidar data was fetched from USGS 3DEP and prepared with PDAL:
 
 ```bash
-cd /home/jesher/Code/Github/jeshernandez/OpenShotGolf/Courses/UserCourses/Airways/source_data
+cd Courses/UserCourses/Airways/source_data
 mkdir -p lidar
 curl -L -o usgs_lidar_products.json 'https://tnmaccess.nationalmap.gov/api/v1/products?datasets=Lidar%20Point%20Cloud%20%28LPC%29&bbox=-119.712,36.774,-119.701,36.781&outputFormat=JSON'
 curl -L --connect-timeout 10 --max-time 120 --retry 3 --speed-limit 1024 --speed-time 15 -o lidar/USGS_LPC_CA_FEMAR9Fresno_2019_D20_11SKA570730.laz https://rockyweb.usgs.gov/vdelivery/Datasets/Staged/Elevation/LPC/Projects/CA_FEMAR9Fresno_2019_D20/CA_FEMAR9Fresno_2_2019/LAZ/USGS_LPC_CA_FEMAR9Fresno_2019_D20_11SKA570730.laz
@@ -191,15 +191,23 @@ For DEM or GeoTIFF:
 1. Set `Import mode` to `Heightmap`.
 2. Set `Source heightmap` to `res://Courses/UserCourses/Airways/source_data/airways_dem.tif`.
 3. Set `Source boundary` to `res://Courses/UserCourses/Airways/source_data/airways_boundary.geojson` if you want GDAL to clip the DEM.
-4. Set `Source overlay` only if you have a licensed raster overlay.
-5. Set `GDAL translate command` to `gdal_translate` or the full path.
-6. Set `GDAL warp command` to `gdalwarp` or the full path.
-7. Set `Source CRS` only if GDAL cannot read it from the file.
-8. Set `Target CRS` to `EPSG:26911` or `EPSG:32611` for the Airways example.
-9. Set `Raster resolution (m)` to `1.0` as a starting point.
-10. Set `Terrain height scale` to `1.0` as a starting point.
-11. Set `Terrain height offset` to `0.0` as a starting point.
-12. Click `Build terrain`.
+4. `Source overlay` is currently not baked into the Terrain3D import. The generated class map drives the painted control map.
+5. Set `Source bunkers GeoJSON` if you have bunker polygons to include in the overlay.
+6. Leave `Generate per-hole colour overlay from holes GeoJSON` enabled unless you already have a hand-made color image and do not want the generated overlay files.
+7. Set `NoData fill distance (px)` to how far GDAL should search when filling DEM gaps.
+8. Set `GDAL translate command` to `gdal_translate` or the full path.
+9. Set `GDAL warp command` to `gdalwarp` or the full path.
+10. Set `GDAL CLI command (fill-nodata)` to `gdal` or the full path to the unified GDAL CLI.
+11. Set `GDAL info command` to `gdalinfo` or the full path.
+12. Set `OGR command` to `ogr2ogr` or the full path.
+13. Set `GDAL rasterize command` to `gdal_rasterize` or the full path.
+14. Set `GDAL DEM command` to `gdaldem` or the full path.
+15. Set `Source CRS` only if GDAL cannot read it from the file.
+16. Set `Target CRS` to `EPSG:26911` or `EPSG:32611` for the Airways example.
+17. Set `Raster resolution (m)` to `1.0` as a starting point.
+18. Set `Meters to Godot scale` to `1.0` as a starting point.
+19. Set `Terrain height offset` to `0.0` as a starting point.
+20. Click `Build terrain`.
 
 For LAS or LAZ point clouds:
 
@@ -209,7 +217,7 @@ For LAS or LAZ point clouds:
 4. Set `Target CRS` to the same CRS you use for the course.
 5. Click `Build terrain`.
 
-The point cloud path writes a temporary PDAL pipeline in `.golf_course_design/`, creates a raster heightmap, then imports it through Terrain3D.
+The point cloud path writes a temporary PDAL pipeline in `.golf_course_design/`, creates a raster heightmap, then imports it through Terrain3D. The heightmap path writes the same kind of staging files and fills DEM gaps before the EXR export.
 
 ### Manual Terrain Prep
 Use this path when you already have a Terrain3D folder.
@@ -229,6 +237,7 @@ After terrain exists, create the playable course data.
 4. Set `Output folder` to `res://Courses/UserCourses/Airways`.
 5. Set `Terrain folder` to `Terrain`.
 6. Save the project.
+7. Trim `Tee colours` to the set of tee boxes that should appear on the course and in the exported scene.
 
 ### Import Hole Lines From GeoJSON
 Use this when you have `airways_holes.geojson`.
@@ -243,7 +252,7 @@ Use this when you have `airways_holes.geojson`.
 
 The importer reads `LineString` and `MultiLineString` features. The first point becomes the tee position. The last point becomes the hole location. All tee colors start at the same imported tee point, so adjust individual tee boxes by hand afterward.
 
-The importer expects GeoJSON coordinates in longitude and latitude. If your hole file is already projected in meters, convert it back to `EPSG:4326` before using this button.
+The importer expects GeoJSON coordinates in longitude and latitude. If your hole file is already projected in meters, convert it back to `EPSG:4326` before using this button. If you leave `Origin latitude` and `Origin longitude` at `0`, the importer uses the first hole coordinate as the origin and writes the detected values back into the project.
 
 ### Add Or Edit Holes By Hand
 Use this when no clean hole GeoJSON exists, or after importing rough hole lines.
@@ -253,7 +262,7 @@ Use this when no clean hole GeoJSON exists, or after importing rough hole lines.
 3. Set `Hole name`.
 4. Set `Par`.
 5. Set `Hole location X` and `Z`.
-6. Set the tee box X and Z values for Black, Blue, White, and Red.
+6. Set the tee box X and Z values for the enabled tee colors.
 7. Use `Duplicate` when the next hole should start from similar values.
 8. Use `Remove` to delete the selected hole.
 9. Repeat until every hole is entered.
@@ -270,27 +279,31 @@ For real courses, use QGIS or the Godot 3D view as the reference while adjusting
 7. Use Terrain3D tools to paint, sculpt, or repair terrain details.
 8. Run the game and select the course from the course selector.
 
-Yes, the course can be viewed in the Godot 3D viewer. The current preview path opens the exported scene. It does not yet auto-position the editor camera or draw full fairway and green meshes.
+The exported scene inherits `res://Courses/_shared/course_base.tscn`, so the course starts from the shared player, camera, sky, and terrain setup. The generated `course.gd` positions the player and camera from the first enabled tee and aims them toward the hole.
 
 ## What Gets Written To Disk
 A finished course folder usually looks like this:
 
 ```text
 res://Courses/UserCourses/Airways/
+  course.gd
   course.json
   course.tscn
   Terrain/
   course_design.tres
   source_data/
+  .golf_course_design/
 ```
 
 Each file has a different job:
 
+- `course.gd` is the generated course script that sets the course start and camera direction.
 - `course.tscn` is one playable Godot scene for the whole course.
 - `course.json` is the course metadata the current loader expects.
 - `Terrain/` contains the Terrain3D region files.
 - `course_design.tres` is the editable plugin project file.
 - `source_data/` is optional raw design data and is not loaded by the game.
+- `.golf_course_design/` holds temporary import files such as `height.exr`, `overlay_class.tif`, `overlay_class_ids.png`, `overlay_color.png`, `overlay_*.gpkg`, `overlay_ramp.txt`, and `pdal_pipeline.json`.
 
 The addon does not create one scene per hole. You add or import holes one at a time, but they are stored in one course project and exported into one course scene.
 
@@ -315,7 +328,7 @@ The source diagram is in [assets/course_pipeline.puml](assets/course_pipeline.pu
 - If `pdal` fails, install PDAL or set `PDAL command` to the full executable path.
 - If GDAL fails to clip terrain, confirm the DEM and boundary use compatible CRS values.
 - If imported holes are far away from the terrain, check the origin latitude, origin longitude, and whether the GeoJSON is longitude/latitude.
-- If terrain looks too flat or too tall, adjust `Terrain height scale` and rebuild terrain.
+- If terrain looks too flat or too tall, adjust `Meters to Godot scale` and `Terrain height offset`, then rebuild terrain.
 - If a course does not appear in the selector, confirm that both `course.json` and `course.tscn` exist.
 - If `Open scene` does nothing, export the course first and check the Godot Output panel.
 

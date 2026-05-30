@@ -8,12 +8,12 @@
 [sub_resource type="Resource" id="Resource_sqjny"]
 script = ExtResource("2_jxn83")
 TeeColor = "White"
-Position = Vector2(25, 3)
+Position = Vector2(371, 231.5)
 
 [sub_resource type="Resource" id="Resource_jxn83"]
 script = ExtResource("2_jxn83")
 TeeColor = "Red"
-Position = Vector2(50, -5.5)
+Position = Vector2(371, 231.5)
 
 [sub_resource type="Resource" id="Resource_55cja"]
 script = ExtResource("1_sqjny")

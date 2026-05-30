@@ -58,6 +58,7 @@ var shot_dir := Vector3(1.0, 0.0, 0.0)  # Normalized horizontal direction
 var aim_yaw_offset_deg := 0.0  # Camera/world rotation offset applied at launch
 var launch_spin_rpm := 0.0  # Stored for bounce calculations
 var rollout_impact_spin_rpm := 0.0  # Spin on first impact; used for rollout friction
+var reset_position_on_hit := true
 
 # Ball physics constants (cached from C# addon in _init)
 var _ball_mass: float
@@ -65,6 +66,8 @@ var _ball_radius: float
 var _ball_moi: float
 var _ball_initialized := false
 var _openfairway_error_reported: Dictionary = {}
+var _terrain_data: Object = null
+var _terrain_lookup_done := false
 
 const OPENFAIRWAY_CLASS_PATHS := {
 	"BallPhysics": "res://addons/openfairway/physics/BallPhysics.cs",
@@ -85,8 +88,25 @@ func _init(ball_type := BallType.STANDARD):
 
 
 func _ready() -> void:
+	_cache_terrain_data()
 	if not _try_initialize_ball():
 		return
+
+
+func _cache_terrain_data() -> void:
+	if _terrain_lookup_done:
+		return
+	var tree := get_tree()
+	if tree == null:
+		# Tree not ready yet; retry on a later call rather than caching a miss.
+		return
+	_terrain_lookup_done = true
+	var terrain := tree.root.find_child("Terrain3D", true, false)
+	if terrain == null:
+		return
+	var data = terrain.get("data")
+	if data is Object and data.has_method("get_height"):
+		_terrain_data = data
 
 
 func _new_openfairway(openfairway_class: StringName):
@@ -409,6 +429,19 @@ func _check_out_of_bounds() -> bool:
 		_enter_rest_state()
 		return true
 
+	var terrain_height := _get_terrain_height_at(global_position, INF)
+	if is_finite(terrain_height):
+		var depth_below_terrain := terrain_height - global_position.y
+		if depth_below_terrain <= absf(BELOW_GROUND_RECOVERY_Y):
+			return false
+		if _try_recover_to_ground():
+			return false
+		if depth_below_terrain < absf(FALLTHROUGH_FAILSAFE_Y):
+			return false
+		print("WARNING: Ball fell through ground at: ", global_position)
+		_enter_rest_state()
+		return true
+
 	if global_position.y < BELOW_GROUND_RECOVERY_Y:
 		if _try_recover_to_ground():
 			return false
@@ -495,7 +528,7 @@ func _try_recover_to_ground() -> bool:
 	else:
 		hit_normal = hit_normal.normalized()
 
-	global_position = hit_position + hit_normal * (_ball_radius + GROUND_SNAP_OFFSET)
+	global_position = hit_position + hit_normal * (_get_rest_height() + GROUND_SNAP_OFFSET)
 	floor_normal = hit_normal
 	velocity = _remove_velocity_along_normal(velocity, hit_normal, false)
 	on_ground = true
@@ -505,6 +538,49 @@ func _try_recover_to_ground() -> bool:
 
 	print("Recovered ball-to-ground at %s (normal: %s)" % [str(global_position), str(hit_normal)])
 	return true
+
+
+func snap_to_ground() -> void:
+	var terrain_height := _get_terrain_height_at(global_position, INF)
+	if is_finite(terrain_height):
+		global_position = Vector3(global_position.x, terrain_height + _get_rest_height(), global_position.z)
+		return
+
+	var world := get_world_3d()
+	if world == null:
+		return
+
+	var ray_start := global_position + Vector3.UP * 50.0
+	var ray_end := global_position + Vector3.DOWN * 50.0
+	var query := PhysicsRayQueryParameters3D.create(ray_start, ray_end)
+	query.collide_with_areas = false
+	query.collide_with_bodies = true
+	query.exclude = [get_rid()]
+
+	var ray_hit := world.direct_space_state.intersect_ray(query)
+	if ray_hit.is_empty():
+		return
+
+	var hit_position: Vector3 = ray_hit["position"]
+	global_position = Vector3(global_position.x, hit_position.y + _get_rest_height(), global_position.z)
+
+
+func _get_terrain_height_at(world_position: Vector3, fallback: float) -> float:
+	_cache_terrain_data()
+	if _terrain_data == null:
+		return fallback
+	var height = _terrain_data.call("get_height", world_position)
+	if typeof(height) == TYPE_FLOAT or typeof(height) == TYPE_INT:
+		var value := float(height)
+		if is_finite(value):
+			return value
+	return fallback
+
+
+func _get_rest_height() -> float:
+	if _ball_radius > 0.0:
+		return _ball_radius
+	return START_HEIGHT
 
 
 func _try_probe_ground() -> Dictionary:
@@ -558,7 +634,8 @@ func _enter_rest_state() -> void:
 
 
 func reset() -> void:
-	position = Vector3(0.0, START_HEIGHT, 0.0)
+	position = Vector3(0.0, _get_rest_height(), 0.0)
+	snap_to_ground()
 	velocity = Vector3.ZERO
 	omega = Vector3.ZERO
 	aim_yaw_offset_deg = 0.0
@@ -642,7 +719,9 @@ func hit_from_data(data: Dictionary) -> void:
 	rollout_impact_spin_rpm = 0.0
 	_surface_zone_stack.clear()
 	set_surface(_get_configured_surface_type())
-	position = Vector3(0.0, START_HEIGHT, 0.0)
+	if reset_position_on_hit:
+		position = Vector3(0.0, _get_rest_height(), 0.0)
+	snap_to_ground()
 
 	velocity = launch_velocity
 	omega = launch_omega

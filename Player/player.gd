@@ -79,7 +79,7 @@ func _process(_delta: float) -> void:
 		create_new_tracer()
 		ball.call_deferred("hit")
 		if current_tracer != null:
-			current_tracer.add_point(Vector3(0.0, 0.05, 0.0))
+			current_tracer.add_point(ball.position)
 		track_points = true
 		trail_timer = 0.0
 		emit_signal("manual_hit")
@@ -122,8 +122,11 @@ func validate_data(data: Dictionary) -> bool:
 		return false
 
 
-func reset_ball():
-	ball.call_deferred("reset")
+func reset_ball(deferred: bool = true):
+	if deferred:
+		ball.call_deferred("reset")
+	else:
+		ball.reset()
 	# Clear all tracers
 	for tracer in tracers:
 		tracer.queue_free()
@@ -169,7 +172,7 @@ func _on_tcp_client_hit_ball(data: Dictionary) -> void:
 	create_new_tracer()
 	ball.call_deferred("hit_from_data", data)
 	if current_tracer != null:
-		current_tracer.add_point(Vector3(0.0, 0.05, 0.0))
+		current_tracer.add_point(ball.position)
 	track_points = true
 	trail_timer = 0.0
 
@@ -185,7 +188,7 @@ func _on_range_ui_hit_shot(data: Variant) -> void:
 	create_new_tracer()
 	ball.call_deferred("hit_from_data", data)
 	if current_tracer != null:
-		current_tracer.add_point(Vector3(0.0, 0.05, 0.0))
+		current_tracer.add_point(ball.position)
 	track_points = true
 	trail_timer = 0.0
 	

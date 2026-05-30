@@ -1,7 +1,7 @@
 extends "res://Courses/Range/range.gd"
 
-const COURSE_TEE := Vector2(25, 3)
-const COURSE_DIRECTION := Vector3(0.926773, 0.0, 0.375621)
+const COURSE_TEE := Vector2(371, 231.5)
+const COURSE_DIRECTION := Vector3(0.994366, 0.0, 0.105998)
 const COURSE_CAMERA_BACK_DISTANCE := 6.0
 const COURSE_CAMERA_HEIGHT := 3.0
 const COURSE_CAMERA_LOOKAHEAD := 20.0

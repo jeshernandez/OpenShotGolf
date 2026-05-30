@@ -19,6 +19,7 @@ const DEFAULT_TEXTURE_INDICES := {
 # Course state — populated after loading a course scene
 var course_info: Dictionary = {}
 var hole_info: Dictionary = {}
+var course_config: Dictionary = {}
 var _current_config_path: String = ""
 
 
@@ -32,11 +33,16 @@ func initialize(scene_path: String, config_path: String) -> void:
 	if course_scene == null:
 		push_error("[CourseManager] Could not instantiate course scene: %s" % scene_path)
 		return
+	if course_scene.has_method("set_course_config"):
+		course_scene.call("set_course_config", course_config, config_path)
 	add_child(course_scene)
 
 
 func _load_course_config(config_path: String) -> void:
 	_current_config_path = config_path
+	course_config.clear()
+	course_info.clear()
+	hole_info.clear()
 	if config_path.is_empty():
 		return
 
@@ -54,6 +60,7 @@ func _load_course_config(config_path: String) -> void:
 	if typeof(parsed) != TYPE_DICTIONARY:
 		push_error("[CourseManager] Invalid JSON in %s." % config_path)
 		return
+	course_config = parsed.duplicate(true)
 
 	# Extract Course Info with defaults for missing keys
 	var info = parsed.get(COURSE_INFO_KEY, {})
