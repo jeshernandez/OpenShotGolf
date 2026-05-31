@@ -23,7 +23,7 @@ var course_config: Dictionary = {}
 var _current_config_path: String = ""
 
 
-func initialize(scene_path: String, config_path: String) -> void:
+func initialize(scene_path: String, config_path: String, tee_color: String = "") -> void:
 	_load_course_config(config_path)
 	var packed := load(scene_path) as PackedScene
 	if packed == null:
@@ -35,6 +35,8 @@ func initialize(scene_path: String, config_path: String) -> void:
 		return
 	if course_scene.has_method("set_course_config"):
 		course_scene.call("set_course_config", course_config, config_path)
+	if not tee_color.is_empty() and course_scene.has_method("set_selected_tee"):
+		course_scene.call("set_selected_tee", tee_color)
 	add_child(course_scene)
 
 

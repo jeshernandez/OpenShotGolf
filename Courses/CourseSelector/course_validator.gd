@@ -4,10 +4,12 @@ const COURSE_CONFIG_FILE := "course.json"
 const COURSE_SCENE_FILE := "course.tscn"
 const COURSE_TITLE_KEY := "Title"
 const COURSE_INFO_KEY := "Course Info"
+const TEE_COLORS_KEY := "Tee Colors"
+const DEFAULT_TEE_COLORS: Array[String] = ["Black", "Blue", "White", "Red"]
 
 
 ## Validates a single course directory. Returns a dictionary with "title",
-## "scene_path", and "config_path" on success, or an empty dictionary on failure.
+## "scene_path", "config_path", and "tee_colors" on success, or an empty dictionary on failure.
 static func validate(course_dir: String, dir_name: String) -> Dictionary:
 	var config_path := "%s/%s/%s" % [course_dir, dir_name, COURSE_CONFIG_FILE]
 
@@ -32,7 +34,22 @@ static func validate(course_dir: String, dir_name: String) -> Dictionary:
 		printerr("[CourseValidator] Missing %s for course '%s'." % [COURSE_SCENE_FILE, dir_name])
 		return {}
 
-	return { "title": title, "scene_path": scene_path, "config_path": config_path }
+	var tee_colors := _extract_tee_colors(parsed)
+	return { "title": title, "scene_path": scene_path, "config_path": config_path, "tee_colors": tee_colors }
+
+
+static func _extract_tee_colors(parsed: Dictionary) -> Array[String]:
+	var info = parsed.get(COURSE_INFO_KEY, {})
+	if typeof(info) == TYPE_DICTIONARY:
+		var colors = info.get(TEE_COLORS_KEY, null)
+		if typeof(colors) == TYPE_ARRAY and not colors.is_empty():
+			var result: Array[String] = []
+			for c in colors:
+				if typeof(c) == TYPE_STRING:
+					result.append(c)
+			if not result.is_empty():
+				return result
+	return DEFAULT_TEE_COLORS.duplicate()
 
 
 static func _extract_title(parsed: Dictionary, dir_name: String) -> String:

@@ -28,6 +28,7 @@ var _hole_numbers: Array[int] = []
 var _current_hole_index := 0
 var _current_hole_number := 1
 var _course_ready := false
+var _selected_tee_color: String = DEFAULT_TEE_COLOR
 var _active_tee_position := Vector3.ZERO
 var _active_flag_position := Vector3.ZERO
 var _active_target_direction := Vector3.RIGHT
@@ -60,6 +61,10 @@ func _process(delta: float) -> void:
 func set_course_config(config: Dictionary, config_path: String = "") -> void:
 	_course_config = config.duplicate(true)
 	_course_config_path = config_path
+
+
+func set_selected_tee(color: String) -> void:
+	_selected_tee_color = color
 
 
 func _ready() -> void:
@@ -395,7 +400,7 @@ func _resolve_tee_marker_node() -> Node3D:
 	if hole_node == null:
 		return null
 
-	var preferred := hole_node.get_node_or_null("%s Tee" % DEFAULT_TEE_COLOR) as Node3D
+	var preferred := hole_node.get_node_or_null("%s Tee" % _selected_tee_color) as Node3D
 	if preferred != null:
 		return preferred
 
@@ -409,8 +414,8 @@ func _resolve_tee_xz(hole_data: Dictionary) -> Vector2:
 	var tee_boxes = hole_data.get("Tee Boxes", {})
 	if typeof(tee_boxes) != TYPE_DICTIONARY or tee_boxes.is_empty():
 		return Vector2.ZERO
-	if tee_boxes.has(DEFAULT_TEE_COLOR):
-		return _resolve_point_xz(tee_boxes[DEFAULT_TEE_COLOR], Vector2.ZERO)
+	if tee_boxes.has(_selected_tee_color):
+		return _resolve_point_xz(tee_boxes[_selected_tee_color], Vector2.ZERO)
 	var tee_names: Array = tee_boxes.keys()
 	tee_names.sort()
 	return _resolve_point_xz(tee_boxes[tee_names[0]], Vector2.ZERO)

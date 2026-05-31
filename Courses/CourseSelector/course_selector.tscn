@@ -128,7 +128,7 @@ offset_right = -24.0
 offset_bottom = 64.0
 grow_horizontal = 2
 theme_override_font_sizes/font_size = 44
-text = "Course Finder"
+text = "Courses"
 horizontal_alignment = 1
 vertical_alignment = 1
 
@@ -206,6 +206,24 @@ theme_override_styles/disabled = SubResource("StyleBoxEmpty_jx5fx")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_xjqb6")
 text = "Refresh"
 
+[node name="TeeOptionButton" type="OptionButton" parent="ContentPanel/ContentMargin/VBoxContainer/CourseDirectory" unique_id=999990001]
+custom_minimum_size = Vector2(120, 51)
+layout_mode = 2
+visible = false
+theme_override_font_sizes/font_size = 22
+
+[node name="PlayButton" type="Button" parent="ContentPanel/ContentMargin/VBoxContainer/CourseDirectory" unique_id=999990002]
+custom_minimum_size = Vector2(80, 51)
+layout_mode = 2
+visible = false
+theme_override_font_sizes/font_size = 22
+theme_override_styles/normal = SubResource("StyleBoxEmpty_6c7yh")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_d6a6h")
+theme_override_styles/hover = SubResource("StyleBoxFlat_muy52")
+theme_override_styles/disabled = SubResource("StyleBoxEmpty_jx5fx")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_xjqb6")
+text = "Play"
+
 [node name="StatusLabel" type="Label" parent="ContentPanel/ContentMargin/VBoxContainer" unique_id=1305899824]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.98, 0.98, 0.98, 1)
@@ -228,3 +246,6 @@ script = ExtResource("3_eghlt")
 [connection signal="course_directory" from="ContentPanel/ContentMargin/VBoxContainer/CourseDirectory/CourseDirectoryText" to="ContentPanel/ContentMargin/VBoxContainer/ScrollContainer/CourseList" method="parse_directory"]
 [connection signal="pressed" from="ContentPanel/ContentMargin/VBoxContainer/CourseDirectory/RefreshButton" to="." method="_on_refresh_button_pressed"]
 [connection signal="item_activated" from="ContentPanel/ContentMargin/VBoxContainer/ScrollContainer/CourseList" to="." method="_on_course_list_item_activated"]
+[connection signal="item_selected" from="ContentPanel/ContentMargin/VBoxContainer/ScrollContainer/CourseList" to="." method="_on_course_list_item_selected"]
+[connection signal="empty_clicked" from="ContentPanel/ContentMargin/VBoxContainer/ScrollContainer/CourseList" to="." method="_on_course_list_empty_clicked"]
+[connection signal="pressed" from="ContentPanel/ContentMargin/VBoxContainer/CourseDirectory/PlayButton" to="." method="_on_play_button_pressed"]

@@ -28,10 +28,10 @@ func _deferred_change_scene(scene_path) -> void:
 	scene_changed.emit()
 
 
-func load_course(scene_path: String, config_path: String) -> void:
+func load_course(scene_path: String, config_path: String, tee_color: String = "") -> void:
 	change_scene("res://Utils/CourseManager.tscn")
 	await scene_changed
-	current_scene.initialize(scene_path, config_path)
+	current_scene.initialize(scene_path, config_path, tee_color)
 
 
 func close_scene():

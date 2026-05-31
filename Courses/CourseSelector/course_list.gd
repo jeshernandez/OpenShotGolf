@@ -75,3 +75,14 @@ func get_config_path_for_index(selected_index: int) -> String:
 		printerr("[CourseList] Selected course index is out of bounds.")
 		return ""
 	return get_item_metadata(selected_index).get("config_path", "")
+
+
+func get_tee_colors_for_index(selected_index: int) -> Array[String]:
+	if selected_index < 0 or selected_index >= get_item_count():
+		printerr("[CourseList] Selected course index is out of bounds.")
+		return []
+	var colors = get_item_metadata(selected_index).get("tee_colors", [])
+	var result: Array[String] = []
+	for c in colors:
+		result.append(str(c))
+	return result

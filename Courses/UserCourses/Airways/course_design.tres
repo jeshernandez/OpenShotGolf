@@ -13,7 +13,7 @@ Position = Vector2(371, 231.5)
 [sub_resource type="Resource" id="Resource_jxn83"]
 script = ExtResource("2_jxn83")
 TeeColor = "Red"
-Position = Vector2(371, 231.5)
+Position = Vector2(389, 233.5)
 
 [sub_resource type="Resource" id="Resource_55cja"]
 script = ExtResource("1_sqjny")

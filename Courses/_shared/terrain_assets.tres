@@ -29,26 +29,35 @@ lod0_range = 128.0
 
 [sub_resource type="Terrain3DTextureAsset" id="Terrain3DTextureAsset_green"]
 name = "Green"
+albedo_color = Color(0.6624526, 0.6624523, 0.6624523, 1)
 albedo_texture = ExtResource("1")
 normal_texture = ExtResource("2")
-uv_scale = 0.2
+uv_scale = 0.104
 detiling_shift = 0.05
 
 [sub_resource type="Terrain3DTextureAsset" id="Terrain3DTextureAsset_fairway"]
 name = "Fairway"
 id = 1
+albedo_color = Color(0.796243, 0.796243, 0.796243, 1)
 albedo_texture = ExtResource("3")
 normal_texture = ExtResource("4")
-uv_scale = 0.3
-detiling_shift = 0.07
+normal_depth = 0.403
+ao_strength = 0.0
+roughness = -0.814
+uv_scale = 0.162
+detiling_rotation = 0.172
+detiling_shift = 0.256
 
 [sub_resource type="Terrain3DTextureAsset" id="Terrain3DTextureAsset_rough"]
 name = "Rough"
 id = 2
 albedo_texture = ExtResource("5")
 normal_texture = ExtResource("6")
-uv_scale = 0.4
-detiling_shift = 0.09
+ao_strength = 0.886
+roughness = -0.18
+uv_scale = 0.069
+detiling_rotation = 0.503
+detiling_shift = 0.345
 
 [sub_resource type="Terrain3DTextureAsset" id="Terrain3DTextureAsset_sand"]
 name = "Sand"
