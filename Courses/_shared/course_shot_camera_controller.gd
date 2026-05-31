@@ -132,13 +132,18 @@ func _enable_follow_after_launch_async(follow_direction: Vector3, delay_seconds:
 		direction = Vector3.RIGHT
 	direction = direction.normalized()
 
+	var follow_offset := -direction * FOLLOW_BACK + Vector3.UP * FOLLOW_HEIGHT
 	_is_orbit_mode = false
 	_camera.follow_mode = PhantomCamera3D.FollowMode.SIMPLE
 	_camera.follow_target = _ball
-	_camera.follow_offset = -direction * FOLLOW_BACK + Vector3.UP * FOLLOW_HEIGHT
+	_camera.follow_offset = follow_offset
 	_camera.follow_damping = true
 	_camera.look_at_mode = PhantomCamera3D.LookAtMode.SIMPLE
 	_camera.look_at_target = _ball
+	# Snap the real Camera3D straight to the follow position (and zero its damping
+	# velocity) so smooth_damp starts from behind the ball instead of drifting in
+	# from the pre-shot orbit position — that drift is the launch jitter.
+	_camera.teleport_position()
 
 
 func _reset_to_ball_async(ball_position: Vector3, target_position: Vector3) -> void:
