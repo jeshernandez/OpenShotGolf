@@ -14,6 +14,10 @@ var _ball: Node3D = null
 var _camera_yaw_deg := 0.0
 var _orbit_radius := 2.1336
 var _reset_tween: Tween = null
+var _is_orbit_mode := false
+# Bumped whenever camera modes are reset; lets an in-flight follow coroutine detect
+# that the shot/hole it was launched for is no longer current and bail out.
+var _follow_generation := 0
 
 
 # Drives only the PhantomCamera3D (`camera`). The PhantomCameraHost is the sole
@@ -64,6 +68,15 @@ func freeze_on_ball() -> void:
 	_disable_camera_modes()
 
 
+func rotate_yaw(delta_deg: float) -> void:
+	if not _is_ready() or not _is_orbit_mode:
+		return
+	_stop_reset_tween()
+	_camera_yaw_deg = wrapf(_camera_yaw_deg + delta_deg, -180.0, 180.0)
+	_camera.global_position = _get_orbit_position(_ball.global_position)
+	_camera.look_at(_ball.global_position + CAMERA_LOOK_OFFSET, Vector3.UP)
+
+
 func reset_to_ball(ball_position: Vector3, target_position: Vector3) -> void:
 	if not _is_ready():
 		return
@@ -85,7 +98,7 @@ func get_aim_yaw_offset_deg() -> float:
 func get_launch_follow_direction(shot_hla_deg: float, world_yaw_offset_deg: float, fallback_direction: Vector3) -> Vector3:
 	var world_hla_deg := shot_hla_deg + world_yaw_offset_deg
 	var hla_rad := deg_to_rad(world_hla_deg)
-	var direction := Vector3(cos(hla_rad), 0.0, sin(hla_rad))
+	var direction := Vector3(cos(hla_rad), 0.0, -sin(hla_rad))
 	if direction.length_squared() < MIN_DIRECTION_LENGTH:
 		direction = fallback_direction
 	direction.y = 0.0
@@ -98,10 +111,17 @@ func _enable_follow_after_launch_async(follow_direction: Vector3, delay_seconds:
 	var tree := _host.get_tree()
 	if tree == null:
 		return
+	# Snapshot the current generation; if camera modes are reset (next shot, ball rest,
+	# next hole) while we await, this coroutine is stale and must not touch the camera.
+	var generation := _follow_generation
 	if delay_seconds > 0.0:
 		await tree.create_timer(delay_seconds).timeout
-	for _i in range(4):
-		await tree.process_frame
+		if generation != _follow_generation:
+			return
+	for _i in range(8):
+		await tree.physics_frame
+		if generation != _follow_generation:
+			return
 		if _ball_has_started_moving():
 			break
 
@@ -112,6 +132,7 @@ func _enable_follow_after_launch_async(follow_direction: Vector3, delay_seconds:
 		direction = Vector3.RIGHT
 	direction = direction.normalized()
 
+	_is_orbit_mode = false
 	_camera.follow_mode = PhantomCamera3D.FollowMode.SIMPLE
 	_camera.follow_target = _ball
 	_camera.follow_offset = -direction * FOLLOW_BACK + Vector3.UP * FOLLOW_HEIGHT
@@ -136,7 +157,19 @@ func _reset_to_ball_async(ball_position: Vector3, target_position: Vector3) -> v
 	_reset_tween.set_parallel(true)
 	_reset_tween.tween_method(Callable(self, "_set_camera_position"), start_position, end_position, RESET_TWEEN_DURATION)
 	_reset_tween.tween_method(Callable(self, "_set_camera_look_position"), start_look_position, end_look_position, RESET_TWEEN_DURATION)
-	await _reset_tween.finished
+	# Godot 4 Tween.kill() does not emit `finished`, so we poll per frame to
+	# avoid a coroutine that hangs indefinitely when rotation input cancels the tween.
+	var tree := _host.get_tree()
+	if tree == null:
+		return
+	var active_tween := _reset_tween
+	while _reset_tween == active_tween and _reset_tween != null and _reset_tween.is_running():
+		await tree.process_frame
+		tree = _host.get_tree()
+		if tree == null:
+			return
+	if _reset_tween != active_tween:
+		return
 	_reset_tween = null
 	_camera.look_at(end_look_position, Vector3.UP)
 
@@ -197,6 +230,8 @@ func _ball_has_started_moving() -> bool:
 func _disable_camera_modes() -> void:
 	_camera.follow_mode = PhantomCamera3D.FollowMode.NONE
 	_camera.look_at_mode = PhantomCamera3D.LookAtMode.NONE
+	_is_orbit_mode = true
+	_follow_generation += 1
 
 
 func _stop_reset_tween() -> void:

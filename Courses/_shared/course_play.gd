@@ -2,6 +2,11 @@ extends "res://Courses/Range/range.gd"
 class_name CoursePlay
 
 const CameraControllerScript := preload("res://Courses/_shared/course_shot_camera_controller.gd")
+const HoleScoreOverlayScript := preload("res://Courses/_shared/hole_score_overlay.gd")
+const PinDistanceIndicatorScript := preload("res://Courses/_shared/pin_distance_indicator.gd")
+
+## Emitted after the final hole is completed, before the course loops back to Hole 1.
+signal course_completed
 
 const COURSE_INFO_KEY := "Course Info"
 const HOLE_INFO_KEY := "Hole Info"
@@ -9,10 +14,13 @@ const DEFAULT_TEE_COLOR := "White"
 const HOLE_MARKERS_PATH := "HoleMarkers"
 const BALL_START_HEIGHT := 0.02
 const COMPLETION_DISTANCE_FEET := 20.0
+const GIMME_NEAR_FEET := 3.0
+const HOLE_OUT_FEET := 0.1
 const FEET_PER_METER := 3.28084
 const DEFAULT_CAMERA_ORBIT_DISTANCE := 2.1336
 const DEFAULT_CAMERA_FOLLOW_DELAY_SECONDS := 0.0
 const MIN_DIRECTION_LENGTH := 0.000001
+const CAMERA_ROTATE_SPEED_DEG_PER_SEC := 90.0
 
 var _course_config: Dictionary = {}
 var _course_config_path := ""
@@ -26,6 +34,27 @@ var _active_flag_position := Vector3.ZERO
 var _active_target_direction := Vector3.RIGHT
 var _shot_camera = null
 var _rest_sequence := 0
+var _stroke_count := 0
+var _overlay_active := false
+var _hole_score_overlay: HoleScoreOverlay = null
+var _pin_distance_indicator: PinDistanceIndicator = null
+
+@onready var _player: Node = $Player
+
+
+func _process(delta: float) -> void:
+	if _shot_camera != null and not _overlay_active:
+		if Input.is_action_pressed("camera_rotate_left"):
+			_shot_camera.rotate_yaw(CAMERA_ROTATE_SPEED_DEG_PER_SEC * delta)
+		if Input.is_action_pressed("camera_rotate_right"):
+			_shot_camera.rotate_yaw(-CAMERA_ROTATE_SPEED_DEG_PER_SEC * delta)
+
+	if _pin_distance_indicator != null and _pin_distance_indicator.visible and _course_ready:
+		var ball_pos := _get_ball_global_position()
+		var dist := Vector2(ball_pos.x, ball_pos.z).distance_to(
+			Vector2(_active_flag_position.x, _active_flag_position.z)
+		)
+		_pin_distance_indicator.update_distance(dist)
 
 
 func set_course_config(config: Dictionary, config_path: String = "") -> void:
@@ -35,8 +64,20 @@ func set_course_config(config: Dictionary, config_path: String = "") -> void:
 
 func _ready() -> void:
 	super._ready()
+	# Course play uses a tube tracer instead of the Range's flat ribbon so the trail
+	# stays visible while the camera follows directly behind the ball during flight.
+	_player.BallTrailScript = preload("res://Courses/_shared/course_ball_trail.gd")
+	# Sample the trail far more often than the Range's 0.1s so the tube grows smoothly
+	# during flight instead of jumping forward in large chunks behind the fast ball.
+	_player.trail_resolution = 0.02
 	_shot_camera = CameraControllerScript.new()
 	_shot_camera.configure(self, $PhantomCamera3D, $Player.ball)
+	_hole_score_overlay = HoleScoreOverlayScript.new()
+	add_child(_hole_score_overlay)
+	_pin_distance_indicator = PinDistanceIndicatorScript.new()
+	add_child(_pin_distance_indicator)
+	assert(_hole_score_overlay != null and _pin_distance_indicator != null,
+		"Course overlays must be instantiated before play begins.")
 	_configure_ball_for_course()
 	call_deferred("_initialize_course_deferred")
 
@@ -45,9 +86,20 @@ func _initialize_course_deferred() -> void:
 	await get_tree().process_frame
 	_ensure_course_config()
 	_load_holes_from_config()
+	_hide_hole_numbers()
 	_start_hole_by_number(1)
 
 
+func _hide_hole_numbers() -> void:
+	var markers := get_node_or_null(HOLE_MARKERS_PATH)
+	if markers == null:
+		return
+	for label in markers.find_children("HoleNumber", "Label3D", true, false):
+		label.visible = false
+
+
+# Fully replaces range.gd's reset handling: in course mode "reset" restarts the
+# current hole rather than the range, so we intentionally do not call super here.
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("reset"):
 		_reset_display_data()
@@ -77,6 +129,9 @@ func _on_golf_ball_rest(ball_data: Dictionary) -> void:
 	if _shot_camera != null:
 		_shot_camera.freeze_on_ball()
 
+	# Remove the tracer once the ball stops so it no longer blocks the resting view.
+	_player.clear_tracers()
+
 	_rest_sequence += 1
 	var sequence := _rest_sequence
 	var delay := float(GlobalSettings.range_settings.ball_reset_timer.value)
@@ -86,14 +141,32 @@ func _on_golf_ball_rest(ball_data: Dictionary) -> void:
 			return
 
 	if _is_hole_complete():
+		var seq := _rest_sequence
+		var hole_data := _get_current_hole_data()
+		var par := int(hole_data.get("Par", 3))
+		var distance_feet := _get_distance_to_pin_feet()
+		var gimme := _get_gimme_strokes(distance_feet)
+		var final_strokes := _stroke_count + gimme
+		var label := ScoreMapper.map_score(final_strokes, par)
+		_pin_distance_indicator.visible = false
+		_overlay_active = true
+		_hole_score_overlay.show_result(label, final_strokes, par)
+		await _hole_score_overlay.completed
+		_overlay_active = false
+		if seq != _rest_sequence:
+			return
 		_advance_to_next_hole()
 		return
 
-	if _shot_camera != null and bool(GlobalSettings.range_settings.camera_follow_mode.value):
+	if _shot_camera != null:
 		_apply_camera_settings()
 		_shot_camera.reset_to_ball(_get_ball_global_position(), _active_flag_position)
 
 
+# Course mode manages follow per-shot: _prepare_course_shot_start re-reads the live
+# camera_follow_mode value on every swing (see _on_*_hit -> enable_follow_after_launch),
+# so enabling it mid-round self-heals on the next shot. We only need to react to the
+# OFF transition here to immediately drop out of follow; the ON branch is a deliberate no-op.
 func set_camera_follow_mode(value) -> void:
 	if _shot_camera == null:
 		return
@@ -106,6 +179,7 @@ func _prepare_course_shot_start(data: Dictionary) -> void:
 		_start_hole_by_number(1)
 
 	_rest_sequence += 1
+	_stroke_count += 1
 	_configure_ball_for_course()
 	_apply_camera_settings()
 
@@ -146,6 +220,7 @@ func _start_hole_by_index(index: int) -> void:
 		return
 
 	_rest_sequence += 1
+	_stroke_count = 0
 	_current_hole_index = clampi(index, 0, _hole_numbers.size() - 1)
 	_current_hole_number = _hole_numbers[_current_hole_index]
 
@@ -154,6 +229,10 @@ func _start_hole_by_index(index: int) -> void:
 	_active_flag_position = _resolve_flag_position(hole_data, _active_tee_position)
 	_active_target_direction = _flat_direction(_active_tee_position, _active_flag_position)
 	_course_ready = true
+
+	if _pin_distance_indicator != null:
+		_pin_distance_indicator.visible = true
+		_pin_distance_indicator.update_hole(_current_hole_number)
 
 	_position_player_at_tee()
 	_apply_camera_settings()
@@ -175,6 +254,7 @@ func _advance_to_next_hole() -> void:
 	var completed_hole := _current_hole_number
 	if _current_hole_index >= _hole_numbers.size() - 1:
 		print("Hole %d complete. Course complete." % completed_hole)
+		course_completed.emit()
 		_current_hole_index = 0
 	else:
 		print("Hole %d complete. Moving to Hole %d." % [completed_hole, _hole_numbers[_current_hole_index + 1]])
@@ -184,12 +264,24 @@ func _advance_to_next_hole() -> void:
 	_start_hole_by_index(_current_hole_index)
 
 
-func _is_hole_complete() -> bool:
+func _get_distance_to_pin_feet() -> float:
 	var ball_position := _get_ball_global_position()
 	var ball_xz := Vector2(ball_position.x, ball_position.z)
 	var flag_xz := Vector2(_active_flag_position.x, _active_flag_position.z)
-	var completion_meters := COMPLETION_DISTANCE_FEET / FEET_PER_METER
-	return ball_xz.distance_to(flag_xz) <= completion_meters
+	return ball_xz.distance_to(flag_xz) * FEET_PER_METER
+
+
+func _get_gimme_strokes(distance_feet: float) -> int:
+	if distance_feet <= HOLE_OUT_FEET:
+		return 0
+	elif distance_feet <= GIMME_NEAR_FEET:
+		return 1
+	else:
+		return 2
+
+
+func _is_hole_complete() -> bool:
+	return _get_distance_to_pin_feet() <= COMPLETION_DISTANCE_FEET
 
 
 func _apply_camera_settings() -> void:
@@ -215,9 +307,9 @@ func _get_target_yaw_offset() -> float:
 
 
 func _get_ball_global_position() -> Vector3:
-	if $Player.ball == null:
+	if _player == null or _player.ball == null:
 		return _active_tee_position + Vector3.UP * BALL_START_HEIGHT
-	return $Player.ball.global_position
+	return _player.ball.global_position
 
 
 func _ensure_course_config() -> void:

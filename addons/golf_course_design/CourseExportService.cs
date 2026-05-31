@@ -302,26 +302,11 @@ public static class CourseExportService
         string terrainProjectPath,
         string scriptProjectPath)
     {
-        // Collect the distinct tee colours actually used so we emit one material per colour.
-        var teeMaterialIds = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-        var teeColors = project.GetEffectiveTeeColors();
-        foreach (var hole in project.Holes)
-        {
-            foreach (var teeBox in GetEnabledTeeBoxes(hole, teeColors))
-            {
-                var key = teeBox.TeeColor?.Trim() ?? string.Empty;
-                if (key.Length > 0 && !teeMaterialIds.ContainsKey(key))
-                {
-                    teeMaterialIds[key] = $"TeeMat_{SanitizeNodeName(key).Replace(' ', '_')}";
-                }
-            }
-        }
-
-        var markerBody = BuildHoleMarkerSection(project, teeMaterialIds);
+        var markerBody = BuildHoleMarkerSection(project);
 
         var builder = new StringBuilder();
         // load_steps is a hint; Godot recomputes it on save. Use a safe upper bound.
-        var loadSteps = 7 + teeMaterialIds.Count;
+        var loadSteps = 6;
         builder.AppendLine($"[gd_scene load_steps={loadSteps} format=3]");
         builder.AppendLine();
         var baseSceneUid = ResourceLoader.GetResourceUid(SharedBaseScenePath);
@@ -330,7 +315,7 @@ public static class CourseExportService
             $"[ext_resource type=\"PackedScene\" {uidAttr}path=\"{SharedBaseScenePath}\" id=\"1_base\"]");
         builder.AppendLine($"[ext_resource type=\"Script\" path=\"{scriptProjectPath}\" id=\"2_course\"]");
         builder.AppendLine();
-        AppendMarkerSubResources(builder, teeMaterialIds);
+        AppendMarkerSubResources(builder);
 
         // Inherited scene: root instances the shared base; overrides reference inherited
         // children by name + parent=".".
@@ -351,7 +336,7 @@ public static class CourseExportService
         File.WriteAllText(sceneAbsolutePath, builder.ToString());
     }
 
-    private static void AppendMarkerSubResources(StringBuilder builder, Dictionary<string, string> teeMaterialIds)
+    private static void AppendMarkerSubResources(StringBuilder builder)
     {
         builder.AppendLine("[sub_resource type=\"CylinderMesh\" id=\"PinPostMesh\"]");
         builder.AppendLine("top_radius = 0.12");
@@ -368,32 +353,12 @@ public static class CourseExportService
         builder.AppendLine("radius = 0.5");
         builder.AppendLine("height = 1.0");
         builder.AppendLine();
-
-        // Shared dark-green tee body (#0C6100), matching the overlay tee disc. All tee spheres use this;
-        // the real tee colour is shown by the small indicator topper instead.
         builder.AppendLine("[sub_resource type=\"StandardMaterial3D\" id=\"TeeBodyMat\"]");
         builder.AppendLine("albedo_color = Color(0.047059, 0.380392, 0, 1)");
         builder.AppendLine();
-
-        // Small topper that carries the per-tee colour (blue/white/red/gold/etc.).
-        builder.AppendLine("[sub_resource type=\"SphereMesh\" id=\"TeeIndicatorMesh\"]");
-        builder.AppendLine("radius = 0.28");
-        builder.AppendLine("height = 0.56");
-        builder.AppendLine();
-
-        foreach (var entry in teeMaterialIds)
-        {
-            var (r, g, b) = TeeColorToRgb(entry.Key);
-            builder.AppendLine($"[sub_resource type=\"StandardMaterial3D\" id=\"{entry.Value}\"]");
-            builder.AppendLine($"albedo_color = Color({Inv(r)}, {Inv(g)}, {Inv(b)}, 1)");
-            builder.AppendLine("emission_enabled = true");
-            builder.AppendLine($"emission = Color({Inv(r)}, {Inv(g)}, {Inv(b)}, 1)");
-            builder.AppendLine("emission_energy_multiplier = 0.3");
-            builder.AppendLine();
-        }
     }
 
-    private static string BuildHoleMarkerSection(GolfCourseProject project, Dictionary<string, string> teeMaterialIds)
+    private static string BuildHoleMarkerSection(GolfCourseProject project)
     {
         var builder = new StringBuilder();
         var usedHoleNodeNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -428,12 +393,7 @@ public static class CourseExportService
                     SanitizeNodeName($"{teeBox.TeeColor} Tee"),
                     $"Tee {teeIndex + 1}",
                     new HashSet<string>(StringComparer.OrdinalIgnoreCase));
-                // Tee Position is a world coordinate; convert to an offset under the hole node,
-                // nudged sideways per tee so identical-position tees don't fully overlap.
                 var localOffset = teeBox.Position - hole.HoleLocation + new Vector2(teeIndex * 1.5f, 0.0f);
-                var materialId = teeMaterialIds.TryGetValue(teeBox.TeeColor?.Trim() ?? string.Empty, out var id)
-                    ? id
-                    : null;
 
                 builder.AppendLine();
                 builder.AppendLine($"[node name=\"{teeNodeName}\" type=\"Node3D\" parent=\"{holeNodePath}\"]");
@@ -444,16 +404,6 @@ public static class CourseExportService
                 builder.AppendLine($"transform = {BuildTransform(Vector2.Zero, 0.5f)}");
                 builder.AppendLine("mesh = SubResource(\"TeeMesh\")");
                 builder.AppendLine("surface_material_override/0 = SubResource(\"TeeBodyMat\")");
-
-                // Colour indicator sitting on top of the dark-green body, carrying the real tee colour.
-                if (materialId != null)
-                {
-                    builder.AppendLine();
-                    builder.AppendLine($"[node name=\"ColorIndicator\" type=\"MeshInstance3D\" parent=\"{holeNodePath}/{teeNodeName}/Marker\"]");
-                    builder.AppendLine($"transform = {BuildTransform(Vector2.Zero, 0.65f)}");
-                    builder.AppendLine("mesh = SubResource(\"TeeIndicatorMesh\")");
-                    builder.AppendLine($"surface_material_override/0 = SubResource(\"{materialId}\")");
-                }
 
                 if (teeIndex == 0)
                 {
@@ -535,20 +485,6 @@ public static class CourseExportService
             + $"{Inv(trueUp.X)}, {Inv(trueUp.Y)}, {Inv(trueUp.Z)}, "
             + $"{Inv(back.X)}, {Inv(back.Y)}, {Inv(back.Z)}, "
             + $"{Inv(from.X)}, {Inv(from.Y)}, {Inv(from.Z)})";
-    }
-
-    private static (float R, float G, float B) TeeColorToRgb(string teeColor)
-    {
-        return teeColor.Trim().ToLowerInvariant() switch
-        {
-            "black" => (0.05f, 0.05f, 0.05f),
-            "blue" => (0.15f, 0.35f, 0.85f),
-            "white" => (0.95f, 0.95f, 0.95f),
-            "red" => (0.85f, 0.15f, 0.15f),
-            "gold" or "yellow" => (0.9f, 0.8f, 0.2f),
-            "green" => (0.2f, 0.7f, 0.3f),
-            _ => (0.6f, 0.6f, 0.6f)
-        };
     }
 
     private static string Inv(float value)

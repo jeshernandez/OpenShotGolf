@@ -142,6 +142,15 @@ func reset_shot_data() -> void:
 	for key in shot_data.keys():
 		shot_data[key] = 0.0
 
+
+# Removes all active tracers without resetting the ball. Used by course play to
+# clear the tracer once the ball comes to rest. The Range does not call this.
+func clear_tracers() -> void:
+	for tracer in tracers:
+		tracer.queue_free()
+	tracers.clear()
+	current_tracer = null
+
 func _on_ball_rest() -> void:
 	track_points = false
 	shot_data["TotalDistance"] = int(ball.get_downrange_yards() / 1.09361)  # Downrange distance in meters
