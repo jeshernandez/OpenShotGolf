@@ -1,4 +1,4 @@
-[gd_scene load_steps=2 format=3 uid="uid://dkb6hii5e48m2"]
+[gd_scene format=3 uid="uid://djwhu4c570g5y"]
 
 [ext_resource type="Script" uid="uid://cjku1fss3cvk1" path="res://addons/terrain_3d/src/asset_dock_45.gd" id="1_40j30"]
 

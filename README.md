@@ -40,7 +40,7 @@ Open Shot Golf (formerly JaySimG) is an open source golf simulator built with th
 ## Ball Physics and Distance Calculation
 - Ball flight is driven by `Player/ball.gd` using force/torque helpers in `physics/ball_physics.gd` (gravity, drag, Magnus lift, grass drag, and frictional torque for bounce and rollout).
 - Spin, launch angle, and ball speed are applied in `hit_from_data`, and the ball transitions through FLIGHT, ROLLOUT, and REST states.
-- Distance metrics come from `Player/player.gd`: horizontal distance is `Vector2(x, z).length()` in meters, converted to yards in range UI when needed (`Courses/Range/range.gd`). Carry, apex, and offline distances are tracked until the ball rests.
+- Distance metrics come from `Player/player.gd`: horizontal distance is `Vector2(x, z).length()` in meters, converted to yards for the HUD when needed. The shared HUD pipeline lives in `Courses/_shared/golf_scene_base.gd` (`_update_ball_display()` + a per-frame refresh while the ball is not at rest), so Range and Course Play both update Distance, Carry, Apex, and Side live during flight. Carry, apex, and offline distances are tracked until the ball rests.
 
 ## Aerodynamics and Reynolds Number Modeling
 - Drag (Cd) and lift (Cl) coefficients are calculated in `physics/aerodynamics.gd` based on Reynolds number (Re) and spin ratio (S).
@@ -139,7 +139,9 @@ Download and install the .NET SDK version 9.0 or later.
 - `Player/`: Ball physics, player controller, and shot metric tracking.
 - `physics/`: Shared physics modules (BallPhysics, Aerodynamics, surfaces, docs).
 - `addons/launch_monitors/`: Launch monitor implementations (e.g. `square/`) plus shared plumbing under `common/` (`common/bluetooth/` transport, `common/tcp_server/` GSPro listener) and the `launch_monitor_manager.gd` autoload.
-- `Courses/Range/`: Range scene, UI, and yardage output.
+- `Courses/_shared/golf_scene_base.gd`: Base class for golf game scenes (Range and Course Play). Owns the shared HUD shot-display pipeline so Distance, Carry, Apex, and Side update live during flight in every mode.
+- `Courses/Range/`: Range game mode (free-hit practice) — extends `golf_scene_base.gd` and adds camera follow / auto ball reset.
+- `Courses/_shared/course_play.gd`: Course game mode — extends `golf_scene_base.gd` and adds hole management, scoring, and per-shot camera control.
 - `Resources/`, `UI/`, `Utils/`: Art assets, UI components, and helper scripts.
 
 ## Course Loader/Finder Diagram

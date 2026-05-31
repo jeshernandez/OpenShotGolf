@@ -1,34 +1,15 @@
-extends Node3D
-
-var track_points : bool = false
-var trail_timer : float = 0.0
-var trail_resolution : float = 0.1
-var apex := 0
-var display_data: Dictionary = {
-	"Distance": "---",
-	"Carry": "---",
-	"Offline": "---",
-	"Apex": "---",
-	"VLA": "---",
-	"HLA": "---",
-	"Speed": "---",
-	"BackSpin": "---",
-	"SideSpin": "---",
-	"TotalSpin": "---",
-	"SpinAxis": "---"
-}
-var raw_ball_data: Dictionary = {}
-var last_display: Dictionary = {}
+extends "res://Courses/_shared/golf_scene_base.gd"
+## Range game mode: free-hit practice with optional camera follow and auto ball reset.
+##
+## Inherits the shared HUD shot-display pipeline from golf_scene_base.gd and layers on
+## Range-specific camera behavior. Overridden handlers call super to preserve live HUD
+## updates, then apply camera follow.
 
 
-# Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+	super._ready()
 	GlobalSettings.range_settings.camera_follow_mode.setting_changed.connect(set_camera_follow_mode)
 	set_camera_follow_mode(GlobalSettings.range_settings.camera_follow_mode.value)
-	if has_node("/root/LaunchMonitorManager"):
-		var launch_monitor = get_node("/root/LaunchMonitorManager")
-		if not launch_monitor.hit_ball.is_connected(_on_launch_monitor_hit_ball):
-			launch_monitor.hit_ball.connect(_on_launch_monitor_hit_ball)
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -38,30 +19,15 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _on_tcp_client_hit_ball(data: Dictionary) -> void:
-	raw_ball_data = data.duplicate()
-	_update_ball_display()
+	super._on_tcp_client_hit_ball(data)
 
 	# Re-enable camera follow if the setting is on
 	if GlobalSettings.range_settings.camera_follow_mode.value:
 		set_camera_follow_mode(true)
 
 
-func _on_launch_monitor_hit_ball(data: Dictionary) -> void:
-	_on_tcp_client_hit_ball(data)
-	$Player._on_tcp_client_hit_ball(data)
-
-
-func _process(_delta: float) -> void:
-	# Refresh UI during flight/rollout so carry/apex update live; distance updates only at rest.
-	var player = $Player
-	if player.get_ball_state() != PhysicsEnums.BallState.REST:
-		_update_ball_display()
-
-
 func _on_golf_ball_rest(_ball_data) -> void:
-	raw_ball_data = _ball_data.duplicate()
-	# Show final shot numbers immediately on rest
-	_update_ball_display()
+	super._on_golf_ball_rest(_ball_data)
 
 	# Return camera to starting position if follow mode is enabled
 	if GlobalSettings.range_settings.camera_follow_mode.value:
@@ -79,6 +45,7 @@ func _on_golf_ball_rest(_ball_data) -> void:
 
 	# No auto reset: leave final numbers visible
 
+
 func set_camera_follow_mode(value) -> void:
 	var camera = $PhantomCamera3D
 
@@ -88,6 +55,7 @@ func set_camera_follow_mode(value) -> void:
 		camera.follow_target = player.ball
 	else:
 		camera.follow_mode = PhantomCamera3D.FollowMode.NONE
+
 
 func reset_camera_to_start() -> void:
 	var camera = $PhantomCamera3D
@@ -111,9 +79,7 @@ func reset_camera_to_start() -> void:
 
 
 func _on_range_ui_hit_shot(data: Dictionary) -> void:
-	# For local injected shots, prime the display immediately with the payload data.
-	raw_ball_data = data.duplicate()
-	_update_ball_display()
+	super._on_range_ui_hit_shot(data)
 
 	# Re-enable camera follow if the setting is on
 	if GlobalSettings.range_settings.camera_follow_mode.value:
@@ -124,30 +90,3 @@ func _on_player_manual_hit() -> void:
 	# Re-enable camera follow if the setting is on
 	if GlobalSettings.range_settings.camera_follow_mode.value:
 		set_camera_follow_mode(true)
-
-
-
-func _reset_display_data() -> void:
-	raw_ball_data.clear()
-	last_display.clear()
-	display_data["Distance"] = "---"
-	display_data["Carry"] = "---"
-	display_data["Offline"] = "---"
-	display_data["Apex"] = "---"
-	display_data["VLA"] = "---"
-	display_data["HLA"] = "---"
-	display_data["Speed"] = "---"
-	display_data["BackSpin"] = "---"
-	display_data["SideSpin"] = "---"
-	display_data["TotalSpin"] = "---"
-	display_data["SpinAxis"] = "---"
-
-
-func _update_ball_display() -> void:
-	# Show distance continuously (updates during flight/rollout, final at rest)
-	var player = $Player
-	var show_distance: bool = true
-	display_data = ShotFormatter.format_ball_display(raw_ball_data, player, GlobalSettings.range_settings.range_units.value, show_distance, display_data)
-	last_display = display_data.duplicate()
-	$RangeUI.set_data(display_data)
-	

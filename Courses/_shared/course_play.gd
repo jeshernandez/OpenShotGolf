@@ -1,4 +1,4 @@
-extends "res://Courses/Range/range.gd"
+extends "res://Courses/_shared/golf_scene_base.gd"
 class_name CoursePlay
 
 const CameraControllerScript := preload("res://Courses/_shared/course_shot_camera_controller.gd")
@@ -43,6 +43,9 @@ var _pin_distance_indicator: PinDistanceIndicator = null
 
 
 func _process(delta: float) -> void:
+	# Keep the shared live HUD refresh (Distance/Carry/Apex/Side update during flight).
+	super._process(delta)
+
 	if _shot_camera != null and not _overlay_active:
 		if Input.is_action_pressed("camera_rotate_left"):
 			_shot_camera.rotate_yaw(CAMERA_ROTATE_SPEED_DEG_PER_SEC * delta)
@@ -64,6 +67,7 @@ func set_course_config(config: Dictionary, config_path: String = "") -> void:
 
 func _ready() -> void:
 	super._ready()
+	GlobalSettings.range_settings.camera_follow_mode.setting_changed.connect(set_camera_follow_mode)
 	# Course play uses a tube tracer instead of the Range's flat ribbon so the trail
 	# stays visible while the camera follows directly behind the ball during flight.
 	_player.BallTrailScript = preload("res://Courses/_shared/course_ball_trail.gd")
@@ -108,14 +112,12 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _on_tcp_client_hit_ball(data: Dictionary) -> void:
-	raw_ball_data = data.duplicate()
-	_update_ball_display()
+	super._on_tcp_client_hit_ball(data)
 	_prepare_course_shot_start(data)
 
 
 func _on_range_ui_hit_shot(data: Dictionary) -> void:
-	raw_ball_data = data.duplicate()
-	_update_ball_display()
+	super._on_range_ui_hit_shot(data)
 	_prepare_course_shot_start(data)
 
 
@@ -124,8 +126,7 @@ func _on_player_manual_hit() -> void:
 
 
 func _on_golf_ball_rest(ball_data: Dictionary) -> void:
-	raw_ball_data = ball_data.duplicate()
-	_update_ball_display()
+	super._on_golf_ball_rest(ball_data)
 	if _shot_camera != null:
 		_shot_camera.freeze_on_ball()
 

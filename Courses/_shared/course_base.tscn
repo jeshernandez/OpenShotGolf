@@ -1,6 +1,6 @@
 [gd_scene load_steps=16 format=3 uid="uid://c0ursebasescene0"]
 
-[ext_resource type="Script" uid="uid://c4whkfuiysonu" path="res://Courses/Range/range.gd" id="1_range"]
+[ext_resource type="Script" path="res://Courses/_shared/golf_scene_base.gd" id="1_base"]
 [ext_resource type="PackedScene" uid="uid://w55fmvo7ly8g" path="res://Player/player.tscn" id="2_player"]
 [ext_resource type="PackedScene" uid="uid://da1vsfwmbk8vw" path="res://UI/range_ui.tscn" id="3_ui"]
 [ext_resource type="Environment" uid="uid://cskyenv0course00" path="res://Courses/_shared/sky_environment.tres" id="4_env"]
@@ -20,7 +20,7 @@
 script = ExtResource("11_tween")
 
 [node name="CourseBase" type="Node3D"]
-script = ExtResource("1_range")
+script = ExtResource("1_base")
 
 [node name="Player" parent="." instance=ExtResource("2_player")]
 
