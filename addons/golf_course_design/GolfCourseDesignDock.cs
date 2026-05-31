@@ -15,6 +15,7 @@ public partial class GolfCourseDesignDock : ScrollContainer
     private GolfCourseProject _project = GolfCourseProject.CreateDefault();
     private string _projectFilePath = DefaultProjectPath;
     private bool _isUpdatingUi;
+    private bool _disposed;
     private int _selectedHoleIndex = 0;
 
     private LineEdit? _projectFilePathEdit;
@@ -65,6 +66,14 @@ public partial class GolfCourseDesignDock : ScrollContainer
     {
         BuildUi();
         LoadProject(_project);
+    }
+
+    public override void _ExitTree()
+    {
+        // BuildTerrain runs a background Task and resumes on the main thread; if the plugin
+        // is disabled or the editor reloads mid-build, this node is freed. Flag it so the
+        // post-await continuation bails out instead of touching disposed Godot objects.
+        _disposed = true;
     }
 
     private void BuildUi()
@@ -488,16 +497,23 @@ public partial class GolfCourseDesignDock : ScrollContainer
                 _buildTerrainButton.Disabled = true;
 
             var staging = await Task.Run(() => TerrainImportService.RunBackgroundPipeline(_project));
+            // The background task may have outlived this dock. Touching any Godot member
+            // (or passing `this` into Finalize) after disposal throws ObjectDisposedException,
+            // which is unobservable on async void and crashes the editor.
+            if (_disposed || !IsInstanceValid(this))
+                return;
             var result = TerrainImportService.FinalizeOnMainThread(staging, this);
             UpdateStatus(result.Message);
         }
         catch (Exception exception)
         {
+            if (_disposed || !IsInstanceValid(this))
+                return;
             UpdateStatus(exception.Message);
         }
         finally
         {
-            if (_buildTerrainButton != null)
+            if (!_disposed && IsInstanceValid(this) && _buildTerrainButton != null)
                 _buildTerrainButton.Disabled = false;
         }
     }
@@ -749,6 +765,19 @@ public partial class GolfCourseDesignDock : ScrollContainer
         if (_teeGridContainer == null)
             return;
 
+        // Disconnect the per-row ValueChanged handlers before the spins are freed so a
+        // value-change event queued during teardown can't fire ApplyHoleEditorToProject
+        // against stale tee controls.
+        foreach (var teeRow in _teeControls)
+        {
+            if (teeRow.ValueHandler == null)
+                continue;
+            if (teeRow.XSpin != null && IsInstanceValid(teeRow.XSpin))
+                teeRow.XSpin.ValueChanged -= teeRow.ValueHandler;
+            if (teeRow.ZSpin != null && IsInstanceValid(teeRow.ZSpin))
+                teeRow.ZSpin.ValueChanged -= teeRow.ValueHandler;
+        }
+
         foreach (var child in _teeGridContainer.GetChildren())
         {
             _teeGridContainer.RemoveChild(child);
@@ -780,8 +809,10 @@ public partial class GolfCourseDesignDock : ScrollContainer
             teeGrid.AddChild(teeRow.XSpin);
             teeGrid.AddChild(teeRow.ZSpin);
 
-            teeRow.XSpin.ValueChanged += _ => ApplyHoleEditorToProject();
-            teeRow.ZSpin.ValueChanged += _ => ApplyHoleEditorToProject();
+            Godot.Range.ValueChangedEventHandler handler = _ => ApplyHoleEditorToProject();
+            teeRow.ValueHandler = handler;
+            teeRow.XSpin.ValueChanged += handler;
+            teeRow.ZSpin.ValueChanged += handler;
 
             _teeControls.Add(teeRow);
         }
@@ -1118,6 +1149,10 @@ public partial class GolfCourseDesignDock : ScrollContainer
         public string TeeColor { get; set; }
         public SpinBox XSpin { get; init; } = null!;
         public SpinBox ZSpin { get; init; } = null!;
+
+        // The shared ValueChanged handler for both spins, retained so RebuildTeeGrid can
+        // disconnect it before freeing the row (the lambda closes over the dock's `this`).
+        public Godot.Range.ValueChangedEventHandler? ValueHandler { get; set; }
 
         public Label MakeColorLabel()
         {

@@ -62,6 +62,12 @@ func show_result(label_text: String, strokes: int, par: int) -> void:
 	# its centre *before* applying the initial scale. (Setting scale first would pivot
 	# from the top-left for a frame — currently masked only by the 0 alpha above.)
 	await get_tree().process_frame
+	# Each await can resume after the scene (and this node) was freed — e.g. the player
+	# navigates away mid-animation. The SceneTreeTimer below in particular outlives this
+	# node, so bail out before touching freed children. completed is intentionally not
+	# emitted on this path: the awaiting CoursePlay is being torn down with us.
+	if not is_inside_tree():
+		return
 	_vbox.pivot_offset = _vbox.size / 2.0
 	_vbox.scale = Vector2(0.82, 0.82)
 
@@ -71,13 +77,19 @@ func show_result(label_text: String, strokes: int, par: int) -> void:
 	tween_in.tween_property(_vbox, "modulate:a", 1.0, ANIM_IN_DURATION * 0.7) \
 		.set_trans(Tween.TRANS_LINEAR)
 	await tween_in.finished
+	if not is_inside_tree():
+		return
 
 	await get_tree().create_timer(DISPLAY_DURATION).timeout
+	if not is_inside_tree():
+		return
 
 	var tween_out := create_tween()
 	tween_out.tween_property(_vbox, "modulate:a", 0.0, ANIM_OUT_DURATION) \
 		.set_trans(Tween.TRANS_LINEAR)
 	await tween_out.finished
+	if not is_inside_tree():
+		return
 
 	visible = false
 	completed.emit()

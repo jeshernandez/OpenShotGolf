@@ -25,6 +25,9 @@ var display_data: Dictionary = {
 var raw_ball_data: Dictionary = {}
 var last_display: Dictionary = {}
 
+# Cached once instead of resolving $Player (a get_node call) every _process frame.
+@onready var _player: Node = $Player
+
 
 func _ready() -> void:
 	if has_node("/root/LaunchMonitorManager"):
@@ -35,8 +38,7 @@ func _ready() -> void:
 
 func _process(_delta: float) -> void:
 	# Refresh UI during flight/rollout so carry/apex update live; distance updates only at rest.
-	var player = $Player
-	if player.get_ball_state() != PhysicsEnums.BallState.REST:
+	if _player.get_ball_state() != PhysicsEnums.BallState.REST:
 		_update_ball_display()
 
 
@@ -69,9 +71,8 @@ func _on_player_manual_hit() -> void:
 
 func _update_ball_display() -> void:
 	# Show distance continuously (updates during flight/rollout, final at rest).
-	var player = $Player
 	var show_distance: bool = true
-	display_data = ShotFormatter.format_ball_display(raw_ball_data, player, GlobalSettings.range_settings.range_units.value, show_distance, display_data)
+	display_data = ShotFormatter.format_ball_display(raw_ball_data, _player, GlobalSettings.range_settings.range_units.value, show_distance, display_data)
 	last_display = display_data.duplicate()
 	$RangeUI.set_data(display_data)
 

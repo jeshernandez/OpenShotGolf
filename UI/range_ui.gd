@@ -17,40 +17,24 @@ func _exit_tree() -> void:
 
 
 func set_data(data: Dictionary) -> void:
-	if GlobalSettings.range_settings.range_units.value == PhysicsEnums.Units.IMPERIAL:
-		$GridCanvas/Distance.set_data(data["Distance"])
-		$GridCanvas/Carry.set_data(data["Carry"])
-		$GridCanvas/Side.set_data(data["Offline"])
-		$GridCanvas/Apex.set_data(data["Apex"])
-		$GridCanvas/Speed.set_units("mph")
-		$GridCanvas/Speed.set_data(str(data["Speed"]))
-		$GridCanvas/BackSpin.set_units("rpm")
-		$GridCanvas/BackSpin.set_data(str(data["BackSpin"]))
-		$GridCanvas/SideSpin.set_units("rpm")
-		$GridCanvas/SideSpin.set_data(str(data["SideSpin"]))
-		$GridCanvas/TotalSpin.set_units("rpm")
-		$GridCanvas/TotalSpin.set_data(str(data["TotalSpin"]))
-		$GridCanvas/SpinAxis.set_units("deg")
-		$GridCanvas/SpinAxis.set_data(str(data["SpinAxis"]))
-		$GridCanvas/VLA.set_data(_format_angle(data.get("VLA")))
-		$GridCanvas/HLA.set_data(_format_angle(data.get("HLA")))
-	else:
-		$GridCanvas/Distance.set_data(data["Distance"])
-		$GridCanvas/Carry.set_data(data["Carry"])
-		$GridCanvas/Side.set_data(data["Offline"])
-		$GridCanvas/Apex.set_data(data["Apex"])
-		$GridCanvas/Speed.set_units("m/s")
-		$GridCanvas/Speed.set_data(str(data["Speed"]))
-		$GridCanvas/BackSpin.set_units("rpm")
-		$GridCanvas/BackSpin.set_data(str(data["BackSpin"]))
-		$GridCanvas/SideSpin.set_units("rpm")
-		$GridCanvas/SideSpin.set_data(str(data["SideSpin"]))
-		$GridCanvas/TotalSpin.set_units("rpm")
-		$GridCanvas/TotalSpin.set_data(str(data["TotalSpin"]))
-		$GridCanvas/SpinAxis.set_units("deg")
-		$GridCanvas/SpinAxis.set_data(str(data["SpinAxis"]))
-		$GridCanvas/VLA.set_data(_format_angle(data.get("VLA")))
-		$GridCanvas/HLA.set_data(_format_angle(data.get("HLA")))
+	# Only the Speed unit differs between systems; every other field renders identically.
+	var is_imperial: bool = GlobalSettings.range_settings.range_units.value == PhysicsEnums.Units.IMPERIAL
+	$GridCanvas/Distance.set_data(data["Distance"])
+	$GridCanvas/Carry.set_data(data["Carry"])
+	$GridCanvas/Side.set_data(data["Offline"])
+	$GridCanvas/Apex.set_data(data["Apex"])
+	$GridCanvas/Speed.set_units("mph" if is_imperial else "m/s")
+	$GridCanvas/Speed.set_data(str(data["Speed"]))
+	$GridCanvas/BackSpin.set_units("rpm")
+	$GridCanvas/BackSpin.set_data(str(data["BackSpin"]))
+	$GridCanvas/SideSpin.set_units("rpm")
+	$GridCanvas/SideSpin.set_data(str(data["SideSpin"]))
+	$GridCanvas/TotalSpin.set_units("rpm")
+	$GridCanvas/TotalSpin.set_data(str(data["TotalSpin"]))
+	$GridCanvas/SpinAxis.set_units("deg")
+	$GridCanvas/SpinAxis.set_data(str(data["SpinAxis"]))
+	$GridCanvas/VLA.set_data(_format_angle(data.get("VLA")))
+	$GridCanvas/HLA.set_data(_format_angle(data.get("HLA")))
 
 
 func _format_angle(value) -> String:

@@ -101,7 +101,7 @@ func _physics_process(delta: float) -> void:
 		apex = max(apex, ball.position.y)
 		side_distance = ball.position.z
 		if ball.state == PhysicsEnums.BallState.FLIGHT:
-			carry = ball.get_downrange_yards() / 1.09361  # Convert yards back to meters for consistency
+			carry = ball.get_downrange_yards() / GolfUnits.YARDS_PER_METER  # Convert yards back to meters for consistency
 		trail_timer += delta
 		if trail_timer >= trail_resolution:
 			current_tracer.add_point(ball.position)
@@ -109,7 +109,7 @@ func _physics_process(delta: float) -> void:
 
 func get_distance() -> int:
 	# Returns the downrange distance in meters
-	return int(ball.get_downrange_yards() / 1.09361)
+	return int(ball.get_downrange_yards() / GolfUnits.YARDS_PER_METER)
 	
 func get_side_distance() -> int:
 	return int(ball.position.z)
@@ -153,7 +153,7 @@ func clear_tracers() -> void:
 
 func _on_ball_rest() -> void:
 	track_points = false
-	shot_data["TotalDistance"] = int(ball.get_downrange_yards() / 1.09361)  # Downrange distance in meters
+	shot_data["TotalDistance"] = int(ball.get_downrange_yards() / GolfUnits.YARDS_PER_METER)  # Downrange distance in meters
 	shot_data["CarryDistance"] = int(carry)
 	shot_data["Apex"] = int(apex)
 	shot_data["SideDistance"] = int(side_distance)

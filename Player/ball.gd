@@ -360,7 +360,7 @@ func _apply_surface_params() -> void:
 func get_downrange_yards() -> float:
 	var delta: Vector3 = position - shot_start_pos
 	var meters: float = delta.dot(shot_dir)
-	return meters * 1.09361
+	return meters * GolfUnits.YARDS_PER_METER
 
 
 func _physics_process(delta: float) -> void:

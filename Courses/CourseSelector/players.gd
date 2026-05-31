@@ -25,7 +25,7 @@ func add_player():
 
 func remove_player():
 	if num_players > 1:
-		var last_player = get_child(num_players)
+		var last_player = get_child(num_players - 1)
 		last_player.queue_free()
 		num_players -= 1
 

@@ -16,7 +16,6 @@ const BALL_START_HEIGHT := 0.02
 const COMPLETION_DISTANCE_FEET := 20.0
 const GIMME_NEAR_FEET := 3.0
 const HOLE_OUT_FEET := 0.1
-const FEET_PER_METER := 3.28084
 const DEFAULT_CAMERA_ORBIT_DISTANCE := 2.1336
 const DEFAULT_CAMERA_FOLLOW_DELAY_SECONDS := 0.0
 const MIN_DIRECTION_LENGTH := 0.000001
@@ -38,8 +37,6 @@ var _stroke_count := 0
 var _overlay_active := false
 var _hole_score_overlay: HoleScoreOverlay = null
 var _pin_distance_indicator: PinDistanceIndicator = null
-
-@onready var _player: Node = $Player
 
 
 func _process(delta: float) -> void:
@@ -84,6 +81,14 @@ func _ready() -> void:
 		"Course overlays must be instantiated before play begins.")
 	_configure_ball_for_course()
 	call_deferred("_initialize_course_deferred")
+
+
+func _exit_tree() -> void:
+	# GlobalSettings is an Autoload that outlives this scene; drop the connection so a
+	# later setting_changed emission does not call into this freed node.
+	var setting := GlobalSettings.range_settings.camera_follow_mode
+	if setting.setting_changed.is_connected(set_camera_follow_mode):
+		setting.setting_changed.disconnect(set_camera_follow_mode)
 
 
 func _initialize_course_deferred() -> void:
@@ -269,7 +274,7 @@ func _get_distance_to_pin_feet() -> float:
 	var ball_position := _get_ball_global_position()
 	var ball_xz := Vector2(ball_position.x, ball_position.z)
 	var flag_xz := Vector2(_active_flag_position.x, _active_flag_position.z)
-	return ball_xz.distance_to(flag_xz) * FEET_PER_METER
+	return ball_xz.distance_to(flag_xz) * GolfUnits.FEET_PER_METER
 
 
 func _get_gimme_strokes(distance_feet: float) -> int:

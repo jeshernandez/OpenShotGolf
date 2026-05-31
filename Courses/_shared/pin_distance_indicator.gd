@@ -1,8 +1,6 @@
 class_name PinDistanceIndicator
 extends CanvasLayer
 
-const FEET_PER_METER := 3.28084
-const YARDS_PER_METER := 1.09361
 const FEET_THRESHOLD_METERS := 9.144  # 30 ft
 
 var _hole_label: Label
@@ -72,8 +70,8 @@ func update_distance(meters: float) -> void:
 	if not visible:
 		return
 	if meters < FEET_THRESHOLD_METERS:
-		var feet := int(round(meters * FEET_PER_METER))
+		var feet := int(round(meters * GolfUnits.FEET_PER_METER))
 		_label.text = "%d FT TO PIN" % feet
 	else:
-		var yards := int(round(meters * YARDS_PER_METER))
+		var yards := int(round(meters * GolfUnits.YARDS_PER_METER))
 		_label.text = "%d YDS TO PIN" % yards

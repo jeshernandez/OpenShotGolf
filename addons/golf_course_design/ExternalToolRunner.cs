@@ -8,6 +8,11 @@ public sealed record ExternalToolResult(int ExitCode, string StandardOutput, str
 
 public static class ExternalToolRunner
 {
+    // Generous upper bound: real GDAL/PDAL passes over large rasters can take minutes, but a
+    // process that blocks indefinitely (e.g. waiting on stdin that never closes) must not
+    // freeze the editor. Exceeding this kills the process and surfaces a TimeoutException.
+    private const int DefaultTimeoutMs = 600_000;
+
     public static void EnsureCommandAvailable(string command, string label)
     {
         if (string.IsNullOrWhiteSpace(command))
@@ -48,7 +53,8 @@ public static class ExternalToolRunner
         string command,
         IEnumerable<string> arguments,
         string? workingDirectory,
-        string? standardInput)
+        string? standardInput,
+        int timeoutMs = DefaultTimeoutMs)
     {
         var output = new StringBuilder();
         var error = new StringBuilder();
@@ -112,8 +118,22 @@ public static class ExternalToolRunner
             process.StandardInput.Close();
         }
 
-        process.WaitForExit();
-        // Second call flushes pending async output events after process exit.
+        if (!process.WaitForExit(timeoutMs))
+        {
+            try
+            {
+                process.Kill(true);
+            }
+            catch
+            {
+                // Best effort: the process may have exited between the timeout and the kill.
+            }
+
+            throw new TimeoutException(
+                $"{command} did not complete within {timeoutMs / 1000} seconds and was terminated.");
+        }
+
+        // Second call (no timeout) flushes pending async output events after process exit.
         process.WaitForExit();
 
         var standardOutput = output.ToString().Trim();

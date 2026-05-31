@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="GolfCourseProject" format=3 uid="uid://doik32and0aum"]
+[gd_resource type="Resource" script_class="GolfCourseProject" format=3 uid="uid://fcxjgm5f535v"]
 
 [ext_resource type="Script" uid="uid://cw3oiung03vf7" path="res://addons/golf_course_design/GolfHoleDefinition.cs" id="1_sqjny"]
 [ext_resource type="Script" uid="uid://ddvu3bjwa4q6q" path="res://addons/golf_course_design/GolfTeeBoxDefinition.cs" id="2_jxn83"]

@@ -5,7 +5,7 @@ class_name ShotFormatter
 # If show_distance is false, Distance is left unchanged from prev_data (or set to "---" if not provided).
 static func format_ball_display(raw_ball_data: Dictionary, player: Node, units: int, show_distance: bool, prev_data: Dictionary = {}) -> Dictionary:
 	var ball_data: Dictionary = {}
-	var m2yd := 1.09361
+	var m2yd := GolfUnits.YARDS_PER_METER
 	var has_backspin := raw_ball_data.has("BackSpin")
 	var has_sidespin := raw_ball_data.has("SideSpin")
 	var has_total := raw_ball_data.has("TotalSpin")
@@ -34,7 +34,7 @@ static func format_ball_display(raw_ball_data: Dictionary, player: Node, units: 
 			carry_val = raw_ball_data.get("CarryDistance", 0.0) as float
 		# carry_val is always in meters, convert to yards for imperial display
 		ball_data["Carry"] = "%.1f" % (carry_val * m2yd)
-		ball_data["Apex"] = "%.1f" % (player.apex*3.28084)
+		ball_data["Apex"] = "%.1f" % (player.apex*GolfUnits.FEET_PER_METER)
 		var side_distance = player.get_side_distance()*m2yd
 		var side_text := "R"
 		if side_distance < 0:
