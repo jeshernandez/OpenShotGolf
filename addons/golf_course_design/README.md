@@ -279,7 +279,7 @@ For real courses, use QGIS or the Godot 3D view as the reference while adjusting
 7. Use Terrain3D tools to paint, sculpt, or repair terrain details.
 8. Run the game and select the course from the course selector.
 
-The exported scene inherits `res://Courses/_shared/course_base.tscn`, so the course starts from the shared player, camera, sky, and terrain setup. The generated `course.gd` positions the player and camera from the first enabled tee and aims them toward the hole.
+The exported scene inherits `res://Courses/_shared/course_base.tscn`, so the course starts from the shared player, camera, sky, and terrain setup. The generated `course.gd` is a one-line subclass of `CoursePlay` (`res://Courses/_shared/course_play.gd`); it inherits all gameplay — hole management, stroke counting, scoring, the pin-distance indicator, and per-shot camera framing. Hole geometry is read at runtime from the generated `course.json` (`Hole Info`) and the `HoleMarkers` nodes in `course.tscn`, so each exported course stays in sync with the shared gameplay logic instead of cloning it.
 
 ## What Gets Written To Disk
 A finished course folder usually looks like this:
@@ -297,7 +297,7 @@ res://Courses/UserCourses/Airways/
 
 Each file has a different job:
 
-- `course.gd` is the generated course script that sets the course start and camera direction.
+- `course.gd` is the generated course script: a one-line subclass of `CoursePlay` (`Courses/_shared/course_play.gd`) that inherits all gameplay from the shared script.
 - `course.tscn` is one playable Godot scene for the whole course.
 - `course.json` is the course metadata the current loader expects.
 - `Terrain/` contains the Terrain3D region files.

@@ -25,8 +25,9 @@ rectangle "GDAL + PDAL + OGR" as Tools #46314F
 rectangle "Staged Terrain\n.golf_course_design" as Staging #294E4A
 rectangle "Terrain3D\nTerrain/" as TerrainFolder #2F3F57
 rectangle "Shared Base Scene\ncourse_base.tscn" as BaseScene #34425C
+rectangle "CoursePlay\ncourse_play.gd\n(shared gameplay)" as CoursePlay #34425C
 rectangle "Hole Markers\ntees + pins" as Holes #34523D
-rectangle "course.gd" as ScriptFile #3C3C3C
+rectangle "course.gd\nextends CoursePlay" as ScriptFile #3C3C3C
 rectangle "course.tscn" as SceneFile #3C3C3C
 rectangle "course.json" as JsonFile #3C3C3C
 rectangle "Godot 3D View" as GodotView #274A5A
@@ -44,7 +45,8 @@ TerrainFolder --> SceneFile : referenced by
 BaseScene --> SceneFile : inherited root
 Dock --> Holes : import or edit\none hole at a time
 Holes --> SceneFile : marker nodes
-Dock --> ScriptFile : course start\nand camera
+Dock --> ScriptFile : write thin\nCoursePlay subclass
+CoursePlay ..> ScriptFile : holes, scoring,\nper-shot camera (inherited)
 Dock --> JsonFile : course metadata
 Dock --> SceneFile : export playable\ncourse scene
 SceneFile --> GodotView : open scene\nfor preview
@@ -69,6 +71,12 @@ end note
 note right of SceneFile
 The export is one scene for the full course,
 not one scene per hole.
+end note
+
+note bottom of ScriptFile
+course.gd is a one-line subclass of CoursePlay.
+Hole geometry is read at runtime from course.json
+and the HoleMarkers nodes, not baked into the script.
 end note
 
 @enduml
