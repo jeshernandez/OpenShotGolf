@@ -24,6 +24,7 @@ script = ExtResource("2_course")
 
 [node name="Terrain3D" parent="." index="3"]
 data_directory = "res://Courses/UserCourses/Airways/Terrain"
+mesh_lods = 4
 
 [node name="PhantomCamera3D" parent="." index="5"]
 transform = Transform3D(-0.105998, 0, 0.994366, 0.076264, 0.997055, 0.00813, -0.991437, 0.076697, -0.105686, 365.0338, 3, 230.864)

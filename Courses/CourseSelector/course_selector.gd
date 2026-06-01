@@ -1,6 +1,6 @@
 extends Control
 
-@onready var _course_list = $ContentPanel/ContentMargin/VBoxContainer/ScrollContainer/CourseList
+@onready var _course_list: CourseList = $ContentPanel/ContentMargin/VBoxContainer/ScrollContainer/CourseList
 @onready var _course_directory_text: TextEdit = $ContentPanel/ContentMargin/VBoxContainer/CourseDirectory/CourseDirectoryText
 @onready var _status_label: Label = $ContentPanel/ContentMargin/VBoxContainer/StatusLabel
 @onready var _refresh_button: Button = $ContentPanel/ContentMargin/VBoxContainer/CourseDirectory/RefreshButton

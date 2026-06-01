@@ -1,3 +1,4 @@
+class_name CourseList
 extends ItemList
 
 var course_dir := ""
@@ -84,5 +85,5 @@ func get_tee_colors_for_index(selected_index: int) -> Array[String]:
 	var colors = get_item_metadata(selected_index).get("tee_colors", [])
 	var result: Array[String] = []
 	for c in colors:
-		result.append(str(c))
+		result.append(c)
 	return result

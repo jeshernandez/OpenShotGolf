@@ -9,7 +9,7 @@
 [ext_resource type="Texture2D" uid="uid://cocmkbjpiplyp" path="res://Courses/_shared/texture_images/ground055S_Sand_alb_ht.dds" id="7"]
 [ext_resource type="Texture2D" uid="uid://d2tui1hymyy1e" path="res://Courses/_shared/texture_images/ground055S_Sand_nrm_rgh.dds" id="8"]
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_oe2rx"]
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_f718m"]
 transparency = 4
 cull_mode = 2
 vertex_color_use_as_albedo = true
@@ -22,7 +22,7 @@ distance_fade_max_distance = 96.0
 [sub_resource type="Terrain3DMeshAsset" id="Terrain3DMeshAsset_ocquq"]
 generated_type = 1
 height_offset = 0.5
-material_override = SubResource("StandardMaterial3D_oe2rx")
+material_override = SubResource("StandardMaterial3D_f718m")
 last_lod = 0
 last_shadow_lod = 0
 lod0_range = 128.0
@@ -32,7 +32,8 @@ name = "Green"
 albedo_color = Color(0.6624526, 0.6624523, 0.6624523, 1)
 albedo_texture = ExtResource("1")
 normal_texture = ExtResource("2")
-uv_scale = 0.104
+roughness = 1.0
+uv_scale = 0.256
 detiling_shift = 0.05
 
 [sub_resource type="Terrain3DTextureAsset" id="Terrain3DTextureAsset_fairway"]
@@ -43,8 +44,8 @@ albedo_texture = ExtResource("3")
 normal_texture = ExtResource("4")
 normal_depth = 0.403
 ao_strength = 0.0
-roughness = -0.814
-uv_scale = 0.162
+roughness = 1.0
+uv_scale = 0.276
 detiling_rotation = 0.172
 detiling_shift = 0.256
 
@@ -54,8 +55,8 @@ id = 2
 albedo_texture = ExtResource("5")
 normal_texture = ExtResource("6")
 ao_strength = 0.886
-roughness = -0.18
-uv_scale = 0.069
+roughness = 1.0
+uv_scale = 0.303
 detiling_rotation = 0.503
 detiling_shift = 0.345
 
