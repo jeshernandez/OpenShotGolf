@@ -1,82 +1,118 @@
 @startuml
 title Golf Course Design Pipeline
 
-left to right direction
+top to bottom direction
 skinparam backgroundColor #1E1E1E
 skinparam shadowing false
 skinparam roundcorner 12
 skinparam ArrowColor #EAEAEA
 skinparam ArrowFontColor white
-skinparam ArrowFontSize 22
+skinparam ArrowFontSize 20
 skinparam defaultFontColor white
-skinparam defaultFontSize 22
+skinparam defaultFontSize 20
 skinparam defaultTextAlignment center
 skinparam NoteBackgroundColor #2A2A2A
 skinparam NoteBorderColor #BBBBBB
 skinparam NoteFontColor white
-skinparam NoteFontSize 22
+skinparam NoteFontSize 19
 
 rectangle "Designer" as Designer #33415C
-rectangle "Source Data\nOSM, USGS 3DEP,\nOpenTopography,\nQGIS" as SourceData #4A3B24
-rectangle "Prepared Files\nboundary.geojson\nholes.geojson\ndem.tif\nlidar.laz\nbunkers.geojson" as Prepared #4A3B24
-rectangle "Golf Course\nDesign Dock" as Dock #30445A
-rectangle "course_design.tres" as ProjectFile #2F4A3E
-rectangle "GDAL + PDAL + OGR" as Tools #46314F
-rectangle "Staged Terrain\n.golf_course_design" as Staging #294E4A
-rectangle "Terrain3D\nTerrain/" as TerrainFolder #2F3F57
-rectangle "Shared Base Scene\ncourse_base.tscn" as BaseScene #34425C
-rectangle "CoursePlay\ncourse_play.gd\n(shared gameplay)" as CoursePlay #34425C
-rectangle "Hole Markers\ntees + pins" as Holes #34523D
-rectangle "course.gd\nextends CoursePlay" as ScriptFile #3C3C3C
-rectangle "course.tscn" as SceneFile #3C3C3C
-rectangle "course.json" as JsonFile #3C3C3C
-rectangle "Godot 3D View" as GodotView #274A5A
 
-Designer --> SourceData : choose course\nand licenses
-SourceData --> Prepared : clip, trace,\nclean data
-Designer --> Dock : set output,\nterrain, holes
-Prepared --> Dock : hole and bunker GeoJSON
-Prepared --> Tools : DEM or lidar,\nboundary, overlay
-Dock --> ProjectFile : save editable\nproject
-ProjectFile --> Tools : import settings
-Tools --> Staging : fill NoData,\nbuild heightmap,\ncreate class map
-Staging --> TerrainFolder : replace after\nsuccessful build
+package "Gather public source data" #292929 {
+  rectangle "Browser and manual tools\nOpenStreetMap\nOverpass Turbo\nQGIS\nUSGS Downloader\nOpenTopography" as Browser #4A3B24
+  rectangle "Optional scripted APIs\nOSM known-way API\nOverpass API\nUSGS TNM Access API\nOpenTopography API" as Api #4A3B24
+}
+
+package "Choose prepared inputs" #292929 {
+  rectangle "Boundary GeoJSON\noptional DEM crop" as Boundary #624A2E
+  rectangle "Hole lines GeoJSON\noptional import and zones" as HoleLines #624A2E
+  rectangle "Bunker GeoJSON\noptional sand zones" as Bunkers #624A2E
+  rectangle "GeoTIFF DEM\nHeightmap mode" as Dem #624A2E
+  rectangle "LAS or LAZ lidar\nPoint cloud mode" as Lidar #624A2E
+  rectangle "Existing Terrain3D folder\nManual or external mode" as ExternalTerrain #624A2E
+}
+
+rectangle "Golf Course\nDesign Dock" as Dock #30445A
+rectangle "course_design.tres\neditable settings" as ProjectFile #2F4A3E
+rectangle "GDAL + OGR" as Gdal #46314F
+rectangle "PDAL rasterization" as Pdal #46314F
+rectangle "Staged terrain\n.golf_course_design/" as Staging #294E4A
+rectangle "Terrain3D data\nTerrain/" as TerrainFolder #2F3F57
+rectangle "Shared base scene\ncourse_base.tscn" as BaseScene #34425C
+rectangle "Shared gameplay\ncourse_play.gd" as CoursePlay #34425C
+rectangle "course.gd\nextends CoursePlay" as ScriptFile #3C3C3C
+rectangle "course.json\ncourse metadata" as JsonFile #3C3C3C
+rectangle "course.tscn\none playable scene" as SceneFile #3C3C3C
+rectangle "Godot 3D view\nand course selector" as GodotView #274A5A
+
+Designer --> Browser : point-and-click path
+Designer --> Api : repeatable scripted path
+Browser --> Boundary
+Browser --> HoleLines
+Browser --> Bunkers
+Browser --> Dem
+Browser --> Lidar
+Api --> Boundary
+Api --> HoleLines
+Api --> Dem
+Api --> Lidar
+
+Boundary --> Dock : optional crop
+HoleLines --> Dock : optional import and painting
+Bunkers --> Dock : optional painting
+Dem --> Dock : Heightmap
+Lidar --> Dock : Point cloud
+ExternalTerrain --> Dock : Manual or external data
+
+Dock --> ProjectFile : Save
+ProjectFile --> Dock : Load
+Dock --> Pdal : point-cloud build
+Lidar --> Pdal
+Pdal --> Gdal : raster heightmap
+Dock --> Gdal : heightmap build
+Dem --> Gdal
+Boundary --> Gdal : crop raster
+HoleLines --> Gdal : fairways, tees,\nand greens
+Bunkers --> Gdal : sand zones
+Gdal --> Staging : fill gaps,\nwrite EXR,\npaint zones
+ExternalTerrain --> Staging : copy folder
+Staging --> TerrainFolder : replace only\nafter success
+
+Dock --> ScriptFile : Export
+Dock --> JsonFile : Export
+Dock --> SceneFile : Export
 TerrainFolder --> SceneFile : referenced by
 BaseScene --> SceneFile : inherited root
-Dock --> Holes : import or edit\none hole at a time
-Holes --> SceneFile : marker nodes
-Dock --> ScriptFile : write thin\nCoursePlay subclass
-CoursePlay ..> ScriptFile : holes, scoring,\nper-shot camera (inherited)
-Dock --> JsonFile : course metadata
-Dock --> SceneFile : export playable\ncourse scene
-SceneFile --> GodotView : open scene\nfor preview
+CoursePlay ..> ScriptFile : inherited behavior
+ScriptFile --> SceneFile : course script
+JsonFile --> SceneFile : runtime hole data
+SceneFile --> GodotView : preview and play
 
-note bottom of Staging
-Terrain builds are staged first.
-If replacement fails, the old folder is restored.
+note right of Dem
+Use a DEM first when it is available.
+Lidar is optional and usually larger.
 end note
 
-note bottom of Tools
-Heightmap imports fill DEM gaps, then export EXR.
-Hole overlays build a class raster and paint the
-Terrain3D control map, with bunkers as sand zones.
+note right of HoleLines
+Holes can also be entered by hand.
+Generated zones need numeric hole refs.
 end note
 
-note bottom of Holes
-One course can contain many holes.
-Each imported line becomes one hole.
-Tee colours can be trimmed per course.
+note right of Staging
+Heightmap and lidar builds are staged first.
+An existing Terrain/ folder is moved to a
+timestamped backup before replacement.
+end note
+
+note right of TerrainFolder
+Generated class maps paint rough, fairway,
+green, and optional sand texture slots.
+Fine edits still happen in Terrain3D.
 end note
 
 note right of SceneFile
 The export is one scene for the full course,
 not one scene per hole.
-end note
-
-note bottom of ScriptFile
-course.gd is a one-line subclass of CoursePlay.
-Hole geometry is read at runtime from course.json
-and the HoleMarkers nodes, not baked into the script.
 end note
 
 @enduml
