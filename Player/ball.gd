@@ -42,6 +42,14 @@ var _kinetic_mult := 1.0
 var _rolling_mult := 1.0
 var _grass_mult := 1.0
 var _critical_mult := 1.0
+# Spinback (check/spin-back) parameters resolved from the lie's surface. Only greens
+# carry non-neutral values; these drive whether a steep high-spin impact checks.
+var _spinback_response_scale := 1.0
+var _spinback_theta_boost_max := 0.0
+var _spinback_spin_start_rpm := 0.0
+var _spinback_spin_end_rpm := 0.0
+var _spinback_speed_start_mps := 0.0
+var _spinback_speed_end_mps := 0.0
 
 # Environment
 var _air_density: float
@@ -351,6 +359,14 @@ func _apply_surface_params() -> void:
 	_rolling_friction = float(params.get("u_kr", 0.03)) * _rolling_mult
 	_grass_viscosity = float(params.get("nu_g", 0.0010)) * _grass_mult
 	_critical_angle = float(params.get("theta_c", 0.25)) * _critical_mult
+	# Spinback params differentiate greens (check) from fairway/rough (release). Without
+	# these the engine sees neutral spinback and greens can't check. Defaults are neutral.
+	_spinback_response_scale = float(params.get("spinback_response_scale", 1.0))
+	_spinback_theta_boost_max = float(params.get("spinback_theta_boost_max", 0.0))
+	_spinback_spin_start_rpm = float(params.get("spinback_spin_start_rpm", 0.0))
+	_spinback_spin_end_rpm = float(params.get("spinback_spin_end_rpm", 0.0))
+	_spinback_speed_start_mps = float(params.get("spinback_speed_start_mps", 0.0))
+	_spinback_speed_end_mps = float(params.get("spinback_speed_end_mps", 0.0))
 	if OS.is_debug_build():
 		print("Surface set to %s -> u_k=%.3f, u_kr=%.3f, nu_g=%.4f, theta_c=%.3f" % [
 			str(surface_type), _kinetic_friction, _rolling_friction, _grass_viscosity, _critical_angle
@@ -420,6 +436,15 @@ func _create_physics_params():
 	_set_openfairway_property(params, &"critical_angle", &"CriticalAngle", _critical_angle)
 	_set_openfairway_property(params, &"floor_normal", &"FloorNormal", floor_normal)
 	_set_openfairway_property(params, &"rollout_impact_spin", &"RolloutImpactSpin", rollout_impact_spin_rpm)
+	# Surface type + spinback params let the bounce model differentiate check (green) from
+	# release (fairway/rough). Required for greens to check and for the over-check floor.
+	_set_openfairway_property(params, &"surface_type", &"SurfaceType", surface_type)
+	_set_openfairway_property(params, &"spinback_response_scale", &"SpinbackResponseScale", _spinback_response_scale)
+	_set_openfairway_property(params, &"spinback_theta_boost_max", &"SpinbackThetaBoostMax", _spinback_theta_boost_max)
+	_set_openfairway_property(params, &"spinback_spin_start_rpm", &"SpinbackSpinStartRpm", _spinback_spin_start_rpm)
+	_set_openfairway_property(params, &"spinback_spin_end_rpm", &"SpinbackSpinEndRpm", _spinback_spin_end_rpm)
+	_set_openfairway_property(params, &"spinback_speed_start_mps", &"SpinbackSpeedStartMps", _spinback_speed_start_mps)
+	_set_openfairway_property(params, &"spinback_speed_end_mps", &"SpinbackSpeedEndMps", _spinback_speed_end_mps)
 	return params
 
 

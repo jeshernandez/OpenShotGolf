@@ -128,6 +128,15 @@ public partial class BounceCalculator : RefCounted
                 float spinbackTerm = 2.0f * BallPhysics.RADIUS * omegaTangentMagnitude * Mathf.Max(parameters.SpinbackResponseScale, 0.0f) / 7.0f;
                 newTangentSpeed = tangentialRetention * vel.Length() * Mathf.Sin(impactAngle - effectiveCriticalAngle) -
                     spinbackTerm;
+                // Non-spinback lies (fairway/rough/firm) must never check below simple
+                // friction-retention. Near the critical angle the Penner sin() term
+                // collapses toward zero, which would stop a low-launch shot dead even on
+                // a lie that should release. Only true spin-back surfaces (greens) may
+                // drop below / reverse. See plan: low-VLA over-check fix.
+                if (!hasSpinbackSurface)
+                {
+                    newTangentSpeed = Mathf.Max(newTangentSpeed, speedTangent * tangentialRetention);
+                }
                 PhysicsLogger.Verbose($"  Bounce: Penner model ({parameters.SurfaceType}) speed={impactSpeed:F2} m/s angle={impactAngleDeg:F2}° crit={criticalAngleDeg:F2}°");
                 PhysicsLogger.Verbose($"    speedTangent={speedTangent:F2} m/s, spinbackScale={parameters.SpinbackResponseScale:F2}, newTangentSpeed={newTangentSpeed:F2} m/s");
             }
@@ -387,6 +396,15 @@ public partial class BounceCalculator : RefCounted
                 float spinbackTerm = 2.0f * BallPhysics.RADIUS * omegaTangentMagnitude * Mathf.Max(parameters.SpinbackResponseScale, 0.0f) / 7.0f;
                 newTangentSpeed = tangentialRetention * vel.Length() * Mathf.Sin(impactAngle - effectiveCriticalAngle) -
                     spinbackTerm;
+                // Non-spinback lies (fairway/rough/firm) must never check below simple
+                // friction-retention. Near the critical angle the Penner sin() term
+                // collapses toward zero, which would stop a low-launch shot dead even on
+                // a lie that should release. Only true spin-back surfaces (greens) may
+                // drop below / reverse. See plan: low-VLA over-check fix.
+                if (!hasSpinbackSurface)
+                {
+                    newTangentSpeed = Mathf.Max(newTangentSpeed, speedTangent * tangentialRetention);
+                }
                 PhysicsLogger.Verbose($"  Bounce: Penner model ({parameters.SurfaceType}) speed={impactSpeed:F2} m/s angle={impactAngleDeg:F2}° crit={criticalAngleDeg:F2}°");
                 PhysicsLogger.Verbose($"    speedTangent={speedTangent:F2} m/s, spinbackScale={parameters.SpinbackResponseScale:F2}, newTangentSpeed={newTangentSpeed:F2} m/s");
             }
