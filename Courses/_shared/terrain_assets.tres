@@ -29,7 +29,7 @@ lod0_range = 128.0
 
 [sub_resource type="Terrain3DTextureAsset" id="Terrain3DTextureAsset_green"]
 name = "Green"
-albedo_color = Color(0.6624526, 0.6624523, 0.6624523, 1)
+albedo_color = Color(0.827451, 0.827451, 0.827451, 1)
 albedo_texture = ExtResource("1")
 normal_texture = ExtResource("2")
 roughness = 1.0
@@ -39,15 +39,14 @@ detiling_shift = 0.05
 [sub_resource type="Terrain3DTextureAsset" id="Terrain3DTextureAsset_fairway"]
 name = "Fairway"
 id = 1
-albedo_color = Color(0.796243, 0.796243, 0.796243, 1)
+albedo_color = Color(0.631373, 0.631373, 0.631373, 1)
 albedo_texture = ExtResource("3")
 normal_texture = ExtResource("4")
 normal_depth = 0.403
 ao_strength = 0.0
 roughness = 1.0
-uv_scale = 0.276
-detiling_rotation = 0.172
-detiling_shift = 0.256
+uv_scale = 0.256
+detiling_shift = 0.05
 
 [sub_resource type="Terrain3DTextureAsset" id="Terrain3DTextureAsset_rough"]
 name = "Rough"
