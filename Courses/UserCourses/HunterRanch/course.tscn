@@ -1,0 +1,537 @@
+[gd_scene format=3 uid="uid://c6mrvt8lgsb4c"]
+
+[ext_resource type="PackedScene" uid="uid://cxfmki7gy8qgb" path="res://Courses/_shared/course_base.tscn" id="1_base"]
+[ext_resource type="Script" uid="uid://c7ggs76ugdd4i" path="res://Courses/UserCourses/HunterRanch/course.gd" id="2_course"]
+[ext_resource type="Script" uid="uid://cl7q5s15wev6" path="res://Courses/_shared/hole_markers_snap.gd" id="3_markers"]
+
+[sub_resource type="CylinderMesh" id="PinPostMesh"]
+top_radius = 0.12
+bottom_radius = 0.12
+height = 6.0
+
+[sub_resource type="StandardMaterial3D" id="PinPostMat"]
+albedo_color = Color(0.85, 0.12, 0.12, 1)
+emission_enabled = true
+emission = Color(0.85, 0.12, 0.12, 1)
+emission_energy_multiplier = 0.35
+
+[node name="Course" unique_id=695516168 instance=ExtResource("1_base")]
+script = ExtResource("2_course")
+
+[node name="Terrain3D" parent="." index="3"]
+data_directory = "res://Courses/UserCourses/HunterRanch/Terrain"
+
+[node name="PhantomCamera3D" parent="." index="5"]
+transform = Transform3D(-0.546517, 0, 0.837448, 0.064229, 0.997055, 0.041916, -0.834981, 0.076696, -0.544908, 685.9753, 3, 569.7209)
+follow_offset = Vector3(-2.093621, 1.5, -1.366292)
+
+[node name="Camera3D" parent="." index="6"]
+transform = Transform3D(-0.546517, 0, 0.837448, 0.064229, 0.997055, 0.041916, -0.834981, 0.076696, -0.544908, 685.9753, 3, 569.7209)
+far = 8000.0
+
+[node name="HoleMarkers" type="Node3D" parent="." index="8" unique_id=21261697]
+script = ExtResource("3_markers")
+
+[node name="Hole 1" type="Node3D" parent="HoleMarkers" index="0" unique_id=1936442815]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 999, 17.952728, 774)
+
+[node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 1" index="0" unique_id=1901144034]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
+mesh = SubResource("PinPostMesh")
+surface_material_override/0 = SubResource("PinPostMat")
+
+[node name="Black Tee" type="Node3D" parent="HoleMarkers/Hole 1" index="1" unique_id=1276343289]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -308, 10.0598755, -201)
+
+[node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 1/Black Tee" index="0" unique_id=2145920550]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.25, 0)
+pixel_size = 0.08
+billboard = 1
+text = "1"
+font_size = 80
+outline_size = 18
+
+[node name="Blue Tee" type="Node3D" parent="HoleMarkers/Hole 1" index="2" unique_id=1041206746]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -406.5, 10.677429, -301)
+
+[node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 1" index="3" unique_id=269005749]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -305, 10.056244, -201)
+
+[node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 1" index="4" unique_id=815915648]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -303.5, 10.028, -201)
+
+[node name="Hole 2" type="Node3D" parent="HoleMarkers" index="1" unique_id=77096409]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1097.303, 33.18277, 475.148)
+
+[node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 2" index="0" unique_id=817456224]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
+mesh = SubResource("PinPostMesh")
+surface_material_override/0 = SubResource("PinPostMat")
+
+[node name="Black Tee" type="Node3D" parent="HoleMarkers/Hole 2" index="1" unique_id=9557122]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -58.665, 2.9500427, 405.214)
+
+[node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 2/Black Tee" index="0" unique_id=1891832495]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.25, 0)
+pixel_size = 0.08
+billboard = 1
+text = "2"
+font_size = 80
+outline_size = 18
+
+[node name="Blue Tee" type="Node3D" parent="HoleMarkers/Hole 2" index="2" unique_id=393245217]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -57.165, 2.950653, 405.214)
+
+[node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 2" index="3" unique_id=758605435]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -55.665, 2.9447021, 405.214)
+
+[node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 2" index="4" unique_id=239668992]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -54.165, 2.9352646, 405.214)
+
+[node name="Hole 3" type="Node3D" parent="HoleMarkers" index="2" unique_id=1008203855]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1098.34, 25.928217, 253.613)
+
+[node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 3" index="0" unique_id=425543587]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
+mesh = SubResource("PinPostMesh")
+surface_material_override/0 = SubResource("PinPostMat")
+
+[node name="Black Tee" type="Node3D" parent="HoleMarkers/Hole 3" index="1" unique_id=1467400244]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.543, 9.986387, 177.529)
+
+[node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 3/Black Tee" index="0" unique_id=1420239774]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.25, 0)
+pixel_size = 0.08
+billboard = 1
+text = "3"
+font_size = 80
+outline_size = 18
+
+[node name="Blue Tee" type="Node3D" parent="HoleMarkers/Hole 3" index="2" unique_id=1286321309]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.043, 9.998575, 177.529)
+
+[node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 3" index="3" unique_id=1336750713]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13.543, 9.972754, 177.529)
+
+[node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 3" index="4" unique_id=1700149752]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.043, 9.911051, 177.529)
+
+[node name="Hole 4" type="Node3D" parent="HoleMarkers" index="3" unique_id=1832623316]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 764.977, 24.479004, 83.059)
+
+[node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 4" index="0" unique_id=1711409939]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
+mesh = SubResource("PinPostMesh")
+surface_material_override/0 = SubResource("PinPostMat")
+
+[node name="Black Tee" type="Node3D" parent="HoleMarkers/Hole 4" index="1" unique_id=19114382]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 342.815, -0.37277794, 126.633)
+
+[node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 4/Black Tee" index="0" unique_id=1173008279]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.25, 0)
+pixel_size = 0.08
+billboard = 1
+text = "4"
+font_size = 80
+outline_size = 18
+
+[node name="Blue Tee" type="Node3D" parent="HoleMarkers/Hole 4" index="2" unique_id=1776399081]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 344.315, -0.38432693, 126.633)
+
+[node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 4" index="3" unique_id=1827240468]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 345.815, -0.3907795, 126.633)
+
+[node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 4" index="4" unique_id=1970149929]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 347.315, -0.39658737, 126.633)
+
+[node name="Hole 5" type="Node3D" parent="HoleMarkers" index="4" unique_id=1894003905]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1006.288, 38.819675, 370.459)
+
+[node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 5" index="0" unique_id=937888185]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
+mesh = SubResource("PinPostMesh")
+surface_material_override/0 = SubResource("PinPostMat")
+
+[node name="Black Tee" type="Node3D" parent="HoleMarkers/Hole 5" index="1" unique_id=99767233]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -219.632, -8.036531, -219.069)
+
+[node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 5/Black Tee" index="0" unique_id=1963023606]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.25, 0)
+pixel_size = 0.08
+billboard = 1
+text = "5"
+font_size = 80
+outline_size = 18
+
+[node name="Blue Tee" type="Node3D" parent="HoleMarkers/Hole 5" index="2" unique_id=732663027]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -218.132, -8.038715, -219.069)
+
+[node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 5" index="3" unique_id=1066086729]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -216.632, -8.048006, -219.069)
+
+[node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 5" index="4" unique_id=1973391205]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -215.132, -8.063831, -219.069)
+
+[node name="Hole 6" type="Node3D" parent="HoleMarkers" index="5" unique_id=221915971]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 612.679, 17.049871, 240.901)
+
+[node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 6" index="0" unique_id=1162537818]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
+mesh = SubResource("PinPostMesh")
+surface_material_override/0 = SubResource("PinPostMat")
+
+[node name="Black Tee" type="Node3D" parent="HoleMarkers/Hole 6" index="1" unique_id=1495606093]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 409.936, 15.901003, 203.879)
+
+[node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 6/Black Tee" index="0" unique_id=349124789]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.25, 0)
+pixel_size = 0.08
+billboard = 1
+text = "6"
+font_size = 80
+outline_size = 18
+
+[node name="Blue Tee" type="Node3D" parent="HoleMarkers/Hole 6" index="2" unique_id=1164713550]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 411.436, 15.908529, 203.879)
+
+[node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 6" index="3" unique_id=297587016]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 412.936, 15.907251, 203.879)
+
+[node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 6" index="4" unique_id=1099007844]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 414.436, 15.849333, 203.879)
+
+[node name="Hole 7" type="Node3D" parent="HoleMarkers" index="6" unique_id=565651656]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 995.385, 28.915068, 489.065)
+
+[node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 7" index="0" unique_id=1615852134]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
+mesh = SubResource("PinPostMesh")
+surface_material_override/0 = SubResource("PinPostMat")
+
+[node name="Black Tee" type="Node3D" parent="HoleMarkers/Hole 7" index="1" unique_id=1158575618]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -420.479, -11.295807, -237.004)
+
+[node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 7/Black Tee" index="0" unique_id=1031686869]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.25, 0)
+pixel_size = 0.08
+billboard = 1
+text = "7"
+font_size = 80
+outline_size = 18
+
+[node name="Blue Tee" type="Node3D" parent="HoleMarkers/Hole 7" index="2" unique_id=173050520]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -418.979, -11.287296, -237.004)
+
+[node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 7" index="3" unique_id=908669008]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -417.479, -11.288586, -237.004)
+
+[node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 7" index="4" unique_id=1830019630]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -415.979, -11.374022, -237.004)
+
+[node name="Hole 8" type="Node3D" parent="HoleMarkers" index="7" unique_id=672823785]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1013.382, 31.768217, 605.35)
+
+[node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 8" index="0" unique_id=1718453213]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
+mesh = SubResource("PinPostMesh")
+surface_material_override/0 = SubResource("PinPostMat")
+
+[node name="Black Tee" type="Node3D" parent="HoleMarkers/Hole 8" index="1" unique_id=1628272802]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 35.534, 2.6385326, -165.482)
+
+[node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 8/Black Tee" index="0" unique_id=251396508]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.25, 0)
+pixel_size = 0.08
+billboard = 1
+text = "8"
+font_size = 80
+outline_size = 18
+
+[node name="Blue Tee" type="Node3D" parent="HoleMarkers/Hole 8" index="2" unique_id=303389440]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 37.034, 2.6501255, -165.482)
+
+[node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 8" index="3" unique_id=1782775789]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 38.534, 2.6184864, -165.482)
+
+[node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 8" index="4" unique_id=1641354515]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 40.034, 2.6125774, -165.482)
+
+[node name="Hole 9" type="Node3D" parent="HoleMarkers" index="8" unique_id=835627020]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 737.799, 23.650787, 527.646)
+
+[node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 9" index="0" unique_id=1664039757]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
+mesh = SubResource("PinPostMesh")
+surface_material_override/0 = SubResource("PinPostMat")
+
+[node name="Black Tee" type="Node3D" parent="HoleMarkers/Hole 9" index="1" unique_id=296106247]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 259.099, 4.710621, 147.792)
+
+[node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 9/Black Tee" index="0" unique_id=286388307]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.25, 0)
+pixel_size = 0.08
+billboard = 1
+text = "9"
+font_size = 80
+outline_size = 18
+
+[node name="Blue Tee" type="Node3D" parent="HoleMarkers/Hole 9" index="2" unique_id=1473541984]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 260.599, 4.732582, 147.792)
+
+[node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 9" index="3" unique_id=1496781141]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 262.099, 4.7248955, 147.792)
+
+[node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 9" index="4" unique_id=603916882]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 263.599, 4.6690598, 147.792)
+
+[node name="Hole 10" type="Node3D" parent="HoleMarkers" index="9" unique_id=1955389129]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 434.661, 7.8657813, 730.842)
+
+[node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 10" index="0" unique_id=555047610]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
+mesh = SubResource("PinPostMesh")
+surface_material_override/0 = SubResource("PinPostMat")
+
+[node name="Black Tee" type="Node3D" parent="HoleMarkers/Hole 10" index="1" unique_id=1202151367]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 160.07, 21.033932, -225.439)
+
+[node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 10/Black Tee" index="0" unique_id=425333853]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.25, 0)
+pixel_size = 0.08
+billboard = 1
+text = "10"
+font_size = 80
+outline_size = 18
+
+[node name="Blue Tee" type="Node3D" parent="HoleMarkers/Hole 10" index="2" unique_id=1145409921]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 161.57, 21.032047, -225.439)
+
+[node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 10" index="3" unique_id=1192131696]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 163.07, 21.014458, -225.439)
+
+[node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 10" index="4" unique_id=1413060120]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 164.57, 20.987282, -225.439)
+
+[node name="Hole 11" type="Node3D" parent="HoleMarkers" index="10" unique_id=54774483]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 137.01, 4.6759863, 601.049)
+
+[node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 11" index="0" unique_id=1499680541]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
+mesh = SubResource("PinPostMesh")
+surface_material_override/0 = SubResource("PinPostMat")
+
+[node name="Black Tee" type="Node3D" parent="HoleMarkers/Hole 11" index="1" unique_id=1496390132]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 261.628, 11.78449, 245.209)
+
+[node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 11/Black Tee" index="0" unique_id=1884990965]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.25, 0)
+pixel_size = 0.08
+billboard = 1
+text = "11"
+font_size = 80
+outline_size = 18
+
+[node name="Blue Tee" type="Node3D" parent="HoleMarkers/Hole 11" index="2" unique_id=1159182469]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 263.128, 11.816369, 245.209)
+
+[node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 11" index="3" unique_id=663703538]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 264.628, 11.847011, 245.209)
+
+[node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 11" index="4" unique_id=369303971]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 266.128, 11.88234, 245.209)
+
+[node name="Hole 12" type="Node3D" parent="HoleMarkers" index="11" unique_id=311289323]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 344.654, 12.429024, 861.273)
+
+[node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 12" index="0" unique_id=1627711668]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
+mesh = SubResource("PinPostMesh")
+surface_material_override/0 = SubResource("PinPostMat")
+
+[node name="Black Tee" type="Node3D" parent="HoleMarkers/Hole 12" index="1" unique_id=515133792]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -221.566, -9.692863, -177.556)
+
+[node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 12/Black Tee" index="0" unique_id=1849666670]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.25, 0)
+pixel_size = 0.08
+billboard = 1
+text = "12"
+font_size = 80
+outline_size = 18
+
+[node name="Blue Tee" type="Node3D" parent="HoleMarkers/Hole 12" index="2" unique_id=1604554769]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -220.066, -9.692863, -177.556)
+
+[node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 12" index="3" unique_id=538807011]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -218.566, -9.692863, -177.556)
+
+[node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 12" index="4" unique_id=2112213449]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -217.066, -9.692863, -177.556)
+
+[node name="Hole 13" type="Node3D" parent="HoleMarkers" index="12" unique_id=1813030909]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 54.757, 13.796643, 883.809)
+
+[node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 13" index="0" unique_id=1471910638]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
+mesh = SubResource("PinPostMesh")
+surface_material_override/0 = SubResource("PinPostMat")
+
+[node name="Black Tee" type="Node3D" parent="HoleMarkers/Hole 13" index="1" unique_id=24761353]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 367.012, 8.37004, 20.866)
+
+[node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 13/Black Tee" index="0" unique_id=1672702257]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.25, 0)
+pixel_size = 0.08
+billboard = 1
+text = "13"
+font_size = 80
+outline_size = 18
+
+[node name="Blue Tee" type="Node3D" parent="HoleMarkers/Hole 13" index="2" unique_id=1609527083]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 368.512, 8.396388, 20.866)
+
+[node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 13" index="3" unique_id=356983462]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 370.012, 8.431514, 20.866)
+
+[node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 13" index="4" unique_id=1341094053]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 371.512, 8.470494, 20.866)
+
+[node name="Hole 14" type="Node3D" parent="HoleMarkers" index="13" unique_id=813446200]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 37.164, 7.232232, 639.726)
+
+[node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 14" index="0" unique_id=1884470488]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
+mesh = SubResource("PinPostMesh")
+surface_material_override/0 = SubResource("PinPostMat")
+
+[node name="Black Tee" type="Node3D" parent="HoleMarkers/Hole 14" index="1" unique_id=1550142757]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25.41, 4.3076944, 167.845)
+
+[node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 14/Black Tee" index="0" unique_id=532949121]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.25, 0)
+pixel_size = 0.08
+billboard = 1
+text = "14"
+font_size = 80
+outline_size = 18
+
+[node name="Blue Tee" type="Node3D" parent="HoleMarkers/Hole 14" index="2" unique_id=2017606619]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 26.91, 4.288788, 167.845)
+
+[node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 14" index="3" unique_id=639622861]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 28.41, 4.243432, 167.845)
+
+[node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 14" index="4" unique_id=224574920]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 29.91, 4.1811075, 167.845)
+
+[node name="Hole 15" type="Node3D" parent="HoleMarkers" index="14" unique_id=1910947940]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 377.432, 6.560419, 679.444)
+
+[node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 15" index="0" unique_id=1111227935]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
+mesh = SubResource("PinPostMesh")
+surface_material_override/0 = SubResource("PinPostMat")
+
+[node name="Black Tee" type="Node3D" parent="HoleMarkers/Hole 15" index="1" unique_id=48392474]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -342.635, 1.647212, -75.082)
+
+[node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 15/Black Tee" index="0" unique_id=1463045671]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.25, 0)
+pixel_size = 0.08
+billboard = 1
+text = "15"
+font_size = 80
+outline_size = 18
+
+[node name="Blue Tee" type="Node3D" parent="HoleMarkers/Hole 15" index="2" unique_id=589945358]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -341.135, 1.6516886, -75.082)
+
+[node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 15" index="3" unique_id=1259316075]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -339.635, 1.6285095, -75.082)
+
+[node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 15" index="4" unique_id=1181977797]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -338.135, 1.5481768, -75.082)
+
+[node name="Hole 16" type="Node3D" parent="HoleMarkers" index="15" unique_id=565706790]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 374.302, 14.573512, 772.186)
+
+[node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 16" index="0" unique_id=1328844530]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
+mesh = SubResource("PinPostMesh")
+surface_material_override/0 = SubResource("PinPostMat")
+
+[node name="Black Tee" type="Node3D" parent="HoleMarkers/Hole 16" index="1" unique_id=1372999056]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -97.204, -2.493019, -119.598)
+
+[node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 16/Black Tee" index="0" unique_id=167856687]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.25, 0)
+pixel_size = 0.08
+billboard = 1
+text = "16"
+font_size = 80
+outline_size = 18
+
+[node name="Blue Tee" type="Node3D" parent="HoleMarkers/Hole 16" index="2" unique_id=83452405]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -95.704, -2.4957438, -119.598)
+
+[node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 16" index="3" unique_id=2104763186]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -94.204, -2.5256643, -119.598)
+
+[node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 16" index="4" unique_id=1606232936]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -92.704, -2.6217127, -119.598)
+
+[node name="Hole 17" type="Node3D" parent="HoleMarkers" index="16" unique_id=1184661710]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 848.685, 15.9411125, 877.309)
+
+[node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 17" index="0" unique_id=231890174]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
+mesh = SubResource("PinPostMesh")
+surface_material_override/0 = SubResource("PinPostMat")
+
+[node name="Black Tee" type="Node3D" parent="HoleMarkers/Hole 17" index="1" unique_id=403299058]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -429.745, -0.24839973, -86.177)
+
+[node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 17/Black Tee" index="0" unique_id=992498545]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.25, 0)
+pixel_size = 0.08
+billboard = 1
+text = "17"
+font_size = 80
+outline_size = 18
+
+[node name="Blue Tee" type="Node3D" parent="HoleMarkers/Hole 17" index="2" unique_id=1612376411]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -428.245, -0.22964764, -86.177)
+
+[node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 17" index="3" unique_id=1681046997]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -426.745, -0.20942974, -86.177)
+
+[node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 17" index="4" unique_id=1122321867]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -425.245, -0.20135689, -86.177)
+
+[node name="Hole 18" type="Node3D" parent="HoleMarkers" index="17" unique_id=2031503092]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 636.649, 17.390512, 607.378)
+
+[node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 18" index="0" unique_id=2010380314]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
+mesh = SubResource("PinPostMesh")
+surface_material_override/0 = SubResource("PinPostMat")
+
+[node name="Black Tee" type="Node3D" parent="HoleMarkers/Hole 18" index="1" unique_id=158347061]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 266.95, 7.3828087, 244.345)
+
+[node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 18/Black Tee" index="0" unique_id=1181396910]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.25, 0)
+pixel_size = 0.08
+billboard = 1
+text = "18"
+font_size = 80
+outline_size = 18
+
+[node name="Blue Tee" type="Node3D" parent="HoleMarkers/Hole 18" index="2" unique_id=937933248]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 268.45, 7.4012203, 244.345)
+
+[node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 18" index="3" unique_id=889193239]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 269.95, 7.413767, 244.345)
+
+[node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 18" index="4" unique_id=129318453]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 271.45, 7.4423046, 244.345)

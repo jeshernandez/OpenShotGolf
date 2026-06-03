@@ -2,6 +2,7 @@
 .godot/
 /android/
 
+/docs/*
 # Godot-specific ignores
 .import/
 export.cfg

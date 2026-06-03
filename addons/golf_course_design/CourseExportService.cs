@@ -167,7 +167,7 @@ public static class CourseExportService
 
         var builder = new StringBuilder();
         // load_steps is a hint; Godot recomputes it on save. Use a safe upper bound.
-        var loadSteps = 6;
+        var loadSteps = 7;
         builder.AppendLine($"[gd_scene load_steps={loadSteps} format=3]");
         builder.AppendLine();
         var baseSceneUid = ResourceLoader.GetResourceUid(SharedBaseScenePath);
@@ -175,6 +175,8 @@ public static class CourseExportService
         builder.AppendLine(
             $"[ext_resource type=\"PackedScene\" {uidAttr}path=\"{SharedBaseScenePath}\" id=\"1_base\"]");
         builder.AppendLine($"[ext_resource type=\"Script\" path=\"{scriptProjectPath}\" id=\"2_course\"]");
+        builder.AppendLine(
+            "[ext_resource type=\"Script\" path=\"res://Courses/_shared/hole_markers_snap.gd\" id=\"3_markers\"]");
         builder.AppendLine();
         AppendMarkerSubResources(builder);
 
@@ -210,13 +212,6 @@ public static class CourseExportService
         builder.AppendLine("emission = Color(0.85, 0.12, 0.12, 1)");
         builder.AppendLine("emission_energy_multiplier = 0.35");
         builder.AppendLine();
-        builder.AppendLine("[sub_resource type=\"SphereMesh\" id=\"TeeMesh\"]");
-        builder.AppendLine("radius = 0.5");
-        builder.AppendLine("height = 1.0");
-        builder.AppendLine();
-        builder.AppendLine("[sub_resource type=\"StandardMaterial3D\" id=\"TeeBodyMat\"]");
-        builder.AppendLine("albedo_color = Color(0.047059, 0.380392, 0, 1)");
-        builder.AppendLine();
     }
 
     private static string BuildHoleMarkerSection(GolfCourseProject project)
@@ -226,6 +221,9 @@ public static class CourseExportService
         var teeColors = project.GetEffectiveTeeColors();
         builder.AppendLine();
         builder.AppendLine("[node name=\"HoleMarkers\" type=\"Node3D\" parent=\".\"]");
+        // Snaps every marker (pin Post and the HoleNumber Label3D) onto the terrain
+        // surface once Terrain3D region data has loaded. See hole_markers_snap.gd.
+        builder.AppendLine("script = ExtResource(\"3_markers\")");
 
         for (var index = 0; index < project.Holes.Count; index++)
         {
@@ -256,15 +254,12 @@ public static class CourseExportService
                     new HashSet<string>(StringComparer.OrdinalIgnoreCase));
                 var localOffset = teeBox.Position - hole.HoleLocation + new Vector2(teeIndex * 1.5f, 0.0f);
 
+                // Empty tee anchor: positions the HoleNumber label at the tee box and lets
+                // the snap script lift it to the tee-box ground height. No visible mesh —
+                // tee spheres were removed because they obscured the ball/fairway in play.
                 builder.AppendLine();
                 builder.AppendLine($"[node name=\"{teeNodeName}\" type=\"Node3D\" parent=\"{holeNodePath}\"]");
                 builder.AppendLine($"transform = {BuildTransform(localOffset, 0.0f)}");
-
-                builder.AppendLine();
-                builder.AppendLine($"[node name=\"Marker\" type=\"MeshInstance3D\" parent=\"{holeNodePath}/{teeNodeName}\"]");
-                builder.AppendLine($"transform = {BuildTransform(Vector2.Zero, 0.5f)}");
-                builder.AppendLine("mesh = SubResource(\"TeeMesh\")");
-                builder.AppendLine("surface_material_override/0 = SubResource(\"TeeBodyMat\")");
 
                 if (teeIndex == 0)
                 {

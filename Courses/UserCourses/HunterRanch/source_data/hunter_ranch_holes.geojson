@@ -1,0 +1,554 @@
+{
+  "type": "FeatureCollection",
+  "name": "hunter_ranch_holes",
+  "generator": "overpass-api",
+  "copyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL.",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/1316501016",
+        "golf": "hole",
+        "ref": "1",
+        "name": "Hole 1",
+        "par": 4
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -120.6197223,
+            35.6480264
+          ],
+          [
+            -120.6187591,
+            35.6473816
+          ],
+          [
+            -120.6179058,
+            35.6468128
+          ],
+          [
+            -120.6168177,
+            35.6463268
+          ],
+          [
+            -120.6166375,
+            35.6462520
+          ],
+          [
+            -120.6163758,
+            35.6461466
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/1316727942",
+        "golf": "hole",
+        "ref": "2",
+        "name": "Hole 2",
+        "par": 4
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -120.6159666,
+            35.6451808
+          ],
+          [
+            -120.6158334,
+            35.6471798
+          ],
+          [
+            -120.6152106,
+            35.6488184
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/1316500996",
+        "golf": "hole",
+        "ref": "3",
+        "name": "Hole 3",
+        "par": 3
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -120.6150710,
+            35.6492123
+          ],
+          [
+            -120.6151022,
+            35.6503404
+          ],
+          [
+            -120.6151319,
+            35.6506772
+          ],
+          [
+            -120.6151398,
+            35.6508139
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/1316500997",
+        "golf": "hole",
+        "ref": "4",
+        "name": "Hole 4",
+        "par": 4
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -120.6150237,
+            35.6512075
+          ],
+          [
+            -120.6173086,
+            35.6519282
+          ],
+          [
+            -120.6187736,
+            35.6524232
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/1316500998",
+        "golf": "hole",
+        "ref": "5",
+        "name": "Hole 5",
+        "par": 4
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -120.6185526,
+            35.6518029
+          ],
+          [
+            -120.6167539,
+            35.6502624
+          ],
+          [
+            -120.6161871,
+            35.6497814
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/1316501017",
+        "golf": "hole",
+        "ref": "6",
+        "name": "Hole 6",
+        "par": 5
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -120.6160268,
+            35.6491083
+          ],
+          [
+            -120.6172180,
+            35.6496507
+          ],
+          [
+            -120.6185358,
+            35.6503074
+          ],
+          [
+            -120.6195696,
+            35.6509358
+          ],
+          [
+            -120.6201416,
+            35.6509754
+          ],
+          [
+            -120.6204968,
+            35.6510345
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/1316511683",
+        "golf": "hole",
+        "ref": "7",
+        "name": "Hole 7",
+        "par": 5
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -120.6209167,
+            35.6509422
+          ],
+          [
+            -120.6190750,
+            35.6490710
+          ],
+          [
+            -120.6174025,
+            35.6484685
+          ],
+          [
+            -120.6163392,
+            35.6487153
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/1316511685",
+        "golf": "hole",
+        "ref": "8",
+        "name": "Hole 8",
+        "par": 3
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -120.6157352,
+            35.6491468
+          ],
+          [
+            -120.6161150,
+            35.6477721
+          ],
+          [
+            -120.6161717,
+            35.6476638
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/1316511686",
+        "golf": "hole",
+        "ref": "9",
+        "name": "Hole 9",
+        "par": 4
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -120.6163724,
+            35.6470360
+          ],
+          [
+            -120.6183539,
+            35.6479408
+          ],
+          [
+            -120.6190666,
+            35.6483394
+          ],
+          [
+            -120.6191925,
+            35.6484240
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/1316511687",
+        "golf": "hole",
+        "ref": "10",
+        "name": "Hole 10",
+        "par": 4
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -120.6207656,
+            35.6486556
+          ],
+          [
+            -120.6209689,
+            35.6482654
+          ],
+          [
+            -120.6216777,
+            35.6470638
+          ],
+          [
+            -120.6225925,
+            35.6466596
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/1316511688",
+        "golf": "hole",
+        "ref": "11",
+        "name": "Hole 11",
+        "par": 4
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -120.6230209,
+            35.6456277
+          ],
+          [
+            -120.6233975,
+            35.6459042
+          ],
+          [
+            -120.6249640,
+            35.6470107
+          ],
+          [
+            -120.6258430,
+            35.6478937
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/1316511689",
+        "golf": "hole",
+        "ref": "12",
+        "name": "Hole 12",
+        "par": 4
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -120.6260187,
+            35.6471520
+          ],
+          [
+            -120.6252980,
+            35.6458902
+          ],
+          [
+            -120.6236207,
+            35.6455042
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/1316511690",
+        "golf": "hole",
+        "ref": "13",
+        "name": "Hole 13",
+        "par": 4
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -120.6227812,
+            35.6450964
+          ],
+          [
+            -120.6250562,
+            35.6452569
+          ],
+          [
+            -120.6265947,
+            35.6453523
+          ],
+          [
+            -120.6268262,
+            35.6453643
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/1316511691",
+        "golf": "hole",
+        "ref": "14",
+        "name": "Hole 14",
+        "par": 3
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -120.6267196,
+            35.6460494
+          ],
+          [
+            -120.6269553,
+            35.6475670
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/1316846692",
+        "golf": "hole",
+        "ref": "15",
+        "name": "Hole 15",
+        "par": 5
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -120.6269720,
+            35.6478861
+          ],
+          [
+            -120.6265699,
+            35.6480486
+          ],
+          [
+            -120.6250062,
+            35.6487446
+          ],
+          [
+            -120.6235234,
+            35.6481928
+          ],
+          [
+            -120.6232104,
+            35.6471351
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/1316511693",
+        "golf": "hole",
+        "ref": "16",
+        "name": "Hole 16",
+        "par": 3
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -120.6243106,
+            35.6473989
+          ],
+          [
+            -120.6232697,
+            35.6463003
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/1316229001",
+        "golf": "hole",
+        "ref": "17",
+        "name": "Hole 17",
+        "par": 5
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -120.6227821,
+            35.6461199
+          ],
+          [
+            -120.6208224,
+            35.6467813
+          ],
+          [
+            -120.6199069,
+            35.6463858
+          ],
+          [
+            -120.6188907,
+            35.6458131
+          ],
+          [
+            -120.6182995,
+            35.6454437
+          ],
+          [
+            -120.6180622,
+            35.6452498
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/1316511694",
+        "golf": "hole",
+        "ref": "18",
+        "name": "Hole 18",
+        "par": 4
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -120.6174493,
+            35.6454683
+          ],
+          [
+            -120.6195736,
+            35.6470396
+          ],
+          [
+            -120.6203302,
+            35.6477278
+          ]
+        ]
+      }
+    }
+  ]
+}
