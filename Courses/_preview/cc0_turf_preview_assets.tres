@@ -1,0 +1,77 @@
+[gd_resource type="Terrain3DAssets" format=3]
+
+[ext_resource type="Texture2D" path="res://Courses/_preview/texture_images/cc0_1k/Grass005_1K_alb_hgt.png" id="1_green_albedo"]
+[ext_resource type="Texture2D" path="res://Courses/_preview/texture_images/cc0_1k/Grass005_1K_nrm_rgh.png" id="2_green_normal"]
+[ext_resource type="Texture2D" path="res://Courses/_preview/texture_images/cc0_1k/Grass008_1K_alb_hgt.png" id="3_fairway_albedo"]
+[ext_resource type="Texture2D" path="res://Courses/_preview/texture_images/cc0_1k/Grass008_1K_nrm_rgh.png" id="4_fairway_normal"]
+[ext_resource type="Texture2D" path="res://Courses/_preview/texture_images/cc0_1k/Grass007_1K_alb_hgt.png" id="5_rough_albedo"]
+[ext_resource type="Texture2D" path="res://Courses/_preview/texture_images/cc0_1k/Grass007_1K_nrm_rgh.png" id="6_rough_normal"]
+[ext_resource type="Texture2D" path="res://Courses/_preview/texture_images/cc0_1k/Sand_1K_alb_hgt.png" id="7_sand_albedo"]
+[ext_resource type="Texture2D" path="res://Courses/_preview/texture_images/cc0_1k/Sand_1K_nrm_rgh.png" id="8_sand_normal"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_grass_preview"]
+transparency = 4
+cull_mode = 2
+vertex_color_use_as_albedo = true
+backlight_enabled = true
+backlight = Color(0.5, 0.5, 0.5, 1)
+distance_fade_mode = 1
+distance_fade_min_distance = 128.0
+distance_fade_max_distance = 96.0
+
+[sub_resource type="Terrain3DMeshAsset" id="Terrain3DMeshAsset_grass_preview"]
+generated_type = 1
+height_offset = 0.5
+material_override = SubResource("StandardMaterial3D_grass_preview")
+last_lod = 0
+last_shadow_lod = 0
+lod0_range = 128.0
+
+[sub_resource type="Terrain3DTextureAsset" id="Terrain3DTextureAsset_green"]
+name = "Preview Green"
+albedo_color = Color(0.76, 0.82, 0.7, 1)
+albedo_texture = ExtResource("1_green_albedo")
+normal_texture = ExtResource("2_green_normal")
+normal_depth = 0.22
+ao_strength = 0.12
+roughness = 0.9
+uv_scale = 0.28
+detiling_shift = 0.12
+
+[sub_resource type="Terrain3DTextureAsset" id="Terrain3DTextureAsset_fairway"]
+name = "Preview Fairway"
+id = 1
+albedo_color = Color(0.66, 0.74, 0.58, 1)
+albedo_texture = ExtResource("3_fairway_albedo")
+normal_texture = ExtResource("4_fairway_normal")
+normal_depth = 0.3
+ao_strength = 0.08
+roughness = 0.95
+uv_scale = 0.32
+detiling_rotation = 0.25
+detiling_shift = 0.35
+
+[sub_resource type="Terrain3DTextureAsset" id="Terrain3DTextureAsset_rough"]
+name = "Preview Rough"
+id = 2
+albedo_color = Color(0.72, 0.78, 0.58, 1)
+albedo_texture = ExtResource("5_rough_albedo")
+normal_texture = ExtResource("6_rough_normal")
+normal_depth = 0.45
+ao_strength = 0.2
+roughness = 1.0
+uv_scale = 0.36
+detiling_rotation = 0.48
+detiling_shift = 0.42
+
+[sub_resource type="Terrain3DTextureAsset" id="Terrain3DTextureAsset_sand"]
+name = "Preview Sand"
+id = 3
+albedo_texture = ExtResource("7_sand_albedo")
+normal_texture = ExtResource("8_sand_normal")
+uv_scale = 0.35
+detiling_shift = 0.06
+
+[resource]
+mesh_list = Array[Terrain3DMeshAsset]([SubResource("Terrain3DMeshAsset_grass_preview")])
+texture_list = Array[Terrain3DTextureAsset]([SubResource("Terrain3DTextureAsset_green"), SubResource("Terrain3DTextureAsset_fairway"), SubResource("Terrain3DTextureAsset_rough"), SubResource("Terrain3DTextureAsset_sand")])

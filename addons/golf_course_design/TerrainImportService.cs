@@ -23,12 +23,28 @@ public sealed record TerrainBuildPending(
     double RasterMinX,
     double RasterMinY,
     double RasterMaxX,
-    double RasterMaxY) : TerrainBuildStaging;
+    double RasterMaxY,
+    int TextureBlendRadiusPixels) : TerrainBuildStaging;
 
 public static class TerrainImportService
 {
     private const string RangeTerrainPath = "res://Courses/Range/Terrain";
     private const string ImportRunnerPath = "res://addons/golf_course_design/TerrainImportRunner.gd";
+
+    // Shared Terrain3D assets resource inherited by every exported course via course_base.tscn.
+    // The control map painted into each course's Terrain folder only stores texture slot indices;
+    // the actual look of each slot (albedo/normal + material props) lives here. These constants
+    // are the authoritative, in-code definition of the Green (slot 0) texture so a Build terrain
+    // run reproduces them instead of depending on a hand-edited .tres. Green only by request;
+    // Fairway/Rough/Sand are left untouched.
+    private const string SharedTerrainAssetsPath = "res://Courses/_shared/terrain_assets.tres";
+    private const int GreenTextureSlot = 0;
+    private const float GreenNormalDepth = 1.985f;
+    private const float GreenAoStrength = 2.0f;
+    private const float GreenRoughness = 1.0f;
+    private const float GreenUvScale = 1.869f;
+    private const float GreenDetilingRotation = 0.852f;
+    private const float GreenDetilingShift = 0.257f;
 
     // Convenience wrapper: runs the full pipeline synchronously (background pipeline + main-thread finalize).
     public static TerrainBuildResult BuildTerrain(GolfCourseProject project, Node helperHost)
@@ -88,7 +104,8 @@ public static class TerrainImportService
                 var (hPath, cPath, scale, offset, hClassPath, hGrid) = PrepareHeightmapPipeline(project, workspaceAbsolutePath);
                 return new TerrainBuildPending(stagingTerrainPath, terrainAbsolutePath, terrainProjectPath,
                     hPath, cPath, scale, offset, hClassPath,
-                    hGrid?.MinX ?? 0, hGrid?.MinY ?? 0, hGrid?.MaxX ?? 0, hGrid?.MaxY ?? 0);
+                    hGrid?.MinX ?? 0, hGrid?.MinY ?? 0, hGrid?.MaxX ?? 0, hGrid?.MaxY ?? 0,
+                    GetTextureBlendRadiusPixels(profile));
 
             case TerrainImportProfile.TerrainImportMode.PointCloud:
                 ValidateGdalTools(profile);
@@ -96,7 +113,8 @@ public static class TerrainImportService
                 var (pcPath, pcColor, pcScale, pcOffset, pcClassPath, pcGrid) = PreparePointCloudPipeline(project, workspaceAbsolutePath);
                 return new TerrainBuildPending(stagingTerrainPath, terrainAbsolutePath, terrainProjectPath,
                     pcPath, pcColor, pcScale, pcOffset, pcClassPath,
-                    pcGrid?.MinX ?? 0, pcGrid?.MinY ?? 0, pcGrid?.MaxX ?? 0, pcGrid?.MaxY ?? 0);
+                    pcGrid?.MinX ?? 0, pcGrid?.MinY ?? 0, pcGrid?.MaxX ?? 0, pcGrid?.MaxY ?? 0,
+                    GetTextureBlendRadiusPixels(profile));
 
             default:
                 throw new InvalidOperationException($"Unsupported import mode: {profile.Mode}");
@@ -110,11 +128,16 @@ public static class TerrainImportService
     {
         ArgumentNullException.ThrowIfNull(helperHost);
 
+        // Apply the codified Green texture settings to the shared assets resource on every build,
+        // regardless of import mode. Done up front (on the main thread) so it also covers the
+        // copy/Manual/External modes that return before any terrain import runs.
+        var runner = GetOrCreateRunner(helperHost);
+        ApplyGreenTextureSettings(runner);
+
         if (staging is TerrainBuildComplete complete)
             return complete.Result;
 
         var pending = (TerrainBuildPending)staging;
-        var runner = GetOrCreateRunner(helperHost);
         // Deliberately do NOT bake the hole-zone overlay into the Terrain3D color map. The color map
         // multiplies the albedo (ALBEDO = albedo * color_map.rgb), so a saturated overlay would tint
         // the textures (e.g. pink fairways) and also trips the importer's auto "show_colormap" debug
@@ -142,7 +165,8 @@ public static class TerrainImportService
                 (float)pending.RasterMinY,
                 (float)pending.RasterMaxX,
                 (float)pending.RasterMaxY,
-                pending.ImportScale);
+                pending.ImportScale,
+                pending.TextureBlendRadiusPixels);
         }
 
         var backupPath = ReplaceTerrainDirectory(pending.StagingTerrainPath, pending.TerrainAbsolutePath);
@@ -424,11 +448,12 @@ public static class TerrainImportService
         RunOverlaySql(profile, featuresPath, basePath, "tees", true, workspaceAbsolutePath,
             $"SELECT ST_Buffer(ST_StartPoint(geom),{Inv(teeRadius)}) AS geom, {TeeClassId} AS cid FROM holes");
         RunOverlaySql(profile, featuresPath, basePath, "greens", true, workspaceAbsolutePath,
-            $"SELECT ST_Buffer(ST_EndPoint(geom),{Inv(greenRadius)}) AS geom, {GreenClassId} AS cid FROM holes");
+            $"SELECT ST_Envelope(ST_Buffer(ST_EndPoint(geom),{Inv(greenRadius)})) AS geom, {GreenClassId} AS cid FROM holes");
         if (hasBunkers)
         {
+            var bunkerSmooth = profile.BunkerSmoothMeters > 0 ? profile.BunkerSmoothMeters : 2.0f;
             RunOverlaySql(profile, featuresPath, bunkersPath, "bunkers", true, workspaceAbsolutePath,
-                $"SELECT geom AS geom, {SandClassId} AS cid FROM bunkers");
+                $"SELECT ST_Buffer(ST_Buffer(geom,{Inv(bunkerSmooth)}),-{Inv(bunkerSmooth)}) AS geom, {SandClassId} AS cid FROM bunkers");
         }
 
         // Outline ring: every feature buffered outward by the outline width, all sharing the outline
@@ -444,8 +469,9 @@ public static class TerrainImportService
             $"SELECT ST_Buffer(ST_EndPoint(geom),{Inv(greenRadius + outlineWidth)}) AS geom, {OutlineClassId} AS cid FROM holes");
         if (hasBunkers)
         {
+            var bunkerSmooth = profile.BunkerSmoothMeters > 0 ? profile.BunkerSmoothMeters : 2.0f;
             RunOverlaySql(profile, outlinesPath, bunkersPath, "outlines", true, workspaceAbsolutePath,
-                $"SELECT ST_Buffer(geom,{Inv(outlineWidth)}) AS geom, {OutlineClassId} AS cid FROM bunkers");
+                $"SELECT ST_Buffer(ST_Buffer(ST_Buffer(geom,{Inv(bunkerSmooth)}),-{Inv(bunkerSmooth)}),{Inv(outlineWidth)}) AS geom, {OutlineClassId} AS cid FROM bunkers");
         }
 
         // Rasterize class ids aligned to the height grid. Corridors are first, then bunkers and markers.
@@ -492,6 +518,13 @@ public static class TerrainImportService
             workspaceAbsolutePath);
 
         return colorPath;
+    }
+
+    private static int GetTextureBlendRadiusPixels(TerrainImportProfile profile)
+    {
+        var blendWidth = profile.TextureBlendWidthMeters > 0 ? profile.TextureBlendWidthMeters : 3.0f;
+        var rasterResolution = profile.RasterResolutionMeters > 0 ? profile.RasterResolutionMeters : 1.0f;
+        return Math.Clamp((int)MathF.Ceiling(blendWidth / rasterResolution), 1, 12);
     }
 
     private static void RunOverlaySql(
@@ -798,6 +831,20 @@ public static class TerrainImportService
         }
 
         return backupPath;
+    }
+
+    private static void ApplyGreenTextureSettings(Node runner)
+    {
+        runner.Call(
+            "apply_texture_asset_settings",
+            SharedTerrainAssetsPath,
+            GreenTextureSlot,
+            GreenNormalDepth,
+            GreenAoStrength,
+            GreenRoughness,
+            GreenUvScale,
+            GreenDetilingRotation,
+            GreenDetilingShift);
     }
 
     private static Node GetOrCreateRunner(Node helperHost)

@@ -104,7 +104,10 @@ func _physics_process(delta: float) -> void:
 			carry = ball.get_downrange_yards() / GolfUnits.YARDS_PER_METER  # Convert yards back to meters for consistency
 		trail_timer += delta
 		if trail_timer >= trail_resolution:
-			current_tracer.add_point(ball.position)
+			# Trace only the flight arc; stop once the ball lands (FLIGHT -> ROLLOUT)
+			# so the tracer no longer hugs the ground during rollout.
+			if ball.state == PhysicsEnums.BallState.FLIGHT:
+				current_tracer.add_point(ball.position)
 			trail_timer = 0.0
 
 func get_distance() -> int:

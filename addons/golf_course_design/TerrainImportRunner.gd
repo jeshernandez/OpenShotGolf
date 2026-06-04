@@ -76,7 +76,8 @@ func paint_control_map(
 	_raster_min_y: float,
 	_raster_max_x: float,
 	_raster_max_y: float,
-	_import_scale: float
+	_import_scale: float,
+	blend_radius_pixels: int = 3
 ) -> bool:
 	if class_image_path.is_empty() or destination_directory.is_empty():
 		push_error("TerrainImportRunner: Missing class_image_path or destination_directory.")
@@ -94,6 +95,7 @@ func paint_control_map(
 	var class_bytes: PackedByteArray = class_img.get_data()
 	var img_w: int = class_img.get_width()
 	var img_h: int = class_img.get_height()
+	var blend_radius: int = clampi(blend_radius_pixels, 1, 12)
 
 	# Terrain3D needs a res:// path (or absolute within the project) for data_directory.
 	var res_dir: String = ProjectSettings.localize_path(destination_directory)
@@ -135,13 +137,15 @@ func paint_control_map(
 				if row_in_bounds and class_col >= 0 and class_col < img_w:
 					class_id = class_bytes[row_offset + class_col]
 
-				# Texture only — never punch holes. Holes remove the mesh, which also removes the
-				# surface the Terrain3D editor needs to paint/sculpt on (the brush ray finds no
-				# intersection over a hole). Keep the full terrain present so it stays editable.
-				var texture_slot: int = _class_to_texture_slot(class_id)
-				if texture_slot == 0:
-					continue  # greens/tees use base 0, the imported default; leave untouched
-				var packed_int: int = Terrain3DUtil.enc_base(texture_slot)
+				var packed_int: int = _encode_control_for_pixel(
+					class_bytes,
+					img_w,
+					img_h,
+					class_col,
+					class_row,
+					class_id,
+					blend_radius
+				)
 
 				# Bitcast the uint32 control value to a float so it can be stored in FORMAT_RF.
 				var buf := PackedByteArray([0, 0, 0, 0])
@@ -165,6 +169,46 @@ func paint_control_map(
 	return true
 
 
+# Codifies a Terrain3D texture asset's material settings in the shared assets resource so the
+# Golf Course Design pipeline can guarantee them in code instead of relying on a hand-edited
+# .tres. The texture "slots" map to the same indices paint_control_map() paints (0=Green,
+# 1=Fairway, 2=Rough, 3=Sand). Loads with the default cache mode (REUSE) so the editor's live
+# resource updates immediately, then persists to disk. Idempotent: re-running with the same
+# values is a no-op on the rendered result. Returns false (with a pushed error) on failure.
+func apply_texture_asset_settings(
+	assets_path: String,
+	texture_slot: int,
+	normal_depth: float,
+	ao_strength: float,
+	roughness: float,
+	uv_scale: float,
+	detiling_rotation: float,
+	detiling_shift: float
+) -> bool:
+	var assets: Resource = ResourceLoader.load(assets_path)
+	if assets == null:
+		push_error("apply_texture_asset_settings: cannot load " + assets_path)
+		return false
+	var texture: Resource = assets.get_texture(texture_slot)
+	if texture == null:
+		push_error("apply_texture_asset_settings: no texture at slot %d in %s" % [texture_slot, assets_path])
+		return false
+
+	texture.set("normal_depth", normal_depth)
+	texture.set("ao_strength", ao_strength)
+	texture.set("roughness", roughness)
+	texture.set("uv_scale", uv_scale)
+	texture.set("detiling_rotation", detiling_rotation)
+	texture.set("detiling_shift", detiling_shift)
+
+	var err: int = ResourceSaver.save(assets, assets_path)
+	if err != OK:
+		push_error("apply_texture_asset_settings: failed to save %s (err %d)" % [assets_path, err])
+		return false
+	print("apply_texture_asset_settings: applied settings to texture slot %d in %s" % [texture_slot, assets_path])
+	return true
+
+
 func _class_to_texture_slot(class_id: int) -> int:
 	if class_id >= 1 and class_id <= 64:
 		return 1  # Fairway
@@ -174,6 +218,88 @@ func _class_to_texture_slot(class_id: int) -> int:
 		202: return 3  # Sand (bunker)
 		203: return 1  # Fairway (outline ring)
 		_: return 2   # Rough (background and anything unrecognised)
+
+
+func _encode_control_for_pixel(
+	class_bytes: PackedByteArray,
+	img_w: int,
+	img_h: int,
+	x: int,
+	y: int,
+	class_id: int,
+	blend_radius: int
+) -> int:
+	var texture_slot: int = _class_to_texture_slot(class_id)
+	var nearest := _find_nearest_other_texture_slot(class_bytes, img_w, img_h, x, y, texture_slot, blend_radius)
+	if nearest.x < 0:
+		return Terrain3DUtil.enc_base(texture_slot)
+
+	var base_slot: int = texture_slot
+	var overlay_slot: int = nearest.x
+	if _texture_priority(texture_slot) > _texture_priority(nearest.x):
+		base_slot = nearest.x
+		overlay_slot = texture_slot
+
+	var blend: int = _edge_blend_value(texture_slot, overlay_slot, nearest.y, blend_radius)
+	return _encode_blended_control(base_slot, overlay_slot, blend)
+
+
+func _find_nearest_other_texture_slot(
+	class_bytes: PackedByteArray,
+	img_w: int,
+	img_h: int,
+	x: int,
+	y: int,
+	texture_slot: int,
+	blend_radius: int
+) -> Vector2i:
+	for distance in range(1, blend_radius + 1):
+		var left_slot := _sample_texture_slot(class_bytes, img_w, img_h, x - distance, y)
+		if left_slot >= 0 and left_slot != texture_slot:
+			return Vector2i(left_slot, distance)
+		var right_slot := _sample_texture_slot(class_bytes, img_w, img_h, x + distance, y)
+		if right_slot >= 0 and right_slot != texture_slot:
+			return Vector2i(right_slot, distance)
+		var up_slot := _sample_texture_slot(class_bytes, img_w, img_h, x, y - distance)
+		if up_slot >= 0 and up_slot != texture_slot:
+			return Vector2i(up_slot, distance)
+		var down_slot := _sample_texture_slot(class_bytes, img_w, img_h, x, y + distance)
+		if down_slot >= 0 and down_slot != texture_slot:
+			return Vector2i(down_slot, distance)
+	return Vector2i(-1, 0)
+
+
+func _sample_texture_slot(class_bytes: PackedByteArray, img_w: int, img_h: int, x: int, y: int) -> int:
+	if x < 0 or x >= img_w or y < 0 or y >= img_h:
+		return -1
+	var class_id: int = class_bytes[y * img_w + x]
+	return _class_to_texture_slot(class_id)
+
+
+func _texture_priority(texture_slot: int) -> int:
+	match texture_slot:
+		2:
+			return 0  # Rough sits under most playable surfaces.
+		1:
+			return 1  # Fairway overlays rough.
+		0:
+			return 2  # Greens and tees overlay grass surfaces.
+		3:
+			return 3  # Sand overlays adjacent turf.
+		_:
+			return 0
+
+
+func _edge_blend_value(texture_slot: int, overlay_slot: int, distance: int, blend_radius: int) -> int:
+	var radius_span: int = maxi(blend_radius - 1, 1)
+	var t: float = clampf(float(distance - 1) / float(radius_span), 0.0, 1.0)
+	if texture_slot == overlay_slot:
+		return clampi(roundi(lerpf(168.0, 255.0, t)), 0, 255)
+	return clampi(roundi(lerpf(87.0, 0.0, t)), 0, 255)
+
+
+func _encode_blended_control(base_slot: int, overlay_slot: int, blend: int) -> int:
+	return ((base_slot & 0x1F) << 27) | ((overlay_slot & 0x1F) << 22) | ((blend & 0xFF) << 14)
 
 
 func _ensure_rgba8_image(image_path: String) -> void:

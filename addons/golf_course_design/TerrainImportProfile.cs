@@ -87,6 +87,12 @@ public partial class TerrainImportProfile : Resource
     public float GreenMarkerRadiusMeters { get; set; } = 10.0f;
 
     [Export]
+    public float TextureBlendWidthMeters { get; set; } = 3.0f;
+
+    [Export]
+    public float BunkerSmoothMeters { get; set; } = 2.0f;
+
+    [Export]
     public string OgrCommand { get; set; } = "ogr2ogr";
 
     [Export]

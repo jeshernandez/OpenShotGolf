@@ -2,8 +2,8 @@
 
 [ext_resource type="Texture2D" uid="uid://cm0i471w5reba" path="res://Courses/_shared/texture_images/Grass008_1K_alb_hgt.dds" id="1"]
 [ext_resource type="Texture2D" uid="uid://dllwjwq4ib3gu" path="res://Courses/_shared/texture_images/Grass008_1K_nrm_rgh.dds" id="2"]
-[ext_resource type="Texture2D" uid="uid://8k2ytrpsecnm" path="res://Courses/_shared/texture_images/graass_005_alb_ht.dds" id="3"]
-[ext_resource type="Texture2D" uid="uid://c2qavkihptb00" path="res://Courses/_shared/texture_images/graass_005_nrm_rgh.dds" id="4"]
+[ext_resource type="Texture2D" uid="uid://chm5pi8rvle26" path="res://Courses/_preview/texture_images/cc0_1k/Grass005_1K_alb_hgt.png" id="3_f718m"]
+[ext_resource type="Texture2D" uid="uid://evcqwbq55dw0" path="res://Courses/_preview/texture_images/cc0_1k/Grass005_1K_nrm_rgh.png" id="4_gkubv"]
 [ext_resource type="Texture2D" uid="uid://de50nh2rr0knp" path="res://Courses/_shared/texture_images/grass_path_2_1k_alb_hgt.dds" id="5"]
 [ext_resource type="Texture2D" uid="uid://b0bbsi1o62jxa" path="res://Courses/_shared/texture_images/grass_path_2_1k_nrm_rgh.dds" id="6"]
 [ext_resource type="Texture2D" uid="uid://cocmkbjpiplyp" path="res://Courses/_shared/texture_images/ground055S_Sand_alb_ht.dds" id="7"]
@@ -32,21 +32,24 @@ name = "Green"
 albedo_color = Color(0.827451, 0.827451, 0.827451, 1)
 albedo_texture = ExtResource("1")
 normal_texture = ExtResource("2")
+normal_depth = 1.985
+ao_strength = 2.0
 roughness = 1.0
-uv_scale = 0.256
-detiling_shift = 0.05
+uv_scale = 1.869
+detiling_rotation = 0.852
+detiling_shift = 0.257
 
 [sub_resource type="Terrain3DTextureAsset" id="Terrain3DTextureAsset_fairway"]
 name = "Fairway"
 id = 1
 albedo_color = Color(0.631373, 0.631373, 0.631373, 1)
-albedo_texture = ExtResource("3")
-normal_texture = ExtResource("4")
-normal_depth = 0.403
-ao_strength = 0.0
+albedo_texture = ExtResource("3_f718m")
+normal_texture = ExtResource("4_gkubv")
+normal_depth = 0.617
+ao_strength = 1.543
 roughness = 1.0
-uv_scale = 0.256
-detiling_shift = 0.05
+uv_scale = 0.399
+detiling_rotation = 0.771
 
 [sub_resource type="Terrain3DTextureAsset" id="Terrain3DTextureAsset_rough"]
 name = "Rough"

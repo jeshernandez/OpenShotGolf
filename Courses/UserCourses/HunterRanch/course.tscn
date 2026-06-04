@@ -3,17 +3,27 @@
 [ext_resource type="PackedScene" uid="uid://cxfmki7gy8qgb" path="res://Courses/_shared/course_base.tscn" id="1_base"]
 [ext_resource type="Script" path="res://Courses/UserCourses/HunterRanch/course.gd" id="2_course"]
 [ext_resource type="Script" path="res://Courses/_shared/hole_markers_snap.gd" id="3_markers"]
+[ext_resource type="Script" path="res://Courses/_shared/golf_cup_marker.gd" id="4_cup"]
 
 [sub_resource type="CylinderMesh" id="PinPostMesh"]
-top_radius = 0.12
-bottom_radius = 0.12
-height = 6.0
+top_radius = 0.015
+bottom_radius = 0.015
+height = 2.286
 
 [sub_resource type="StandardMaterial3D" id="PinPostMat"]
-albedo_color = Color(0.85, 0.12, 0.12, 1)
+albedo_color = Color(1, 1, 1, 1)
 emission_enabled = true
-emission = Color(0.85, 0.12, 0.12, 1)
-emission_energy_multiplier = 0.35
+emission = Color(1, 1, 1, 1)
+emission_energy_multiplier = 0.15
+
+[sub_resource type="CylinderMesh" id="CupSurfaceMesh"]
+top_radius = 0.054
+bottom_radius = 0.054
+height = 0.1015
+
+[sub_resource type="StandardMaterial3D" id="CupSurfaceMat"]
+albedo_color = Color(0.015, 0.012, 0.01, 1)
+roughness = 0.8
 
 [node name="Course" instance=ExtResource("1_base")]
 script = ExtResource("2_course")
@@ -35,8 +45,17 @@ script = ExtResource("3_markers")
 [node name="Hole 1" type="Node3D" parent="HoleMarkers"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 999, 0, 774)
 
+[node name="Cup" type="Node3D" parent="HoleMarkers/Hole 1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0, 0)
+script = ExtResource("4_cup")
+
+[node name="CupSurface" type="MeshInstance3D" parent="HoleMarkers/Hole 1/Cup"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.05075, 0)
+mesh = SubResource("CupSurfaceMesh")
+surface_material_override/0 = SubResource("CupSurfaceMat")
+
 [node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 1"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.143, 0)
 mesh = SubResource("PinPostMesh")
 surface_material_override/0 = SubResource("PinPostMat")
 
@@ -61,15 +80,24 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -305, 0, -201)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -303.5, 0, -201)
 
 [node name="Hole 2" type="Node3D" parent="HoleMarkers"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1097.303, 0, 475.148)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1097.303, 0, 475.1476)
+
+[node name="Cup" type="Node3D" parent="HoleMarkers/Hole 2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0, 0)
+script = ExtResource("4_cup")
+
+[node name="CupSurface" type="MeshInstance3D" parent="HoleMarkers/Hole 2/Cup"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.05075, 0)
+mesh = SubResource("CupSurfaceMesh")
+surface_material_override/0 = SubResource("CupSurfaceMat")
 
 [node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 2"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.143, 0)
 mesh = SubResource("PinPostMesh")
 surface_material_override/0 = SubResource("PinPostMat")
 
 [node name="Black Tee" type="Node3D" parent="HoleMarkers/Hole 2"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -58.665, 0, 405.214)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -58.66479, 0, 405.2135)
 
 [node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 2/Black Tee"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.25, 0)
@@ -80,24 +108,33 @@ outline_size = 18
 text = "2"
 
 [node name="Blue Tee" type="Node3D" parent="HoleMarkers/Hole 2"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -57.165, 0, 405.214)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -57.16479, 0, 405.2135)
 
 [node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 2"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -55.665, 0, 405.214)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -55.66479, 0, 405.2135)
 
 [node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 2"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -54.165, 0, 405.214)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -54.16479, 0, 405.2135)
 
 [node name="Hole 3" type="Node3D" parent="HoleMarkers"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1098.34, 0, 253.613)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1098.34, 0, 253.6128)
+
+[node name="Cup" type="Node3D" parent="HoleMarkers/Hole 3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0, 0)
+script = ExtResource("4_cup")
+
+[node name="CupSurface" type="MeshInstance3D" parent="HoleMarkers/Hole 3/Cup"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.05075, 0)
+mesh = SubResource("CupSurfaceMesh")
+surface_material_override/0 = SubResource("CupSurfaceMat")
 
 [node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 3"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.143, 0)
 mesh = SubResource("PinPostMesh")
 surface_material_override/0 = SubResource("PinPostMat")
 
 [node name="Black Tee" type="Node3D" parent="HoleMarkers/Hole 3"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.543, 0, 177.529)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.54285, 0, 177.529)
 
 [node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 3/Black Tee"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.25, 0)
@@ -108,24 +145,33 @@ outline_size = 18
 text = "3"
 
 [node name="Blue Tee" type="Node3D" parent="HoleMarkers/Hole 3"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.043, 0, 177.529)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.04285, 0, 177.529)
 
 [node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 3"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13.543, 0, 177.529)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13.54285, 0, 177.529)
 
 [node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 3"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.043, 0, 177.529)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.04285, 0, 177.529)
 
 [node name="Hole 4" type="Node3D" parent="HoleMarkers"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 764.977, 0, 83.059)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 764.9774, 0, 83.05946)
+
+[node name="Cup" type="Node3D" parent="HoleMarkers/Hole 4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0, 0)
+script = ExtResource("4_cup")
+
+[node name="CupSurface" type="MeshInstance3D" parent="HoleMarkers/Hole 4/Cup"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.05075, 0)
+mesh = SubResource("CupSurfaceMesh")
+surface_material_override/0 = SubResource("CupSurfaceMat")
 
 [node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 4"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.143, 0)
 mesh = SubResource("PinPostMesh")
 surface_material_override/0 = SubResource("PinPostMat")
 
 [node name="Black Tee" type="Node3D" parent="HoleMarkers/Hole 4"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 342.815, 0, 126.633)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 342.8153, 0, 126.6325)
 
 [node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 4/Black Tee"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.25, 0)
@@ -136,24 +182,33 @@ outline_size = 18
 text = "4"
 
 [node name="Blue Tee" type="Node3D" parent="HoleMarkers/Hole 4"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 344.315, 0, 126.633)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 344.3153, 0, 126.6325)
 
 [node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 4"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 345.815, 0, 126.633)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 345.8153, 0, 126.6325)
 
 [node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 4"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 347.315, 0, 126.633)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 347.3153, 0, 126.6325)
 
 [node name="Hole 5" type="Node3D" parent="HoleMarkers"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1006.288, 0, 370.459)
 
+[node name="Cup" type="Node3D" parent="HoleMarkers/Hole 5"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0, 0)
+script = ExtResource("4_cup")
+
+[node name="CupSurface" type="MeshInstance3D" parent="HoleMarkers/Hole 5/Cup"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.05075, 0)
+mesh = SubResource("CupSurfaceMesh")
+surface_material_override/0 = SubResource("CupSurfaceMat")
+
 [node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 5"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.143, 0)
 mesh = SubResource("PinPostMesh")
 surface_material_override/0 = SubResource("PinPostMat")
 
 [node name="Black Tee" type="Node3D" parent="HoleMarkers/Hole 5"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -219.632, 0, -219.069)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -219.6315, 0, -219.069)
 
 [node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 5/Black Tee"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.25, 0)
@@ -164,24 +219,33 @@ outline_size = 18
 text = "5"
 
 [node name="Blue Tee" type="Node3D" parent="HoleMarkers/Hole 5"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -218.132, 0, -219.069)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -218.1315, 0, -219.069)
 
 [node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 5"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -216.632, 0, -219.069)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -216.6315, 0, -219.069)
 
 [node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 5"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -215.132, 0, -219.069)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -215.1315, 0, -219.069)
 
 [node name="Hole 6" type="Node3D" parent="HoleMarkers"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 612.679, 0, 240.901)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 612.6787, 0, 240.9011)
+
+[node name="Cup" type="Node3D" parent="HoleMarkers/Hole 6"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0, 0)
+script = ExtResource("4_cup")
+
+[node name="CupSurface" type="MeshInstance3D" parent="HoleMarkers/Hole 6/Cup"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.05075, 0)
+mesh = SubResource("CupSurfaceMesh")
+surface_material_override/0 = SubResource("CupSurfaceMat")
 
 [node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 6"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.143, 0)
 mesh = SubResource("PinPostMesh")
 surface_material_override/0 = SubResource("PinPostMat")
 
 [node name="Black Tee" type="Node3D" parent="HoleMarkers/Hole 6"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 409.936, 0, 203.879)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 409.9361, 0, 203.8789)
 
 [node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 6/Black Tee"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.25, 0)
@@ -192,24 +256,33 @@ outline_size = 18
 text = "6"
 
 [node name="Blue Tee" type="Node3D" parent="HoleMarkers/Hole 6"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 411.436, 0, 203.879)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 411.4361, 0, 203.8789)
 
 [node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 6"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 412.936, 0, 203.879)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 412.9361, 0, 203.8789)
 
 [node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 6"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 414.436, 0, 203.879)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 414.4361, 0, 203.8789)
 
 [node name="Hole 7" type="Node3D" parent="HoleMarkers"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 995.385, 0, 489.065)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 995.3845, 0, 489.0654)
+
+[node name="Cup" type="Node3D" parent="HoleMarkers/Hole 7"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0, 0)
+script = ExtResource("4_cup")
+
+[node name="CupSurface" type="MeshInstance3D" parent="HoleMarkers/Hole 7/Cup"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.05075, 0)
+mesh = SubResource("CupSurfaceMesh")
+surface_material_override/0 = SubResource("CupSurfaceMat")
 
 [node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 7"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.143, 0)
 mesh = SubResource("PinPostMesh")
 surface_material_override/0 = SubResource("PinPostMat")
 
 [node name="Black Tee" type="Node3D" parent="HoleMarkers/Hole 7"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -420.479, 0, -237.004)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -420.4791, 0, -237.0038)
 
 [node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 7/Black Tee"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.25, 0)
@@ -220,24 +293,33 @@ outline_size = 18
 text = "7"
 
 [node name="Blue Tee" type="Node3D" parent="HoleMarkers/Hole 7"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -418.979, 0, -237.004)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -418.9791, 0, -237.0038)
 
 [node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 7"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -417.479, 0, -237.004)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -417.4791, 0, -237.0038)
 
 [node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 7"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -415.979, 0, -237.004)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -415.9791, 0, -237.0038)
 
 [node name="Hole 8" type="Node3D" parent="HoleMarkers"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1013.382, 0, 605.35)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1013.382, 0, 605.3499)
+
+[node name="Cup" type="Node3D" parent="HoleMarkers/Hole 8"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0, 0)
+script = ExtResource("4_cup")
+
+[node name="CupSurface" type="MeshInstance3D" parent="HoleMarkers/Hole 8/Cup"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.05075, 0)
+mesh = SubResource("CupSurfaceMesh")
+surface_material_override/0 = SubResource("CupSurfaceMat")
 
 [node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 8"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.143, 0)
 mesh = SubResource("PinPostMesh")
 surface_material_override/0 = SubResource("PinPostMat")
 
 [node name="Black Tee" type="Node3D" parent="HoleMarkers/Hole 8"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 35.534, 0, -165.482)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 35.53357, 0, -165.4818)
 
 [node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 8/Black Tee"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.25, 0)
@@ -248,24 +330,33 @@ outline_size = 18
 text = "8"
 
 [node name="Blue Tee" type="Node3D" parent="HoleMarkers/Hole 8"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 37.034, 0, -165.482)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 37.03357, 0, -165.4818)
 
 [node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 8"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 38.534, 0, -165.482)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 38.53357, 0, -165.4818)
 
 [node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 8"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 40.034, 0, -165.482)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 40.03357, 0, -165.4818)
 
 [node name="Hole 9" type="Node3D" parent="HoleMarkers"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 737.799, 0, 527.646)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 737.7986, 0, 527.6464)
+
+[node name="Cup" type="Node3D" parent="HoleMarkers/Hole 9"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0, 0)
+script = ExtResource("4_cup")
+
+[node name="CupSurface" type="MeshInstance3D" parent="HoleMarkers/Hole 9/Cup"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.05075, 0)
+mesh = SubResource("CupSurfaceMesh")
+surface_material_override/0 = SubResource("CupSurfaceMat")
 
 [node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 9"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.143, 0)
 mesh = SubResource("PinPostMesh")
 surface_material_override/0 = SubResource("PinPostMat")
 
 [node name="Black Tee" type="Node3D" parent="HoleMarkers/Hole 9"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 259.099, 0, 147.792)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 259.0992, 0, 147.792)
 
 [node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 9/Black Tee"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.25, 0)
@@ -276,24 +367,33 @@ outline_size = 18
 text = "9"
 
 [node name="Blue Tee" type="Node3D" parent="HoleMarkers/Hole 9"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 260.599, 0, 147.792)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 260.5992, 0, 147.792)
 
 [node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 9"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 262.099, 0, 147.792)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 262.0992, 0, 147.792)
 
 [node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 9"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 263.599, 0, 147.792)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 263.5992, 0, 147.792)
 
 [node name="Hole 10" type="Node3D" parent="HoleMarkers"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 434.661, 0, 730.842)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 434.6608, 0, 730.842)
+
+[node name="Cup" type="Node3D" parent="HoleMarkers/Hole 10"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0, 0)
+script = ExtResource("4_cup")
+
+[node name="CupSurface" type="MeshInstance3D" parent="HoleMarkers/Hole 10/Cup"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.05075, 0)
+mesh = SubResource("CupSurfaceMesh")
+surface_material_override/0 = SubResource("CupSurfaceMat")
 
 [node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 10"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.143, 0)
 mesh = SubResource("PinPostMesh")
 surface_material_override/0 = SubResource("PinPostMat")
 
 [node name="Black Tee" type="Node3D" parent="HoleMarkers/Hole 10"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 160.07, 0, -225.439)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 160.0695, 0, -225.4386)
 
 [node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 10/Black Tee"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.25, 0)
@@ -304,24 +404,33 @@ outline_size = 18
 text = "10"
 
 [node name="Blue Tee" type="Node3D" parent="HoleMarkers/Hole 10"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 161.57, 0, -225.439)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 161.5695, 0, -225.4386)
 
 [node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 10"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 163.07, 0, -225.439)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 163.0695, 0, -225.4386)
 
 [node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 10"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 164.57, 0, -225.439)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 164.5695, 0, -225.4386)
 
 [node name="Hole 11" type="Node3D" parent="HoleMarkers"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 137.01, 0, 601.049)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 137.0097, 0, 601.0494)
+
+[node name="Cup" type="Node3D" parent="HoleMarkers/Hole 11"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0, 0)
+script = ExtResource("4_cup")
+
+[node name="CupSurface" type="MeshInstance3D" parent="HoleMarkers/Hole 11/Cup"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.05075, 0)
+mesh = SubResource("CupSurfaceMesh")
+surface_material_override/0 = SubResource("CupSurfaceMat")
 
 [node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 11"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.143, 0)
 mesh = SubResource("PinPostMesh")
 surface_material_override/0 = SubResource("PinPostMat")
 
 [node name="Black Tee" type="Node3D" parent="HoleMarkers/Hole 11"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 261.628, 0, 245.209)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 261.6275, 0, 245.2091)
 
 [node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 11/Black Tee"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.25, 0)
@@ -332,24 +441,33 @@ outline_size = 18
 text = "11"
 
 [node name="Blue Tee" type="Node3D" parent="HoleMarkers/Hole 11"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 263.128, 0, 245.209)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 263.1275, 0, 245.2091)
 
 [node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 11"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 264.628, 0, 245.209)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 264.6275, 0, 245.2091)
 
 [node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 11"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 266.128, 0, 245.209)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 266.1275, 0, 245.2091)
 
 [node name="Hole 12" type="Node3D" parent="HoleMarkers"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 344.654, 0, 861.273)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 344.6541, 0, 861.2732)
+
+[node name="Cup" type="Node3D" parent="HoleMarkers/Hole 12"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0, 0)
+script = ExtResource("4_cup")
+
+[node name="CupSurface" type="MeshInstance3D" parent="HoleMarkers/Hole 12/Cup"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.05075, 0)
+mesh = SubResource("CupSurfaceMesh")
+surface_material_override/0 = SubResource("CupSurfaceMat")
 
 [node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 12"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.143, 0)
 mesh = SubResource("PinPostMesh")
 surface_material_override/0 = SubResource("PinPostMat")
 
 [node name="Black Tee" type="Node3D" parent="HoleMarkers/Hole 12"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -221.566, 0, -177.556)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -221.5662, 0, -177.556)
 
 [node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 12/Black Tee"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.25, 0)
@@ -360,24 +478,33 @@ outline_size = 18
 text = "12"
 
 [node name="Blue Tee" type="Node3D" parent="HoleMarkers/Hole 12"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -220.066, 0, -177.556)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -220.0662, 0, -177.556)
 
 [node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 12"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -218.566, 0, -177.556)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -218.5662, 0, -177.556)
 
 [node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 12"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -217.066, 0, -177.556)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -217.0662, 0, -177.556)
 
 [node name="Hole 13" type="Node3D" parent="HoleMarkers"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 54.757, 0, 883.809)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 54.75679, 0, 883.809)
+
+[node name="Cup" type="Node3D" parent="HoleMarkers/Hole 13"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0, 0)
+script = ExtResource("4_cup")
+
+[node name="CupSurface" type="MeshInstance3D" parent="HoleMarkers/Hole 13/Cup"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.05075, 0)
+mesh = SubResource("CupSurfaceMesh")
+surface_material_override/0 = SubResource("CupSurfaceMat")
 
 [node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 13"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.143, 0)
 mesh = SubResource("PinPostMesh")
 surface_material_override/0 = SubResource("PinPostMat")
 
 [node name="Black Tee" type="Node3D" parent="HoleMarkers/Hole 13"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 367.012, 0, 20.866)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 367.0123, 0, 20.86627)
 
 [node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 13/Black Tee"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.25, 0)
@@ -388,24 +515,33 @@ outline_size = 18
 text = "13"
 
 [node name="Blue Tee" type="Node3D" parent="HoleMarkers/Hole 13"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 368.512, 0, 20.866)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 368.5123, 0, 20.86627)
 
 [node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 13"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 370.012, 0, 20.866)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 370.0123, 0, 20.86627)
 
 [node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 13"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 371.512, 0, 20.866)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 371.5123, 0, 20.86627)
 
 [node name="Hole 14" type="Node3D" parent="HoleMarkers"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 37.164, 0, 639.726)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 37.16447, 0, 639.7263)
+
+[node name="Cup" type="Node3D" parent="HoleMarkers/Hole 14"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0, 0)
+script = ExtResource("4_cup")
+
+[node name="CupSurface" type="MeshInstance3D" parent="HoleMarkers/Hole 14/Cup"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.05075, 0)
+mesh = SubResource("CupSurfaceMesh")
+surface_material_override/0 = SubResource("CupSurfaceMat")
 
 [node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 14"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.143, 0)
 mesh = SubResource("PinPostMesh")
 surface_material_override/0 = SubResource("PinPostMat")
 
 [node name="Black Tee" type="Node3D" parent="HoleMarkers/Hole 14"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25.41, 0, 167.845)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25.40968, 0, 167.8453)
 
 [node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 14/Black Tee"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.25, 0)
@@ -416,24 +552,33 @@ outline_size = 18
 text = "14"
 
 [node name="Blue Tee" type="Node3D" parent="HoleMarkers/Hole 14"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 26.91, 0, 167.845)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 26.90968, 0, 167.8453)
 
 [node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 14"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 28.41, 0, 167.845)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 28.40968, 0, 167.8453)
 
 [node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 14"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 29.91, 0, 167.845)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 29.90968, 0, 167.8453)
 
 [node name="Hole 15" type="Node3D" parent="HoleMarkers"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 377.432, 0, 679.444)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 377.432, 0, 679.4443)
+
+[node name="Cup" type="Node3D" parent="HoleMarkers/Hole 15"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0, 0)
+script = ExtResource("4_cup")
+
+[node name="CupSurface" type="MeshInstance3D" parent="HoleMarkers/Hole 15/Cup"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.05075, 0)
+mesh = SubResource("CupSurfaceMesh")
+surface_material_override/0 = SubResource("CupSurfaceMat")
 
 [node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 15"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.143, 0)
 mesh = SubResource("PinPostMesh")
 surface_material_override/0 = SubResource("PinPostMat")
 
 [node name="Black Tee" type="Node3D" parent="HoleMarkers/Hole 15"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -342.635, 0, -75.082)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -342.6347, 0, -75.08203)
 
 [node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 15/Black Tee"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.25, 0)
@@ -444,24 +589,33 @@ outline_size = 18
 text = "15"
 
 [node name="Blue Tee" type="Node3D" parent="HoleMarkers/Hole 15"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -341.135, 0, -75.082)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -341.1347, 0, -75.08203)
 
 [node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 15"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -339.635, 0, -75.082)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -339.6347, 0, -75.08203)
 
 [node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 15"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -338.135, 0, -75.082)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -338.1347, 0, -75.08203)
 
 [node name="Hole 16" type="Node3D" parent="HoleMarkers"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 374.302, 0, 772.186)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 374.3024, 0, 772.186)
+
+[node name="Cup" type="Node3D" parent="HoleMarkers/Hole 16"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0, 0)
+script = ExtResource("4_cup")
+
+[node name="CupSurface" type="MeshInstance3D" parent="HoleMarkers/Hole 16/Cup"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.05075, 0)
+mesh = SubResource("CupSurfaceMesh")
+surface_material_override/0 = SubResource("CupSurfaceMat")
 
 [node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 16"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.143, 0)
 mesh = SubResource("PinPostMesh")
 surface_material_override/0 = SubResource("PinPostMat")
 
 [node name="Black Tee" type="Node3D" parent="HoleMarkers/Hole 16"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -97.204, 0, -119.598)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -97.20398, 0, -119.598)
 
 [node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 16/Black Tee"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.25, 0)
@@ -472,24 +626,33 @@ outline_size = 18
 text = "16"
 
 [node name="Blue Tee" type="Node3D" parent="HoleMarkers/Hole 16"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -95.704, 0, -119.598)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -95.70398, 0, -119.598)
 
 [node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 16"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -94.204, 0, -119.598)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -94.20398, 0, -119.598)
 
 [node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 16"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -92.704, 0, -119.598)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -92.70398, 0, -119.598)
 
 [node name="Hole 17" type="Node3D" parent="HoleMarkers"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 848.685, 0, 877.309)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 848.6854, 0, 877.3085)
+
+[node name="Cup" type="Node3D" parent="HoleMarkers/Hole 17"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0, 0)
+script = ExtResource("4_cup")
+
+[node name="CupSurface" type="MeshInstance3D" parent="HoleMarkers/Hole 17/Cup"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.05075, 0)
+mesh = SubResource("CupSurfaceMesh")
+surface_material_override/0 = SubResource("CupSurfaceMat")
 
 [node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 17"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.143, 0)
 mesh = SubResource("PinPostMesh")
 surface_material_override/0 = SubResource("PinPostMat")
 
 [node name="Black Tee" type="Node3D" parent="HoleMarkers/Hole 17"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -429.745, 0, -86.177)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -429.7449, 0, -86.17731)
 
 [node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 17/Black Tee"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.25, 0)
@@ -500,24 +663,33 @@ outline_size = 18
 text = "17"
 
 [node name="Blue Tee" type="Node3D" parent="HoleMarkers/Hole 17"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -428.245, 0, -86.177)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -428.2449, 0, -86.17731)
 
 [node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 17"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -426.745, 0, -86.177)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -426.7449, 0, -86.17731)
 
 [node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 17"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -425.245, 0, -86.177)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -425.2449, 0, -86.17731)
 
 [node name="Hole 18" type="Node3D" parent="HoleMarkers"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 636.649, 0, 607.378)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 636.6492, 0, 607.3779)
+
+[node name="Cup" type="Node3D" parent="HoleMarkers/Hole 18"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0, 0)
+script = ExtResource("4_cup")
+
+[node name="CupSurface" type="MeshInstance3D" parent="HoleMarkers/Hole 18/Cup"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.05075, 0)
+mesh = SubResource("CupSurfaceMesh")
+surface_material_override/0 = SubResource("CupSurfaceMat")
 
 [node name="Post" type="MeshInstance3D" parent="HoleMarkers/Hole 18"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.143, 0)
 mesh = SubResource("PinPostMesh")
 surface_material_override/0 = SubResource("PinPostMat")
 
 [node name="Black Tee" type="Node3D" parent="HoleMarkers/Hole 18"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 266.95, 0, 244.345)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 266.9495, 0, 244.3448)
 
 [node name="HoleNumber" type="Label3D" parent="HoleMarkers/Hole 18/Black Tee"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.25, 0)
@@ -528,10 +700,10 @@ outline_size = 18
 text = "18"
 
 [node name="Blue Tee" type="Node3D" parent="HoleMarkers/Hole 18"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 268.45, 0, 244.345)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 268.4495, 0, 244.3448)
 
 [node name="White Tee" type="Node3D" parent="HoleMarkers/Hole 18"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 269.95, 0, 244.345)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 269.9495, 0, 244.3448)
 
 [node name="Red Tee" type="Node3D" parent="HoleMarkers/Hole 18"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 271.45, 0, 244.345)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 271.4495, 0, 244.3448)

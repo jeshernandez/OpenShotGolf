@@ -15,6 +15,14 @@ public static class CourseExportService
     // The exported course inherits this shared, course-agnostic base scene (environment, sky,
     // lighting, camera, player, terrain) instead of cloning the range. See Courses/_shared/.
     private const string SharedBaseScenePath = "res://Courses/_shared/course_base.tscn";
+    private const float CupRadiusMeters = 0.054f;
+    private const float CupDepthMeters = 0.1015f;
+    // Cup rim sits flush with the green surface (0); hole_markers_snap.gd also tilts the
+    // cup to the terrain normal at runtime/in-editor. Kept as a named constant so it stays
+    // documented and trivially tunable.
+    private const float CupTerrainInsetMeters = 0.0f;
+    private const float PinPostRadiusMeters = 0.015f;
+    private const float PinPostHeightMeters = 2.286f;
 
     public static CourseExportResult ExportCourse(GolfCourseProject project)
     {
@@ -177,6 +185,8 @@ public static class CourseExportService
         builder.AppendLine($"[ext_resource type=\"Script\" path=\"{scriptProjectPath}\" id=\"2_course\"]");
         builder.AppendLine(
             "[ext_resource type=\"Script\" path=\"res://Courses/_shared/hole_markers_snap.gd\" id=\"3_markers\"]");
+        builder.AppendLine(
+            "[ext_resource type=\"Script\" path=\"res://Courses/_shared/golf_cup_marker.gd\" id=\"4_cup\"]");
         builder.AppendLine();
         AppendMarkerSubResources(builder);
 
@@ -202,15 +212,24 @@ public static class CourseExportService
     private static void AppendMarkerSubResources(StringBuilder builder)
     {
         builder.AppendLine("[sub_resource type=\"CylinderMesh\" id=\"PinPostMesh\"]");
-        builder.AppendLine("top_radius = 0.12");
-        builder.AppendLine("bottom_radius = 0.12");
-        builder.AppendLine("height = 6.0");
+        builder.AppendLine($"top_radius = {Inv(PinPostRadiusMeters)}");
+        builder.AppendLine($"bottom_radius = {Inv(PinPostRadiusMeters)}");
+        builder.AppendLine($"height = {Inv(PinPostHeightMeters)}");
         builder.AppendLine();
         builder.AppendLine("[sub_resource type=\"StandardMaterial3D\" id=\"PinPostMat\"]");
-        builder.AppendLine("albedo_color = Color(0.85, 0.12, 0.12, 1)");
+        builder.AppendLine("albedo_color = Color(1, 1, 1, 1)");
         builder.AppendLine("emission_enabled = true");
-        builder.AppendLine("emission = Color(0.85, 0.12, 0.12, 1)");
-        builder.AppendLine("emission_energy_multiplier = 0.35");
+        builder.AppendLine("emission = Color(1, 1, 1, 1)");
+        builder.AppendLine("emission_energy_multiplier = 0.15");
+        builder.AppendLine();
+        builder.AppendLine("[sub_resource type=\"CylinderMesh\" id=\"CupSurfaceMesh\"]");
+        builder.AppendLine($"top_radius = {Inv(CupRadiusMeters)}");
+        builder.AppendLine($"bottom_radius = {Inv(CupRadiusMeters)}");
+        builder.AppendLine($"height = {Inv(CupDepthMeters)}");
+        builder.AppendLine();
+        builder.AppendLine("[sub_resource type=\"StandardMaterial3D\" id=\"CupSurfaceMat\"]");
+        builder.AppendLine("albedo_color = Color(0.015, 0.012, 0.01, 1)");
+        builder.AppendLine("roughness = 0.8");
         builder.AppendLine();
     }
 
@@ -238,10 +257,20 @@ public static class CourseExportService
             builder.AppendLine($"[node name=\"{holeName}\" type=\"Node3D\" parent=\"HoleMarkers\"]");
             builder.AppendLine($"transform = {BuildTransform(hole.HoleLocation, 0.0f)}");
 
-            // Visible pin post (cylinder base seated at y=0) so the hole reads from a distance.
+            builder.AppendLine();
+            builder.AppendLine($"[node name=\"Cup\" type=\"Node3D\" parent=\"{holeNodePath}\"]");
+            builder.AppendLine($"transform = {BuildTransform(Vector2.Zero, -CupTerrainInsetMeters)}");
+            builder.AppendLine("script = ExtResource(\"4_cup\")");
+
+            builder.AppendLine();
+            builder.AppendLine($"[node name=\"CupSurface\" type=\"MeshInstance3D\" parent=\"{holeNodePath}/Cup\"]");
+            builder.AppendLine($"transform = {BuildTransform(Vector2.Zero, -CupDepthMeters * 0.5f)}");
+            builder.AppendLine("mesh = SubResource(\"CupSurfaceMesh\")");
+            builder.AppendLine("surface_material_override/0 = SubResource(\"CupSurfaceMat\")");
+
             builder.AppendLine();
             builder.AppendLine($"[node name=\"Post\" type=\"MeshInstance3D\" parent=\"{holeNodePath}\"]");
-            builder.AppendLine($"transform = {BuildTransform(Vector2.Zero, 3.0f)}");
+            builder.AppendLine($"transform = {BuildTransform(Vector2.Zero, PinPostHeightMeters * 0.5f - CupTerrainInsetMeters)}");
             builder.AppendLine("mesh = SubResource(\"PinPostMesh\")");
             builder.AppendLine("surface_material_override/0 = SubResource(\"PinPostMat\")");
 
@@ -365,7 +394,7 @@ public static class CourseExportService
 
     private static string BuildTransform(Vector2 position, float y)
     {
-        return $"Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, {position.X.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture)}, {y.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture)}, {position.Y.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture)})";
+        return $"Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, {Inv(position.X)}, {Inv(y)}, {Inv(position.Y)})";
     }
 
     private static string BuildVector3(Vector3 value)

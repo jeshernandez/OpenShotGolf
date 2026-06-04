@@ -38,6 +38,8 @@ var _stroke_count := 0
 var _overlay_active := false
 var _hole_score_overlay: HoleScoreOverlay = null
 var _pin_distance_indicator: PinDistanceIndicator = null
+var _active_cup_marker: GolfCupMarker = null
+var _hole_out_active := false
 
 
 func _process(delta: float) -> void:
@@ -137,6 +139,8 @@ func _on_player_manual_hit() -> void:
 
 func _on_golf_ball_rest(ball_data: Dictionary) -> void:
 	super._on_golf_ball_rest(ball_data)
+	if _hole_out_active:
+		return
 	if _shot_camera != null:
 		_shot_camera.freeze_on_ball()
 
@@ -152,26 +156,30 @@ func _on_golf_ball_rest(ball_data: Dictionary) -> void:
 			return
 
 	if _is_hole_complete():
-		var seq := _rest_sequence
 		var hole_data := _get_current_hole_data()
 		var par := int(hole_data.get("Par", 3))
 		var distance_feet := _get_distance_to_pin_feet()
 		var gimme := _get_gimme_strokes(distance_feet)
 		var final_strokes := _stroke_count + gimme
-		var label := ScoreMapper.map_score(final_strokes, par)
-		_pin_distance_indicator.visible = false
-		_overlay_active = true
-		_hole_score_overlay.show_result(label, final_strokes, par)
-		await _hole_score_overlay.completed
-		_overlay_active = false
-		if seq != _rest_sequence:
-			return
-		_advance_to_next_hole()
+		await _show_hole_result_and_advance(final_strokes, sequence)
 		return
 
 	if _shot_camera != null:
 		_apply_camera_settings()
 		_shot_camera.reset_to_ball(_get_ball_global_position(), _active_flag_position)
+
+
+func _on_cup_ball_holed(_ball: Node3D) -> void:
+	if not _course_ready or _hole_out_active:
+		return
+
+	_hole_out_active = true
+	_rest_sequence += 1
+	var sequence := _rest_sequence
+	if _shot_camera != null:
+		_shot_camera.freeze_on_ball()
+	_player.clear_tracers()
+	await _show_hole_result_and_advance(_stroke_count, sequence)
 
 
 # Course mode manages follow per-shot: _prepare_course_shot_start re-reads the live
@@ -232,6 +240,7 @@ func _start_hole_by_index(index: int) -> void:
 
 	_rest_sequence += 1
 	_stroke_count = 0
+	_hole_out_active = false
 	_current_hole_index = clampi(index, 0, _hole_numbers.size() - 1)
 	_current_hole_number = _hole_numbers[_current_hole_index]
 
@@ -240,6 +249,7 @@ func _start_hole_by_index(index: int) -> void:
 	_active_flag_position = _resolve_flag_position(hole_data, _active_tee_position)
 	_active_target_direction = _flat_direction(_active_tee_position, _active_flag_position)
 	_course_ready = true
+	_connect_active_cup_marker()
 
 	if _pin_distance_indicator != null:
 		_pin_distance_indicator.visible = true
@@ -250,6 +260,26 @@ func _start_hole_by_index(index: int) -> void:
 	if _shot_camera != null:
 		_shot_camera.set_to_start_immediate(_get_ball_global_position(), _active_flag_position)
 	print("Starting Hole %d" % _current_hole_number)
+
+
+func _connect_active_cup_marker() -> void:
+	if _active_cup_marker != null and is_instance_valid(_active_cup_marker):
+		if _active_cup_marker.ball_holed.is_connected(_on_cup_ball_holed):
+			_active_cup_marker.ball_holed.disconnect(_on_cup_ball_holed)
+
+	_active_cup_marker = null
+	var hole_node := _resolve_hole_marker_node()
+	if hole_node == null:
+		return
+
+	var cup_marker := hole_node.get_node_or_null("Cup") as GolfCupMarker
+	if cup_marker == null:
+		return
+
+	_active_cup_marker = cup_marker
+	_active_cup_marker.watch_ball($Player.ball)
+	if not _active_cup_marker.ball_holed.is_connected(_on_cup_ball_holed):
+		_active_cup_marker.ball_holed.connect(_on_cup_ball_holed)
 
 
 func _position_player_at_tee() -> void:
@@ -273,6 +303,20 @@ func _advance_to_next_hole() -> void:
 	_reset_display_data()
 	$RangeUI.set_data(display_data)
 	_start_hole_by_index(_current_hole_index)
+
+
+func _show_hole_result_and_advance(final_strokes: int, sequence: int) -> void:
+	var hole_data := _get_current_hole_data()
+	var par := int(hole_data.get("Par", 3))
+	var label := ScoreMapper.map_score(final_strokes, par)
+	_pin_distance_indicator.visible = false
+	_overlay_active = true
+	_hole_score_overlay.show_result(label, final_strokes, par)
+	await _hole_score_overlay.completed
+	_overlay_active = false
+	if sequence != _rest_sequence:
+		return
+	_advance_to_next_hole()
 
 
 func _get_distance_to_pin_feet() -> float:

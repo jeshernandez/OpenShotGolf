@@ -1,0 +1,318 @@
+[gd_resource type="Resource" script_class="GolfCourseProject" format=3]
+
+[ext_resource type="Script" path="res://addons/golf_course_design/GolfHoleDefinition.cs" id="1_gngs6"]
+[ext_resource type="Script" path="res://addons/golf_course_design/GolfTeeBoxDefinition.cs" id="2_emctg"]
+[ext_resource type="Script" path="res://addons/golf_course_design/TerrainImportProfile.cs" id="3_mnm0b"]
+[ext_resource type="Script" path="res://addons/golf_course_design/GolfCourseProject.cs" id="4_yg4uj"]
+
+[sub_resource type="Resource" id="Resource_ccal7"]
+script = ExtResource("2_emctg")
+TeeColor = "White"
+Position = Vector2(371, 231.5)
+
+[sub_resource type="Resource" id="Resource_61rln"]
+script = ExtResource("2_emctg")
+TeeColor = "Red"
+Position = Vector2(389, 233.5)
+
+[sub_resource type="Resource" id="Resource_u3x22"]
+script = ExtResource("1_gngs6")
+HoleLocation = Vector2(666.5, 263)
+TeeBoxes = Array[ExtResource("2_emctg")]([SubResource("Resource_ccal7"), SubResource("Resource_61rln")])
+
+[sub_resource type="Resource" id="Resource_iuuxu"]
+script = ExtResource("2_emctg")
+TeeColor = "White"
+Position = Vector2(698.22284, 269.4048)
+
+[sub_resource type="Resource" id="Resource_qo1f2"]
+script = ExtResource("2_emctg")
+TeeColor = "Red"
+Position = Vector2(698.22284, 269.4048)
+
+[sub_resource type="Resource" id="Resource_7lqi0"]
+script = ExtResource("1_gngs6")
+HoleName = "Hole 2"
+HoleLocation = Vector2(548.88715, 514.96747)
+TeeBoxes = Array[ExtResource("2_emctg")]([SubResource("Resource_iuuxu"), SubResource("Resource_qo1f2")])
+
+[sub_resource type="Resource" id="Resource_0dlmr"]
+script = ExtResource("2_emctg")
+TeeColor = "White"
+Position = Vector2(512.0894, 493.11652)
+
+[sub_resource type="Resource" id="Resource_8qrjc"]
+script = ExtResource("2_emctg")
+TeeColor = "Red"
+Position = Vector2(512.0894, 493.11652)
+
+[sub_resource type="Resource" id="Resource_gun4h"]
+script = ExtResource("1_gngs6")
+HoleName = "Hole 3"
+HoleLocation = Vector2(157.0527, 373.06702)
+TeeBoxes = Array[ExtResource("2_emctg")]([SubResource("Resource_0dlmr"), SubResource("Resource_8qrjc")])
+
+[sub_resource type="Resource" id="Resource_m8hjf"]
+script = ExtResource("2_emctg")
+TeeColor = "White"
+Position = Vector2(91.97312, 394.3784)
+
+[sub_resource type="Resource" id="Resource_6oing"]
+script = ExtResource("2_emctg")
+TeeColor = "Red"
+Position = Vector2(91.97312, 394.3784)
+
+[sub_resource type="Resource" id="Resource_0tyft"]
+script = ExtResource("1_gngs6")
+HoleName = "Hole 4"
+HoleLocation = Vector2(374.39514, 470.54413)
+TeeBoxes = Array[ExtResource("2_emctg")]([SubResource("Resource_m8hjf"), SubResource("Resource_6oing")])
+
+[sub_resource type="Resource" id="Resource_gwv7i"]
+script = ExtResource("2_emctg")
+TeeColor = "White"
+Position = Vector2(407.38586, 487.55234)
+
+[sub_resource type="Resource" id="Resource_iif7q"]
+script = ExtResource("2_emctg")
+TeeColor = "Red"
+Position = Vector2(407.38586, 487.55234)
+
+[sub_resource type="Resource" id="Resource_7ouqw"]
+script = ExtResource("1_gngs6")
+HoleName = "Hole 5"
+Par = 3
+HoleLocation = Vector2(318.20615, 581.4962)
+TeeBoxes = Array[ExtResource("2_emctg")]([SubResource("Resource_gwv7i"), SubResource("Resource_iif7q")])
+
+[sub_resource type="Resource" id="Resource_l6ngy"]
+script = ExtResource("2_emctg")
+TeeColor = "White"
+Position = Vector2(298.38815, 548.0526)
+
+[sub_resource type="Resource" id="Resource_snmuf"]
+script = ExtResource("2_emctg")
+TeeColor = "Red"
+Position = Vector2(298.38815, 548.0526)
+
+[sub_resource type="Resource" id="Resource_aikrh"]
+script = ExtResource("1_gngs6")
+HoleName = "Hole 6"
+HoleLocation = Vector2(53.475025, 383.9827)
+TeeBoxes = Array[ExtResource("2_emctg")]([SubResource("Resource_l6ngy"), SubResource("Resource_snmuf")])
+
+[sub_resource type="Resource" id="Resource_p6f6o"]
+script = ExtResource("2_emctg")
+TeeColor = "White"
+Position = Vector2(125.718704, 349.37927)
+
+[sub_resource type="Resource" id="Resource_squ60"]
+script = ExtResource("2_emctg")
+TeeColor = "Red"
+Position = Vector2(125.718704, 349.37927)
+
+[sub_resource type="Resource" id="Resource_kqog1"]
+script = ExtResource("1_gngs6")
+HoleName = "Hole 7"
+Par = 3
+HoleLocation = Vector2(79.73885, 253.69728)
+TeeBoxes = Array[ExtResource("2_emctg")]([SubResource("Resource_p6f6o"), SubResource("Resource_squ60")])
+
+[sub_resource type="Resource" id="Resource_3cjes"]
+script = ExtResource("2_emctg")
+TeeColor = "White"
+Position = Vector2(112.353874, 246.05089)
+
+[sub_resource type="Resource" id="Resource_gqbus"]
+script = ExtResource("2_emctg")
+TeeColor = "Red"
+Position = Vector2(112.353874, 246.05089)
+
+[sub_resource type="Resource" id="Resource_d8orx"]
+script = ExtResource("1_gngs6")
+HoleName = "Hole 8"
+Par = 5
+HoleLocation = Vector2(532.4133, 453.6946)
+TeeBoxes = Array[ExtResource("2_emctg")]([SubResource("Resource_3cjes"), SubResource("Resource_gqbus")])
+
+[sub_resource type="Resource" id="Resource_3l007"]
+script = ExtResource("2_emctg")
+TeeColor = "White"
+Position = Vector2(554.98486, 377.17404)
+
+[sub_resource type="Resource" id="Resource_ujc4c"]
+script = ExtResource("2_emctg")
+TeeColor = "Red"
+Position = Vector2(554.98486, 377.17404)
+
+[sub_resource type="Resource" id="Resource_66m2n"]
+script = ExtResource("1_gngs6")
+HoleName = "Hole 9"
+Par = 3
+HoleLocation = Vector2(367.26474, 275.76007)
+TeeBoxes = Array[ExtResource("2_emctg")]([SubResource("Resource_3l007"), SubResource("Resource_ujc4c")])
+
+[sub_resource type="Resource" id="Resource_q3wb8"]
+script = ExtResource("2_emctg")
+TeeColor = "White"
+Position = Vector2(367.6805, 218.43323)
+
+[sub_resource type="Resource" id="Resource_p8qld"]
+script = ExtResource("2_emctg")
+TeeColor = "Red"
+Position = Vector2(367.6805, 218.43323)
+
+[sub_resource type="Resource" id="Resource_dfa1k"]
+script = ExtResource("1_gngs6")
+HoleName = "Hole 10"
+HoleLocation = Vector2(695.48914, 213.01176)
+TeeBoxes = Array[ExtResource("2_emctg")]([SubResource("Resource_q3wb8"), SubResource("Resource_p8qld")])
+
+[sub_resource type="Resource" id="Resource_fslxh"]
+script = ExtResource("2_emctg")
+TeeColor = "White"
+Position = Vector2(713.4139, 271.05707)
+
+[sub_resource type="Resource" id="Resource_pusrt"]
+script = ExtResource("2_emctg")
+TeeColor = "Red"
+Position = Vector2(713.4139, 271.05707)
+
+[sub_resource type="Resource" id="Resource_jbrck"]
+script = ExtResource("1_gngs6")
+HoleName = "Hole 11"
+HoleLocation = Vector2(688.9839, 418.1146)
+TeeBoxes = Array[ExtResource("2_emctg")]([SubResource("Resource_fslxh"), SubResource("Resource_pusrt")])
+
+[sub_resource type="Resource" id="Resource_lfytk"]
+script = ExtResource("2_emctg")
+TeeColor = "White"
+Position = Vector2(744.93036, 473.0882)
+
+[sub_resource type="Resource" id="Resource_a6q6d"]
+script = ExtResource("2_emctg")
+TeeColor = "Red"
+Position = Vector2(744.93036, 473.0882)
+
+[sub_resource type="Resource" id="Resource_pv3tg"]
+script = ExtResource("1_gngs6")
+HoleName = "Hole 12"
+HoleLocation = Vector2(766.5478, 215.74309)
+TeeBoxes = Array[ExtResource("2_emctg")]([SubResource("Resource_lfytk"), SubResource("Resource_a6q6d")])
+
+[sub_resource type="Resource" id="Resource_6b6i3"]
+script = ExtResource("2_emctg")
+TeeColor = "White"
+Position = Vector2(821.2682, 180.52763)
+
+[sub_resource type="Resource" id="Resource_mxlxn"]
+script = ExtResource("2_emctg")
+TeeColor = "Red"
+Position = Vector2(821.2682, 180.52763)
+
+[sub_resource type="Resource" id="Resource_5xdft"]
+script = ExtResource("1_gngs6")
+HoleName = "Hole 13"
+HoleLocation = Vector2(799.9144, 457.71188)
+TeeBoxes = Array[ExtResource("2_emctg")]([SubResource("Resource_6b6i3"), SubResource("Resource_mxlxn")])
+
+[sub_resource type="Resource" id="Resource_xu8q6"]
+script = ExtResource("2_emctg")
+TeeColor = "White"
+Position = Vector2(833.68243, 478.5644)
+
+[sub_resource type="Resource" id="Resource_pqg0d"]
+script = ExtResource("2_emctg")
+TeeColor = "Red"
+Position = Vector2(833.68243, 478.5644)
+
+[sub_resource type="Resource" id="Resource_3qitp"]
+script = ExtResource("1_gngs6")
+HoleName = "Hole 14"
+HoleLocation = Vector2(898.7429, 149.5342)
+TeeBoxes = Array[ExtResource("2_emctg")]([SubResource("Resource_xu8q6"), SubResource("Resource_pqg0d")])
+
+[sub_resource type="Resource" id="Resource_0t051"]
+script = ExtResource("2_emctg")
+TeeColor = "White"
+Position = Vector2(921.0456, 111.20126)
+
+[sub_resource type="Resource" id="Resource_5da0t"]
+script = ExtResource("2_emctg")
+TeeColor = "Red"
+Position = Vector2(921.0456, 111.20126)
+
+[sub_resource type="Resource" id="Resource_jxrva"]
+script = ExtResource("1_gngs6")
+HoleName = "Hole 15"
+Par = 3
+HoleLocation = Vector2(764.60114, 173.56801)
+TeeBoxes = Array[ExtResource("2_emctg")]([SubResource("Resource_0t051"), SubResource("Resource_5da0t")])
+
+[sub_resource type="Resource" id="Resource_eus8x"]
+script = ExtResource("2_emctg")
+TeeColor = "White"
+Position = Vector2(725.1471, 178.34442)
+
+[sub_resource type="Resource" id="Resource_n62tp"]
+script = ExtResource("2_emctg")
+TeeColor = "Red"
+Position = Vector2(725.1471, 178.34442)
+
+[sub_resource type="Resource" id="Resource_ii81l"]
+script = ExtResource("1_gngs6")
+HoleName = "Hole 16"
+Par = 5
+HoleLocation = Vector2(314.8335, 110.67473)
+TeeBoxes = Array[ExtResource("2_emctg")]([SubResource("Resource_eus8x"), SubResource("Resource_n62tp")])
+
+[sub_resource type="Resource" id="Resource_bnyo2"]
+script = ExtResource("2_emctg")
+TeeColor = "White"
+Position = Vector2(279.71255, 114.94928)
+
+[sub_resource type="Resource" id="Resource_856di"]
+script = ExtResource("2_emctg")
+TeeColor = "Red"
+Position = Vector2(279.71255, 114.94928)
+
+[sub_resource type="Resource" id="Resource_dlbtb"]
+script = ExtResource("1_gngs6")
+HoleName = "Hole 17"
+HoleLocation = Vector2(52.874344, 110.856064)
+TeeBoxes = Array[ExtResource("2_emctg")]([SubResource("Resource_bnyo2"), SubResource("Resource_856di")])
+
+[sub_resource type="Resource" id="Resource_tygfb"]
+script = ExtResource("2_emctg")
+TeeColor = "White"
+Position = Vector2(44.87003, 150.00372)
+
+[sub_resource type="Resource" id="Resource_7odqq"]
+script = ExtResource("2_emctg")
+TeeColor = "Red"
+Position = Vector2(44.87003, 150.00372)
+
+[sub_resource type="Resource" id="Resource_52aos"]
+script = ExtResource("1_gngs6")
+HoleName = "Hole 18"
+HoleLocation = Vector2(317.17703, 155.80719)
+TeeBoxes = Array[ExtResource("2_emctg")]([SubResource("Resource_tygfb"), SubResource("Resource_7odqq")])
+
+[sub_resource type="Resource" id="Resource_bdped"]
+script = ExtResource("3_mnm0b")
+Mode = 2
+SourceHeightmapPath = "res://Courses/UserCourses/Airways/source_data/airways_dem.tif"
+SourceHolesGeoJsonPath = "res://Courses/UserCourses/Airways/source_data/airways_holes.geojson"
+SourceBunkersGeoJsonPath = "res://Courses/UserCourses/Airways/source_data/airways_bunkers.geojson"
+OriginLatitude = 36.777303
+OriginLongitude = -119.706169
+MetersToGodotScale = 1.001
+TargetSpatialReference = "EPSG:26911"
+
+[resource]
+script = ExtResource("4_yg4uj")
+CourseTitle = "Airways Golf Course"
+OutputFolder = "res://Courses/_preview/AirwaysSoftEdges"
+ImportProfile = SubResource("Resource_bdped")
+TeeColors = Array[String](["White", "Red"])
+Holes = Array[ExtResource("1_gngs6")]([SubResource("Resource_u3x22"), SubResource("Resource_7lqi0"), SubResource("Resource_gun4h"), SubResource("Resource_0tyft"), SubResource("Resource_7ouqw"), SubResource("Resource_aikrh"), SubResource("Resource_kqog1"), SubResource("Resource_d8orx"), SubResource("Resource_66m2n"), SubResource("Resource_dfa1k"), SubResource("Resource_jbrck"), SubResource("Resource_pv3tg"), SubResource("Resource_5xdft"), SubResource("Resource_3qitp"), SubResource("Resource_jxrva"), SubResource("Resource_ii81l"), SubResource("Resource_dlbtb"), SubResource("Resource_52aos")])

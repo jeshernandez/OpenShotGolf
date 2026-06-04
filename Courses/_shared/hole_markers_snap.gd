@@ -16,6 +16,11 @@ extends Node3D
 # get_height returns NAN until then. Poll a bounded number of frames before giving up.
 const MAX_WAIT_FRAMES := 120
 const TERRAIN_NODE_PATH := "../Terrain3D"
+# Cup rim sits flush with the green surface (0). The snap below also tilts the cup to the
+# sampled terrain normal, so the rim follows the green slope. Dial up a hair (e.g. 0.001)
+# only if the upslope edge of the rim pokes above the surface on steep pins.
+const CUP_TERRAIN_INSET_METERS := 0.0
+const CUP_NORMAL_SAMPLE_METERS := 0.25
 
 
 func _ready() -> void:
@@ -54,16 +59,61 @@ func _snap_markers(terrain: Node) -> void:
 		if hole_height == null:
 			continue
 		hole.position.y = hole_height
+		_snap_cup_to_green_slope(terrain, hole)
 		# Lift each tee anchor (and its child HoleNumber label) to its own ground height,
 		# which can differ from the green when tee and pin sit at different elevations.
 		# The Post is a MeshInstance3D child and rides up with the Hole node, so skip it.
 		for tee in hole.get_children():
 			if not (tee is Node3D) or tee is MeshInstance3D:
 				continue
+			if StringName(tee.name) == &"Cup":
+				continue
 			var tee_height = _terrain_height(terrain, _global_position_xz(tee))
 			if tee_height == null:
 				continue
 			tee.position.y = tee_height - hole_height
+
+
+func _snap_cup_to_green_slope(terrain: Node, hole: Node3D) -> void:
+	var cup := hole.get_node_or_null("Cup") as Node3D
+	if cup == null:
+		return
+
+	var cup_xz := _global_position_xz(cup)
+	var cup_height = _terrain_height(terrain, cup_xz)
+	if cup_height == null:
+		return
+
+	var normal := _terrain_normal(terrain, cup_xz)
+	var cup_position := Vector3(cup_xz.x, cup_height - CUP_TERRAIN_INSET_METERS, cup_xz.y)
+	cup.global_transform = Transform3D(_basis_from_normal(normal), cup_position)
+
+
+func _terrain_normal(terrain: Node, point: Vector2) -> Vector3:
+	var sample := CUP_NORMAL_SAMPLE_METERS
+	var left = _terrain_height(terrain, point + Vector2.LEFT * sample)
+	var right = _terrain_height(terrain, point + Vector2.RIGHT * sample)
+	var z_minus = _terrain_height(terrain, point + Vector2.UP * sample)
+	var z_plus = _terrain_height(terrain, point + Vector2.DOWN * sample)
+	if left == null or right == null or z_minus == null or z_plus == null:
+		return Vector3.UP
+
+	var dx := Vector3(sample * 2.0, float(right) - float(left), 0.0)
+	var dz := Vector3(0.0, float(z_plus) - float(z_minus), sample * 2.0)
+	var normal := dz.cross(dx)
+	if normal.length_squared() < 0.000001:
+		return Vector3.UP
+	return normal.normalized()
+
+
+func _basis_from_normal(normal: Vector3) -> Basis:
+	var y_axis := normal.normalized() if normal.length_squared() > 0.000001 else Vector3.UP
+	var x_axis := Vector3.RIGHT - y_axis * Vector3.RIGHT.dot(y_axis)
+	if x_axis.length_squared() < 0.000001:
+		x_axis = Vector3.FORWARD - y_axis * Vector3.FORWARD.dot(y_axis)
+	x_axis = x_axis.normalized()
+	var z_axis := x_axis.cross(y_axis).normalized()
+	return Basis(x_axis, y_axis, z_axis).orthonormalized()
 
 
 # Returns the terrain height at the given world X/Z, or null when the terrain data is

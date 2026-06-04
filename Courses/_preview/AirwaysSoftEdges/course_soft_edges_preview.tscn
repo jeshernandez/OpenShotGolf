@@ -1,0 +1,10 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="PackedScene" path="res://Courses/UserCourses/Airways/course.tscn" id="1_airways"]
+[ext_resource type="Terrain3DAssets" path="res://Courses/_preview/cc0_turf_preview_assets.tres" id="2_assets"]
+
+[node name="CourseSoftEdgesPreview" instance=ExtResource("1_airways")]
+
+[node name="Terrain3D" parent="." index="3"]
+data_directory = "res://Courses/_preview/AirwaysSoftEdges/Terrain"
+assets = ExtResource("2_assets")
