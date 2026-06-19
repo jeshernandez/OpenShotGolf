@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://c0ursebasescene0"]
+[gd_scene load_steps=17 format=3 uid="uid://c0ursebasescene0"]
 
 [ext_resource type="Script" path="res://Courses/_shared/golf_scene_base.gd" id="1_base"]
 [ext_resource type="PackedScene" uid="uid://w55fmvo7ly8g" path="res://Player/player.tscn" id="2_player"]
@@ -18,6 +18,12 @@
 
 [sub_resource type="Resource" id="Resource_hbh3r"]
 script = ExtResource("11_tween")
+
+[sub_resource type="Resource" id="Resource_greentween"]
+script = ExtResource("11_tween")
+duration = 0.6
+transition = 7
+ease = 2
 
 [node name="CourseBase" type="Node3D"]
 script = ExtResource("1_base")
@@ -73,12 +79,23 @@ month = 5
 [node name="PhantomCamera3D" type="Node3D" parent="."]
 transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, -6.04467, 3.02244, 0)
 script = ExtResource("10_pcam")
+priority = 10
 tween_resource = SubResource("Resource_hbh3r")
 tween_on_load = false
 follow_offset = Vector3(-2.5, 1.5, 0)
 follow_damping = true
 follow_damping_value = Vector3(0.4, 0.1, 0.1)
 dead_zone_height = 0.204
+
+[node name="GreenPhantomCamera3D" type="Node3D" parent="."]
+script = ExtResource("10_pcam")
+priority = 0
+tween_resource = SubResource("Resource_greentween")
+tween_on_load = false
+follow_mode = 3
+look_at_mode = 3
+follow_damping = true
+follow_damping_value = Vector3(0.25, 0.25, 0.25)
 
 [node name="Camera3D" type="Camera3D" parent="."]
 transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, -6.04467, 3.02244, 0)

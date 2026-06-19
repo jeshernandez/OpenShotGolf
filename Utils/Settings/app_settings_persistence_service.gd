@@ -3,8 +3,10 @@ extends RefCounted
 
 const SAVE_PATH := "user://app_settings.cfg"
 const LEGACY_SQUARE_PATH := "user://square_launch_monitor.cfg"
-const SAVE_VERSION := 3
+const SAVE_VERSION := 4
 const OLD_DEFAULT_TCP_PORT := 55000
+const OLD_DEFAULT_CAMERA_ORBIT_DISTANCE := 7.0 / AppSettings.FEET_PER_CAMERA_DISTANCE_UNIT
+const CAMERA_DISTANCE_MIGRATION_EPSILON := 0.0001
 
 
 static func load_into(app_settings: AppSettings) -> void:
@@ -20,7 +22,7 @@ static func load_into(app_settings: AppSettings) -> void:
 		_set_if_present(config, "player", "range_default_club", app_settings.range_default_club)
 		_set_if_present(config, "display", "resolution_preset", app_settings.display_resolution_preset)
 		_set_if_present(config, "display", "fullscreen", app_settings.display_fullscreen)
-		_set_if_present(config, "game", "camera_orbit_distance", app_settings.camera_orbit_distance)
+		_load_camera_orbit_distance(config, save_version, app_settings.camera_orbit_distance)
 		_set_if_present(config, "game", "camera_follow_delay_seconds", app_settings.camera_follow_delay_seconds)
 		_load_tcp_port(config, app_settings.tcp_port)
 		_set_if_present(config, "game", "shot_recording_enabled", app_settings.shot_recording_enabled)
@@ -92,6 +94,17 @@ static func _load_tcp_port(config: ConfigFile, setting: Setting) -> void:
 		port = AppSettings.DEFAULT_TCP_PORT
 
 	setting.set_value(port)
+
+
+static func _load_camera_orbit_distance(config: ConfigFile, save_version: int, setting: Setting) -> void:
+	if setting == null or not config.has_section_key("game", "camera_orbit_distance"):
+		return
+
+	var distance := float(config.get_value("game", "camera_orbit_distance", AppSettings.DEFAULT_CAMERA_ORBIT_DISTANCE))
+	if save_version < SAVE_VERSION and absf(distance - OLD_DEFAULT_CAMERA_ORBIT_DISTANCE) <= CAMERA_DISTANCE_MIGRATION_EPSILON:
+		distance = AppSettings.DEFAULT_CAMERA_ORBIT_DISTANCE
+
+	setting.set_value(distance)
 
 
 static func _load_provider(config: ConfigFile, setting: Setting) -> void:

@@ -2,19 +2,37 @@ class_name CourseShotCameraController
 extends RefCounted
 
 const CAMERA_LOOK_OFFSET := Vector3(0.0, 1.5, 0.0)
-const FOLLOW_BACK := 8.5
+const FLIGHT_FOLLOW_BACK := 8.5
 const FOLLOW_HEIGHT := 2.0
+const FOLLOW_HEIGHT_REFERENCE_BACK := 8.5
 const ORBIT_HEIGHT := 1.5
 const RESET_TWEEN_DURATION := 1.2
 const MIN_DIRECTION_LENGTH := 0.000001
+# Within this cup distance (20 yds) the dedicated Group "green" camera takes over,
+# framing the ball and the flag together; outside it the chase camera follows.
+const CLOSE_FOLLOW_TRIGGER_FT := 60.0
+# How far back (ft) the green camera sits from the ball/cup group on the approach
+# side so the flag stays in frame while the ball is framed close-up.
+const GREEN_FOLLOW_BACK_FT := 10.0
+# Priority the green camera is raised to so it outranks the chase camera (whose
+# priority is 10, set in course_base.tscn); the host tweens between the two views.
+const GREEN_PRIORITY := 20
 
 var _host: Node = null
 var _camera: Node3D = null
+# Dedicated Group-mode PhantomCamera3D that frames the ball + flag near the cup.
+var _green_camera: Node3D = null
+# The active hole's flag-pole node; the green camera's group target alongside the ball.
+var _cup_target: Node3D = null
+var _green_active := false
 var _ball: Node3D = null
 var _camera_yaw_deg := 0.0
 var _orbit_radius := 2.1336
 var _reset_tween: Tween = null
 var _is_orbit_mode := false
+# Horizontal ball-travel direction captured at launch; sets the chase follow
+# offset and is the fallback approach direction for the green camera's framing.
+var _follow_direction := Vector3.ZERO
 # Bumped whenever camera modes are reset; lets an in-flight follow coroutine detect
 # that the shot/hole it was launched for is no longer current and bail out.
 var _follow_generation := 0
@@ -23,10 +41,27 @@ var _follow_generation := 0
 # Drives only the PhantomCamera3D (`camera`). The PhantomCameraHost is the sole
 # owner of the actual Camera3D and mirrors the PhantomCamera's transform onto it
 # every frame, so this controller never writes to Camera3D directly.
-func configure(host: Node, camera: Node3D, ball: Node3D) -> void:
+func configure(host: Node, camera: Node3D, green_camera: Node3D, ball: Node3D) -> void:
 	_host = host
 	_camera = camera
+	_green_camera = green_camera
 	_ball = ball
+
+
+# Points the green camera's Group follow/look-at at the live hole's flag (plus the
+# ball). Called whenever the active hole changes so framing tracks the right cup.
+func set_cup_target(post_node: Node3D) -> void:
+	_cup_target = post_node
+	if _green_camera == null or not is_instance_valid(_green_camera):
+		return
+	if post_node == null or _ball == null:
+		var empty: Array[Node3D] = []
+		_green_camera.follow_targets = empty
+		_green_camera.look_at_targets = empty
+		return
+	var targets: Array[Node3D] = [_ball, post_node]
+	_green_camera.follow_targets = targets
+	_green_camera.look_at_targets = targets
 
 
 func set_orbit_radius(radius: float) -> void:
@@ -60,6 +95,28 @@ func disable_follow() -> void:
 	if not _is_ready():
 		return
 	_disable_camera_modes()
+
+
+# Called every frame by CoursePlay while a hole is live. Once the ball has landed
+# (no longer FLIGHT) and is within CLOSE_FOLLOW_TRIGGER_FT of the cup, hand the view
+# to the Group "green" camera so it frames the ball and flag together; otherwise the
+# chase camera keeps following. Switching is a priority change, so the host tweens
+# between the two views instead of snapping. The chase follow is never teleported
+# per-frame here — follow_damping smooths it the same way it does in flight.
+func update_follow_distance_for_cup(cup_distance_ft: float, ball_state: int) -> void:
+	if not _is_ready() or _is_orbit_mode:
+		return
+	if _camera.follow_mode != PhantomCamera3D.FollowMode.SIMPLE:
+		return
+	if _follow_direction.length_squared() < MIN_DIRECTION_LENGTH:
+		return
+	var should_frame_green := ball_state != PhysicsEnums.BallState.FLIGHT \
+		and cup_distance_ft <= CLOSE_FOLLOW_TRIGGER_FT \
+		and _cup_target != null and is_instance_valid(_cup_target)
+	if should_frame_green:
+		_activate_green_camera()
+	else:
+		_deactivate_green_camera()
 
 
 func freeze_on_ball() -> void:
@@ -131,12 +188,12 @@ func _enable_follow_after_launch_async(follow_direction: Vector3, delay_seconds:
 	if direction.length_squared() < MIN_DIRECTION_LENGTH:
 		direction = Vector3.RIGHT
 	direction = direction.normalized()
+	_follow_direction = direction
 
-	var follow_offset := -direction * FOLLOW_BACK + Vector3.UP * FOLLOW_HEIGHT
 	_is_orbit_mode = false
 	_camera.follow_mode = PhantomCamera3D.FollowMode.SIMPLE
 	_camera.follow_target = _ball
-	_camera.follow_offset = follow_offset
+	_set_follow_offset(FLIGHT_FOLLOW_BACK)
 	_camera.follow_damping = true
 	_camera.look_at_mode = PhantomCamera3D.LookAtMode.SIMPLE
 	_camera.look_at_target = _ball
@@ -222,6 +279,50 @@ func _get_ball_velocity_direction() -> Vector3:
 	return direction.normalized()
 
 
+func _set_follow_offset(follow_back: float) -> void:
+	var follow_height := follow_back * (FOLLOW_HEIGHT / FOLLOW_HEIGHT_REFERENCE_BACK)
+	_camera.follow_offset = -_follow_direction * follow_back + Vector3.UP * follow_height
+
+
+# Raise the green camera above the chase camera so the host tweens to it. The
+# group offset is set once on activation, placing the camera on the ball's far
+# side from the cup (looking back over the ball toward the flag) so the flag
+# stays framed even when the ball comes to rest past the cup.
+func _activate_green_camera() -> void:
+	if _green_active:
+		return
+	if _green_camera == null or not is_instance_valid(_green_camera):
+		return
+	_green_active = true
+	_update_green_offset()
+	_green_camera.priority = GREEN_PRIORITY
+
+
+func _deactivate_green_camera() -> void:
+	if not _green_active:
+		return
+	_green_active = false
+	if _green_camera == null or not is_instance_valid(_green_camera):
+		return
+	_green_camera.priority = 0
+	# Resync the chase camera to the live follow position so resuming it mid-roll
+	# tweens from the ball rather than from a stale (inactive) transform.
+	if _is_ready() and _camera.follow_mode == PhantomCamera3D.FollowMode.SIMPLE:
+		_camera.teleport_position()
+
+
+func _update_green_offset() -> void:
+	var approach := _ball.global_position - _cup_target.global_position
+	approach.y = 0.0
+	if approach.length_squared() < MIN_DIRECTION_LENGTH:
+		approach = _follow_direction
+	if approach.length_squared() < MIN_DIRECTION_LENGTH:
+		approach = Vector3.BACK
+	approach = approach.normalized()
+	var back := GREEN_FOLLOW_BACK_FT / GolfUnits.FEET_PER_METER
+	_green_camera.follow_offset = approach * back + Vector3.UP * FOLLOW_HEIGHT
+
+
 func _ball_has_started_moving() -> bool:
 	if _ball == null:
 		return false
@@ -233,9 +334,11 @@ func _ball_has_started_moving() -> bool:
 
 
 func _disable_camera_modes() -> void:
+	_deactivate_green_camera()
 	_camera.follow_mode = PhantomCamera3D.FollowMode.NONE
 	_camera.look_at_mode = PhantomCamera3D.LookAtMode.NONE
 	_is_orbit_mode = true
+	_follow_direction = Vector3.ZERO
 	_follow_generation += 1
 
 

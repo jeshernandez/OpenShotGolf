@@ -16,7 +16,7 @@ const BALL_START_HEIGHT := 0.02
 const COMPLETION_DISTANCE_FEET := 20.0
 const GIMME_NEAR_FEET := 3.0
 const HOLE_OUT_FEET := 0.1
-const DEFAULT_CAMERA_ORBIT_DISTANCE := 2.1336
+const DEFAULT_CAMERA_ORBIT_DISTANCE := AppSettings.DEFAULT_CAMERA_ORBIT_DISTANCE
 const DEFAULT_CAMERA_FOLLOW_DELAY_SECONDS := 0.0
 const MIN_DIRECTION_LENGTH := 0.000001
 const CAMERA_ROTATE_SPEED_DEG_PER_SEC := 90.0
@@ -52,6 +52,11 @@ func _process(delta: float) -> void:
 		if Input.is_action_pressed("camera_rotate_right"):
 			_shot_camera.rotate_yaw(-CAMERA_ROTATE_SPEED_DEG_PER_SEC * delta)
 
+	# Hold the wider chase view during flight, then pull in on landing/rollout.
+	# The controller self-guards unless it is actively following.
+	if _shot_camera != null and _course_ready:
+		_shot_camera.update_follow_distance_for_cup(_get_distance_to_pin_feet(), _player.get_ball_state())
+
 	if _pin_distance_indicator != null and _pin_distance_indicator.visible and _course_ready:
 		var ball_pos := _get_ball_global_position()
 		var dist := Vector2(ball_pos.x, ball_pos.z).distance_to(
@@ -79,7 +84,7 @@ func _ready() -> void:
 	# during flight instead of jumping forward in large chunks behind the fast ball.
 	_player.trail_resolution = 0.02
 	_shot_camera = CameraControllerScript.new()
-	_shot_camera.configure(self, $PhantomCamera3D, $Player.ball)
+	_shot_camera.configure(self, $PhantomCamera3D, $GreenPhantomCamera3D, $Player.ball)
 	_hole_score_overlay = HoleScoreOverlayScript.new()
 	add_child(_hole_score_overlay)
 	_pin_distance_indicator = PinDistanceIndicatorScript.new()
@@ -118,6 +123,7 @@ func _hide_hole_numbers() -> void:
 # current hole rather than the range, so we intentionally do not call super here.
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("reset"):
+		_hide_ball_indicator()
 		_reset_display_data()
 		$RangeUI.set_data(display_data)
 		_start_hole_by_index(_current_hole_index)
@@ -134,6 +140,7 @@ func _on_range_ui_hit_shot(data: Dictionary) -> void:
 
 
 func _on_player_manual_hit() -> void:
+	_hide_ball_indicator()
 	_prepare_course_shot_start({})
 
 
@@ -173,6 +180,7 @@ func _on_cup_ball_holed(_ball: Node3D) -> void:
 	if not _course_ready or _hole_out_active:
 		return
 
+	_hide_ball_indicator()
 	_hole_out_active = true
 	_rest_sequence += 1
 	var sequence := _rest_sequence
@@ -194,6 +202,7 @@ func set_camera_follow_mode(value) -> void:
 
 
 func _prepare_course_shot_start(data: Dictionary) -> void:
+	_hide_ball_indicator()
 	if not _course_ready:
 		_start_hole_by_number(1)
 
@@ -238,6 +247,7 @@ func _start_hole_by_index(index: int) -> void:
 		push_warning("Course has no playable holes.")
 		return
 
+	_hide_ball_indicator()
 	_rest_sequence += 1
 	_stroke_count = 0
 	_hole_out_active = false
@@ -259,7 +269,16 @@ func _start_hole_by_index(index: int) -> void:
 	_apply_camera_settings()
 	if _shot_camera != null:
 		_shot_camera.set_to_start_immediate(_get_ball_global_position(), _active_flag_position)
+	_show_ball_indicator()
 	print("Starting Hole %d" % _current_hole_number)
+
+
+func _should_show_ball_indicator() -> bool:
+	return _course_ready and not _hole_out_active and not _overlay_active
+
+
+func _uses_ball_indicator() -> bool:
+	return true
 
 
 func _connect_active_cup_marker() -> void:
@@ -270,7 +289,15 @@ func _connect_active_cup_marker() -> void:
 	_active_cup_marker = null
 	var hole_node := _resolve_hole_marker_node()
 	if hole_node == null:
+		if _shot_camera != null:
+			_shot_camera.set_cup_target(null)
 		return
+
+	# Point the green camera's group framing at this hole's flag pole (the Post,
+	# matching _resolve_flag_position) so it keeps the flag in view near the cup.
+	if _shot_camera != null:
+		var post_node := hole_node.get_node_or_null("Post") as Node3D
+		_shot_camera.set_cup_target(post_node if post_node != null else hole_node)
 
 	var cup_marker := hole_node.get_node_or_null("Cup") as GolfCupMarker
 	if cup_marker == null:
@@ -309,6 +336,7 @@ func _show_hole_result_and_advance(final_strokes: int, sequence: int) -> void:
 	var hole_data := _get_current_hole_data()
 	var par := int(hole_data.get("Par", 3))
 	var label := ScoreMapper.map_score(final_strokes, par)
+	_hide_ball_indicator()
 	_pin_distance_indicator.visible = false
 	_overlay_active = true
 	_hole_score_overlay.show_result(label, final_strokes, par)
@@ -342,7 +370,8 @@ func _is_hole_complete() -> bool:
 func _apply_camera_settings() -> void:
 	if _shot_camera == null:
 		return
-	_shot_camera.set_orbit_radius(_get_camera_orbit_distance())
+	var camera_distance := _get_camera_orbit_distance()
+	_shot_camera.set_orbit_radius(camera_distance)
 
 
 func _get_camera_orbit_distance() -> float:

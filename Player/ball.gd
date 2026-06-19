@@ -79,6 +79,9 @@ const OPENFAIRWAY_CLASS_PATHS := {
 const DEFAULT_BALL_MASS := 0.04592623
 const DEFAULT_BALL_RADIUS := 0.021335
 const DEFAULT_BALL_MOI := 0.4 * DEFAULT_BALL_MASS * DEFAULT_BALL_RADIUS * DEFAULT_BALL_RADIUS
+# Native radius of golf_ball.glb in its own units (~unit sphere). The visual mesh
+# is scaled by _ball_radius / this so it always matches the physics ball size.
+const BALL_MESH_NATIVE_RADIUS := 1.00717
 
 
 func _init(ball_type := BallType.STANDARD):
@@ -219,9 +222,10 @@ func _create_collision_and_model():
 	shape.set_radius(_ball_radius)
 	collision.set_shape(shape)
 	add_child(collision)
-	# Create model
+	# Create model. Scale the visual mesh to match the physics radius so the rendered
+	# ball is real PGA size (1.68") instead of the old hardcoded 0.05 (~2.4x too big).
 	var mesh = ball_scene.instantiate()
-	var mesh_scale := 0.05
+	var mesh_scale := _ball_radius / BALL_MESH_NATIVE_RADIUS
 	mesh.scale = Vector3(mesh_scale, mesh_scale, mesh_scale)
 	add_child(mesh)
 
