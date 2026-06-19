@@ -192,10 +192,28 @@ func _create_collision_and_model():
 
 
 func _connect_settings() -> void:
+<<<<<<< HEAD
 	GlobalSettings.range_settings.temperature.setting_changed.connect(_on_environment_changed)
 	GlobalSettings.range_settings.altitude.setting_changed.connect(_on_environment_changed)
 	GlobalSettings.range_settings.range_units.setting_changed.connect(_on_environment_changed)
 	GlobalSettings.range_settings.surface_type.setting_changed.connect(_on_surface_type_changed)
+=======
+	_range_settings = GlobalSettingsManager.range_settings
+	var settings := _range_settings
+
+	if not settings.temperature.setting_changed.is_connected(_on_environment_changed):
+		settings.temperature.setting_changed.connect(_on_environment_changed)
+	if not settings.altitude.setting_changed.is_connected(_on_environment_changed):
+		settings.altitude.setting_changed.connect(_on_environment_changed)
+	if not settings.range_units.setting_changed.is_connected(_on_environment_changed):
+		settings.range_units.setting_changed.connect(_on_environment_changed)
+	if not settings.surface_type.setting_changed.is_connected(_on_surface_type_changed):
+		settings.surface_type.setting_changed.connect(_on_surface_type_changed)
+	if not settings.ball_type.setting_changed.is_connected(_ball_type_changed):
+		settings.ball_type.setting_changed.connect(_ball_type_changed)
+	_ball_type_changed(settings.ball_type.value)
+	_settings_connected = true
+>>>>>>> 4e157d9 (Updating Settings class name, singleton manager)
 
 
 func _create_physics_params():
@@ -227,7 +245,14 @@ func _on_surface_type_changed(value) -> void:
 
 
 func _update_environment() -> void:
+<<<<<<< HEAD
 	var units: int = GlobalSettings.range_settings.range_units.value
+=======
+	if _aero == null:
+		return
+	var settings := GlobalSettingsManager.range_settings
+	var units: int = settings.range_units.value
+>>>>>>> 4e157d9 (Updating Settings class name, singleton manager)
 	var density = _call_openfairway_method(
 		_aero,
 		&"get_air_density",
@@ -631,3 +656,18 @@ func _print_launch_debug(data: Dictionary, speed_mps: float, vla: float, hla: fl
 	print("Initial omega: ", omega, " (%.0f rpm)" % (omega.length() / 0.10472))
 	print("Shot direction: ", shot_dir)
 	print("===================")
+<<<<<<< HEAD
+=======
+
+
+func set_env(_value) -> void:
+	_update_environment()
+
+
+func _get_ball_label() -> String:
+	match GlobalSettingsManager.range_settings.ball_type.value:
+		GolfBall.BallType.PREMIUM:
+			return "Premium"
+		_:
+			return "Standard"
+>>>>>>> 4e157d9 (Updating Settings class name, singleton manager)
