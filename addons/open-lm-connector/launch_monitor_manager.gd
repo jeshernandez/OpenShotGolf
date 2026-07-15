@@ -1,3 +1,4 @@
+class_name LaunchMonitorManagerAutoload
 extends Node
 
 # Monitor implementations live in sibling folders (e.g. `square/`); shared transports and external receivers live under `common/`.
@@ -11,10 +12,14 @@ signal firmware_changed(firmware: String)
 signal ready_changed(is_ready: bool)
 
 const SETTINGS_PATH := "user://square_launch_monitor.cfg"
-const DEFAULT_CLUB_CODE := "0204"
+const DEFAULT_CLUB_CODE := SquareClubCatalog.DEFAULT_CLUB_CODE
+const PROVIDER_PITRAC := AppSettings.LAUNCH_MONITOR_PROVIDER_PITRAC
+const PROVIDER_SQUARE := AppSettings.LAUNCH_MONITOR_PROVIDER_SQUARE
 const SQUARE_CLASS_NAME := "SquareLaunchMonitor"
-const SQUARE_SCRIPT_PATH := "res://addons/launch_monitors/square/SquareLaunchMonitor.cs"
-const SQUARE_LOG_PREFIX := "[SquareLM]"
+const SQUARE_SCRIPT_PATH := "res://addons/open-lm-connector/square/SquareLaunchMonitor.cs"
+const TCP_SERVER_CLASS_NAME := "TcpServer"
+const TCP_SERVER_SCRIPT_PATH := "res://addons/open-lm-connector/common/tcp_server/TcpServer.cs"
+const LMONITOR_LOG_PREFIX := "[LMonitor]"
 const SQUARE_DEVICE_PREFIX := "squaregolf"
 const BLUEZ_DEVICE_SEGMENT_PREFIX := "/dev_"
 const LINUX_AUTO_CONNECT_SCAN_SECONDS := 15.0
@@ -29,18 +34,17 @@ var battery_level := -1
 var firmware := ""
 var is_ready := false
 var _square_init_error := ""
-var settings := {
-	"enabled": false,
-	"device_id": "",
-	"club_code": DEFAULT_CLUB_CODE,
-	"handedness": 0
-}
+var _square_runtime_enabled := false
 
 var _square: Node = null
 var _config := ConfigFile.new()
 var _linux_auto_connect_active := false
 var _linux_auto_connect_target_address := ""
 var _linux_auto_connect_timer: Timer = null
+var _tcp_server: Node = null
+var _tcp_init_error := ""
+var _app_settings: AppSettings = null
+var _active_provider := ""
 
 
 func _ready() -> void:

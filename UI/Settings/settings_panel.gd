@@ -14,11 +14,11 @@ enum SettingsTab { PLAYER, DISPLAY, GAME, LMONITORS, PANELS }
 
 const FALLBACK_PLAYER_NAME := "JesseInCode"
 const FALLBACK_RESOLUTION_PRESET := "1728x972"
-const FEET_PER_CAMERA_DISTANCE_UNIT := 3.28084
+const FEET_PER_CAMERA_DISTANCE := 3.28084
 const CAMERA_DISTANCE_MIN_UNITS := 1.0
 const CAMERA_DISTANCE_MAX_UNITS := 8.0
-const CAMERA_DISTANCE_MIN_FEET := CAMERA_DISTANCE_MIN_UNITS * FEET_PER_CAMERA_DISTANCE_UNIT
-const CAMERA_DISTANCE_MAX_FEET := CAMERA_DISTANCE_MAX_UNITS * FEET_PER_CAMERA_DISTANCE_UNIT
+const CAMERA_DISTANCE_MIN_FEET := CAMERA_DISTANCE_MIN_UNITS * FEET_PER_CAMERA_DISTANCE
+const CAMERA_DISTANCE_MAX_FEET := CAMERA_DISTANCE_MAX_UNITS * FEET_PER_CAMERA_DISTANCE
 const PANEL_WIDTH := 1040.0
 const PANEL_HEIGHT := 580.0
 const PANEL_SHADOW_PADDING_X := 17.0
@@ -85,9 +85,8 @@ var _show_range_default_club_setting := true
 
 func _ready() -> void:
 	_global_settings = GlobalSettingsManager
-	if _global_settings != null:
-		_app_settings = _global_settings.app_settings
-		_game_settings = _global_settings.game_settings
+	_app_settings = _global_settings.app_settings
+	_game_settings = _global_settings.game_settings
 
 	_build_ui()
 	_create_panel_toggle_icons()
@@ -119,12 +118,12 @@ func show_panel(tab: int = SettingsTab.PLAYER) -> void:
 	visible = true
 	call_deferred("_sync_panel_shadow_to_panel")
 
-	if tab == SettingsTab.PLAYER and _player_name_input != null:
+	if tab == SettingsTab.PLAYER:
 		_player_name_input.grab_focus()
 
 
 func _warn_if_main_menu_signal_unwired() -> void:
-	if _main_menu_button == null or not _main_menu_button.visible:
+	if not _main_menu_button.visible:
 		return
 	if main_menu_requested.get_connections().is_empty():
 		push_warning("SettingsPanel: MAIN MENU button is visible but main_menu_requested has no listeners; clicking it will do nothing.")
@@ -139,17 +138,20 @@ func hide_panel() -> void:
 
 
 func set_main_menu_button_visible(is_visible: bool) -> void:
-	if _main_menu_button != null:
-		_main_menu_button.visible = is_visible
+	_main_menu_button.visible = is_visible
 
 
 func set_tracer_history_setting_visible(is_visible: bool) -> void:
 	_show_tracer_history_setting = is_visible
+	if not is_node_ready():
+		return
 	_apply_tracer_history_visibility()
 
 
 func set_range_default_club_setting_visible(is_visible: bool) -> void:
 	_show_range_default_club_setting = is_visible
+	if not is_node_ready():
+		return
 	_apply_range_default_club_visibility()
 
 
@@ -521,14 +523,9 @@ func _configure_controls() -> void:
 	_camera_delay_value.max_value = 5.0
 	_camera_delay_value.step = 0.05
 
-	var tracer_min := 0
-	var tracer_max := 5
-	if _game_settings != null and _game_settings.shot_tracer_count != null:
-		var setting: Setting = _game_settings.shot_tracer_count
-		if setting.min_value != null:
-			tracer_min = int(setting.min_value)
-		if setting.max_value != null:
-			tracer_max = int(setting.max_value)
+	var setting: Setting = _game_settings.shot_tracer_count
+	var tracer_min := int(setting.min_value)
+	var tracer_max := int(setting.max_value)
 
 	_tracer_history_slider.min_value = tracer_min
 	_tracer_history_slider.max_value = tracer_max
@@ -583,79 +580,72 @@ func _connect_control_signals() -> void:
 
 func _connect_setting_signals() -> void:
 	var callback := Callable(self, "_on_any_setting_changed")
-	if _app_settings != null:
-		for setting: Setting in _app_settings.settings.values():
-			if not setting.setting_changed.is_connected(callback):
-				setting.setting_changed.connect(callback)
+	for setting: Setting in _app_settings.settings.values():
+		if not setting.setting_changed.is_connected(callback):
+			setting.setting_changed.connect(callback)
 
-	if _game_settings != null:
-		_shot_tracer_count_setting = _game_settings.shot_tracer_count
-		if _shot_tracer_count_setting != null and not _shot_tracer_count_setting.setting_changed.is_connected(callback):
-			_shot_tracer_count_setting.setting_changed.connect(callback)
+	_shot_tracer_count_setting = _game_settings.shot_tracer_count
+	if not _shot_tracer_count_setting.setting_changed.is_connected(callback):
+		_shot_tracer_count_setting.setting_changed.connect(callback)
 
 	var launch_monitor = _get_launch_monitor_manager()
-	if launch_monitor != null:
-		var device_callback := Callable(self, "_on_square_device_discovered")
-		if not launch_monitor.device_discovered.is_connected(device_callback):
-			launch_monitor.device_discovered.connect(device_callback)
+	var device_callback := Callable(self, "_on_square_device_discovered")
+	if not launch_monitor.device_discovered.is_connected(device_callback):
+		launch_monitor.device_discovered.connect(device_callback)
 
 
 func _disconnect_setting_signals() -> void:
 	var callback := Callable(self, "_on_any_setting_changed")
-	if _app_settings != null:
-		for setting: Setting in _app_settings.settings.values():
-			if setting.setting_changed.is_connected(callback):
-				setting.setting_changed.disconnect(callback)
+	for setting: Setting in _app_settings.settings.values():
+		if setting.setting_changed.is_connected(callback):
+			setting.setting_changed.disconnect(callback)
 
-	if _shot_tracer_count_setting != null and _shot_tracer_count_setting.setting_changed.is_connected(callback):
+	if _shot_tracer_count_setting.setting_changed.is_connected(callback):
 		_shot_tracer_count_setting.setting_changed.disconnect(callback)
 
 	var launch_monitor = _get_launch_monitor_manager()
-	if launch_monitor != null:
-		var device_callback := Callable(self, "_on_square_device_discovered")
-		if launch_monitor.device_discovered.is_connected(device_callback):
-			launch_monitor.device_discovered.disconnect(device_callback)
+	var device_callback := Callable(self, "_on_square_device_discovered")
+	if launch_monitor.device_discovered.is_connected(device_callback):
+		launch_monitor.device_discovered.disconnect(device_callback)
 
 
 func _refresh_controls_from_settings() -> void:
 	_is_syncing_controls = true
 
-	if _app_settings != null:
-		_player_name_input.text = _sanitize_player_name(str(_app_settings.player_name.value))
-		_test_shots_check.set_pressed_no_signal(bool(_app_settings.test_shots_enabled.value))
+	_player_name_input.text = _sanitize_player_name(str(_app_settings.player_name.value))
+	_test_shots_check.set_pressed_no_signal(bool(_app_settings.test_shots_enabled.value))
 
-		var preset := str(_app_settings.display_resolution_preset.value).strip_edges()
-		if preset == "":
-			preset = FALLBACK_RESOLUTION_PRESET
-		_select_or_add_resolution_preset(preset)
-		_fullscreen_check.set_pressed_no_signal(bool(_app_settings.display_fullscreen.value))
+	var preset := str(_app_settings.display_resolution_preset.value).strip_edges()
+	if preset == "":
+		preset = FALLBACK_RESOLUTION_PRESET
+	_select_or_add_resolution_preset(preset)
+	_fullscreen_check.set_pressed_no_signal(bool(_app_settings.display_fullscreen.value))
 
-		var camera_distance_units := float(_app_settings.camera_orbit_distance.value)
-		var camera_distance_feet := _units_to_feet(camera_distance_units)
-		_camera_distance_slider.set_value_no_signal(camera_distance_feet)
-		_camera_distance_value.set_value_no_signal(camera_distance_feet)
-		_camera_distance_helper.text = "Distance from ball: %d ft" % int(round(camera_distance_feet))
+	var camera_distance_units := float(_app_settings.camera_orbit_distance.value)
+	var camera_distance_feet := _units_to_feet(camera_distance_units)
+	_camera_distance_slider.set_value_no_signal(camera_distance_feet)
+	_camera_distance_value.set_value_no_signal(camera_distance_feet)
+	_camera_distance_helper.text = "Distance from ball: %d ft" % int(round(camera_distance_feet))
 
-		var camera_delay := float(_app_settings.camera_follow_delay_seconds.value)
-		_camera_delay_slider.set_value_no_signal(camera_delay)
-		_camera_delay_value.set_value_no_signal(camera_delay)
-		_camera_delay_helper.text = "Follow starts after %.2f seconds" % camera_delay
+	var camera_delay := float(_app_settings.camera_follow_delay_seconds.value)
+	_camera_delay_slider.set_value_no_signal(camera_delay)
+	_camera_delay_value.set_value_no_signal(camera_delay)
+	_camera_delay_helper.text = "Follow starts after %.2f seconds" % camera_delay
 
-		_launch_monitor_enabled_check.set_pressed_no_signal(bool(_app_settings.launch_monitor_enabled.value))
-		_select_option_by_metadata(_launch_monitor_provider_option, _get_selected_launch_monitor_provider())
-		_tcp_port_value.set_value_no_signal(int(_app_settings.tcp_port.value))
-		_shot_recording_check.set_pressed_no_signal(bool(_app_settings.shot_recording_enabled.value))
-		_shot_recording_path_input.text = str(_app_settings.shot_recording_path.value)
-		_update_shot_recording_helper()
+	_launch_monitor_enabled_check.set_pressed_no_signal(bool(_app_settings.launch_monitor_enabled.value))
+	_select_option_by_metadata(_launch_monitor_provider_option, _get_selected_launch_monitor_provider())
+	_tcp_port_value.set_value_no_signal(int(_app_settings.tcp_port.value))
+	_shot_recording_check.set_pressed_no_signal(bool(_app_settings.shot_recording_enabled.value))
+	_shot_recording_path_input.text = str(_app_settings.shot_recording_path.value)
+	_update_shot_recording_helper()
 
-		var default_club := RangeClubCatalog.normalize_label(str(_app_settings.range_default_club.value))
-		_select_range_default_club(default_club)
+	var default_club := RangeClubCatalog.normalize_label(str(_app_settings.range_default_club.value))
+	_select_range_default_club(default_club)
 
-	if _shot_tracer_count_setting != null:
-		var tracer_count := int(round(float(_shot_tracer_count_setting.value)))
-		_tracer_history_slider.set_value_no_signal(tracer_count)
-		_tracer_history_value.set_value_no_signal(tracer_count)
-		_update_tracer_history_helper(tracer_count)
+	var tracer_count := int(round(float(_shot_tracer_count_setting.value)))
+	_tracer_history_slider.set_value_no_signal(tracer_count)
+	_tracer_history_value.set_value_no_signal(tracer_count)
+	_update_tracer_history_helper(tracer_count)
 
 	_refresh_square_controls()
 	_apply_tracer_history_visibility()
@@ -725,9 +715,6 @@ func _select_range_default_club(club_label: String) -> void:
 
 
 func _select_option_by_metadata(option: OptionButton, metadata: Variant) -> void:
-	if option == null:
-		return
-
 	for index in range(option.item_count):
 		if str(option.get_item_metadata(index)) == str(metadata):
 			option.select(index)
@@ -738,9 +725,6 @@ func _select_option_by_metadata(option: OptionButton, metadata: Variant) -> void
 
 
 func _select_option_by_item_id(option: OptionButton, item_id: int) -> void:
-	if option == null:
-		return
-
 	var index := option.get_item_index(item_id)
 	if index >= 0:
 		option.select(index)
@@ -755,14 +739,12 @@ func _on_any_setting_changed(_value: Variant) -> void:
 
 
 func _on_save_pressed() -> void:
-	if _global_settings != null:
-		_global_settings.save_app_settings()
+	_global_settings.save_app_settings()
 	hide_panel()
 
 
 func _on_main_menu_pressed() -> void:
-	if _global_settings != null:
-		_global_settings.save_app_settings()
+	_global_settings.save_app_settings()
 	main_menu_requested.emit()
 	hide_panel()
 
@@ -789,14 +771,14 @@ func _on_player_name_focus_exited() -> void:
 
 
 func _commit_player_name(input: String) -> void:
-	if _is_syncing_controls or _app_settings == null:
+	if _is_syncing_controls:
 		return
 
 	_app_settings.player_name.set_value(_sanitize_player_name(input))
 
 
 func _on_range_default_club_selected(index: int) -> void:
-	if _is_syncing_controls or _app_settings == null:
+	if _is_syncing_controls:
 		return
 
 	var safe_index: int = int(clamp(index, 0, _range_default_club_option.item_count - 1))
@@ -805,77 +787,77 @@ func _on_range_default_club_selected(index: int) -> void:
 
 
 func _on_test_shots_toggled(enabled: bool) -> void:
-	if _is_syncing_controls or _app_settings == null:
+	if _is_syncing_controls:
 		return
 
 	_app_settings.test_shots_enabled.set_value(enabled)
 
 
 func _on_resolution_selected(index: int) -> void:
-	if _is_syncing_controls or _app_settings == null:
+	if _is_syncing_controls:
 		return
 
 	_app_settings.display_resolution_preset.set_value(_resolution_option.get_item_text(index))
 
 
 func _on_fullscreen_toggled(is_pressed: bool) -> void:
-	if _is_syncing_controls or _app_settings == null:
+	if _is_syncing_controls:
 		return
 
 	_app_settings.display_fullscreen.set_value(is_pressed)
 
 
 func _on_camera_distance_slider_changed(value: float) -> void:
-	if _is_syncing_controls or _app_settings == null:
+	if _is_syncing_controls:
 		return
 
 	_app_settings.camera_orbit_distance.set_value(_feet_to_units(value))
 
 
 func _on_camera_distance_value_changed(value: float) -> void:
-	if _is_syncing_controls or _app_settings == null:
+	if _is_syncing_controls:
 		return
 
 	_app_settings.camera_orbit_distance.set_value(_feet_to_units(value))
 
 
 func _on_camera_delay_slider_changed(value: float) -> void:
-	if _is_syncing_controls or _app_settings == null:
+	if _is_syncing_controls:
 		return
 
 	_app_settings.camera_follow_delay_seconds.set_value(value)
 
 
 func _on_camera_delay_value_changed(value: float) -> void:
-	if _is_syncing_controls or _app_settings == null:
+	if _is_syncing_controls:
 		return
 
 	_app_settings.camera_follow_delay_seconds.set_value(value)
 
 
 func _on_tracer_history_slider_changed(value: float) -> void:
-	if _is_syncing_controls or _shot_tracer_count_setting == null:
+	if _is_syncing_controls:
 		return
 
 	_shot_tracer_count_setting.set_value(int(round(value)))
 
 
 func _on_tracer_history_value_changed(value: float) -> void:
-	if _is_syncing_controls or _shot_tracer_count_setting == null:
+	if _is_syncing_controls:
 		return
 
 	_shot_tracer_count_setting.set_value(int(round(value)))
 
 
 func _on_launch_monitor_enabled_toggled(enabled: bool) -> void:
-	if _is_syncing_controls or _app_settings == null:
+	if _is_syncing_controls:
 		return
 
 	_app_settings.launch_monitor_enabled.set_value(enabled)
 
 
 func _on_launch_monitor_provider_selected(index: int) -> void:
-	if _is_syncing_controls or _app_settings == null:
+	if _is_syncing_controls:
 		return
 
 	_app_settings.launch_monitor_provider.set_value(str(_launch_monitor_provider_option.get_item_metadata(index)))
@@ -883,15 +865,12 @@ func _on_launch_monitor_provider_selected(index: int) -> void:
 
 func _on_square_scan_pressed() -> void:
 	var launch_monitor = _get_launch_monitor_manager()
-	if launch_monitor == null:
-		return
-
 	launch_monitor.start_scan()
 
 
 func _on_square_connect_pressed() -> void:
 	var launch_monitor = _get_launch_monitor_manager()
-	if launch_monitor == null or _square_device_option == null or _square_device_option.item_count == 0:
+	if _square_device_option.item_count == 0:
 		return
 
 	var selected_index := int(clamp(_square_device_option.selected, 0, _square_device_option.item_count - 1))
@@ -904,13 +883,12 @@ func _on_square_connect_pressed() -> void:
 
 func _on_square_disconnect_pressed() -> void:
 	var launch_monitor = _get_launch_monitor_manager()
-	if launch_monitor != null:
-		launch_monitor.disconnect_device()
+	launch_monitor.disconnect_device()
 
 
 func _on_square_club_selected(index: int) -> void:
 	var launch_monitor = _get_launch_monitor_manager()
-	if _is_syncing_controls or launch_monitor == null:
+	if _is_syncing_controls:
 		return
 
 	launch_monitor.set_club_code(str(_square_club_option.get_item_metadata(index)))
@@ -918,7 +896,7 @@ func _on_square_club_selected(index: int) -> void:
 
 func _on_square_handedness_selected(index: int) -> void:
 	var launch_monitor = _get_launch_monitor_manager()
-	if _is_syncing_controls or launch_monitor == null:
+	if _is_syncing_controls:
 		return
 
 	launch_monitor.set_handedness(_square_handedness_option.get_item_id(index))
@@ -929,26 +907,25 @@ func _on_square_device_discovered(_device_id: String, _name: String, _rssi: int)
 
 
 func _on_tcp_port_value_changed(value: float) -> void:
-	if _is_syncing_controls or _app_settings == null:
+	if _is_syncing_controls:
 		return
 
 	_app_settings.tcp_port.set_value(int(round(value)))
 
 
 func _on_shot_recording_toggled(enabled: bool) -> void:
-	if _is_syncing_controls or _app_settings == null:
+	if _is_syncing_controls:
 		return
 
 	_app_settings.shot_recording_enabled.set_value(enabled)
 
 
 func _on_shot_recording_browse_pressed() -> void:
-	if _shot_recording_file_dialog != null:
-		_shot_recording_file_dialog.popup()
+	_shot_recording_file_dialog.popup()
 
 
 func _on_shot_recording_dir_selected(dir: String) -> void:
-	if _is_syncing_controls or _app_settings == null:
+	if _is_syncing_controls:
 		return
 
 	_app_settings.shot_recording_path.set_value(dir)
@@ -968,28 +945,15 @@ func _update_tracer_history_helper(tracer_count: int) -> void:
 
 
 func _refresh_square_controls() -> void:
-	if _square_device_option == null:
-		return
-
 	var launch_monitor := _get_launch_monitor_manager()
-	if launch_monitor == null:
-		_square_device_option.clear()
-		return
-
 	_select_option_by_metadata(_square_club_option, launch_monitor.get_square_club_code())
 	_select_option_by_item_id(_square_handedness_option, launch_monitor.get_square_handedness())
 	_refresh_square_devices()
 
 
 func _refresh_square_devices() -> void:
-	if _square_device_option == null:
-		return
-
 	_square_device_option.clear()
 	var launch_monitor := _get_launch_monitor_manager()
-	if launch_monitor == null:
-		return
-
 	var selected_device := launch_monitor.get_selected_device_id()
 	for device_id in launch_monitor.devices.keys():
 		var device = launch_monitor.devices[device_id]
@@ -1004,35 +968,26 @@ func _refresh_square_devices() -> void:
 
 
 func _apply_launch_monitor_visibility() -> void:
-	var enabled := _app_settings != null and bool(_app_settings.launch_monitor_enabled.value)
+	var enabled := bool(_app_settings.launch_monitor_enabled.value)
 	var provider := _get_selected_launch_monitor_provider()
 
-	if _launch_monitor_provider_card != null:
-		_launch_monitor_provider_card.visible = enabled
-	if _square_monitor_card != null:
-		_square_monitor_card.visible = enabled and provider == LMONITOR_PROVIDER_SQUARE
-	if _pitrac_card != null:
-		_pitrac_card.visible = enabled and provider == LMONITOR_PROVIDER_PITRAC
+	_launch_monitor_provider_card.visible = enabled
+	_square_monitor_card.visible = enabled and provider == LMONITOR_PROVIDER_SQUARE
+	_pitrac_card.visible = enabled and provider == LMONITOR_PROVIDER_PITRAC
 
 	call_deferred("_sync_panel_shadow_to_panel")
 
 
 func _get_selected_launch_monitor_provider() -> String:
-	if _app_settings == null:
-		return LMONITOR_PROVIDER_PITRAC
-
 	return AppSettings.normalize_provider(str(_app_settings.launch_monitor_provider.value))
 
 
 func _get_launch_monitor_manager() -> LaunchMonitorManagerAutoload:
-	var tree := get_tree()
-	if tree == null:
-		return null
-	return tree.root.get_node_or_null("LaunchMonitorManager") as LaunchMonitorManagerAutoload
+	return LaunchMonitorManager
 
 
 func _set_active_tab(tab: int) -> void:
-	if _tabs == null or _tabs.get_tab_count() == 0:
+	if _tabs.get_tab_count() == 0:
 		return
 
 	var tab_index: int = int(clamp(tab, 0, _tabs.get_tab_count() - 1))
@@ -1041,7 +996,7 @@ func _set_active_tab(tab: int) -> void:
 
 
 func _reset_tab_scroll(tab: int) -> void:
-	var scroll: ScrollContainer = null
+	var scroll: ScrollContainer
 	match tab:
 		SettingsTab.PLAYER:
 			scroll = _player_tab_scroll
@@ -1051,23 +1006,20 @@ func _reset_tab_scroll(tab: int) -> void:
 			scroll = _game_tab_scroll
 		SettingsTab.LMONITORS:
 			scroll = _lmonitors_tab_scroll
-
-	if scroll == null:
-		return
+		_:
+			return
 
 	scroll.scroll_vertical = 0
 	scroll.scroll_horizontal = 0
 
 
 func _apply_tracer_history_visibility() -> void:
-	if _tracer_history_card != null:
-		_tracer_history_card.visible = _show_tracer_history_setting
+	_tracer_history_card.visible = _show_tracer_history_setting
 	call_deferred("_sync_panel_shadow_to_panel")
 
 
 func _apply_range_default_club_visibility() -> void:
-	if _range_default_club_card != null:
-		_range_default_club_card.visible = _show_range_default_club_setting
+	_range_default_club_card.visible = _show_range_default_club_setting
 	call_deferred("_sync_panel_shadow_to_panel")
 
 
@@ -1083,17 +1035,14 @@ func _sanitize_player_name(value: String) -> String:
 
 
 func _units_to_feet(units: float) -> float:
-	return units * FEET_PER_CAMERA_DISTANCE_UNIT
+	return units * FEET_PER_CAMERA_DISTANCE
 
 
 func _feet_to_units(feet: float) -> float:
-	return feet / FEET_PER_CAMERA_DISTANCE_UNIT
+	return feet / FEET_PER_CAMERA_DISTANCE
 
 
 func _sync_panel_shadow_to_panel() -> void:
-	if _panel == null or _panel_shadow == null:
-		return
-
 	_panel_shadow.position = _panel.position - Vector2(PANEL_SHADOW_PADDING_X, PANEL_SHADOW_PADDING_Y)
 	_panel_shadow.size = _panel.size + Vector2(PANEL_SHADOW_PADDING_X * 2.0, PANEL_SHADOW_PADDING_Y * 2.0)
 

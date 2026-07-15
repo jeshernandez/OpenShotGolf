@@ -8,7 +8,6 @@ var temperature_spin_box : SpinBox = null
 var altitude_spin_box : SpinBox = null
 var surface_option : OptionButton = null
 var tracer_count_spin_box : SpinBox = null
-var ball_type_option : OptionButton = null
 var square_enabled_button : CheckButton = null
 var square_device_option : OptionButton = null
 var square_scan_button : Button = null
@@ -75,21 +74,7 @@ func _ready() -> void:
 	var surface_index := surface_option.get_item_index(surface_id)
 	if surface_index >= 0:
 		surface_option.select(surface_index)
-
-<<<<<<< HEAD
-	GlobalSettings.range_settings.range_units.setting_changed.connect(update_units)
-=======
-	if ball_type_option:
-		ball_type_option.clear()
-		ball_type_option.add_item("Standard", GolfBall.BallType.STANDARD)
-		ball_type_option.add_item("Premium", GolfBall.BallType.PREMIUM)
-		var ball_type_id: int = GlobalSettingsManager.range_settings.ball_type.value
-		var ball_type_index := ball_type_option.get_item_index(ball_type_id)
-		if ball_type_index >= 0:
-			ball_type_option.select(ball_type_index)
-
 	GlobalSettingsManager.range_settings.range_units.setting_changed.connect(update_units)
->>>>>>> 4e157d9 (Updating Settings class name, singleton manager)
 
 	$MarginContainer/VBoxContainer/Units/CheckButton.set_pressed_no_signal(
 		GlobalSettingsManager.range_settings.range_units.value == PhysicsEnums.Units.METRIC
@@ -167,17 +152,6 @@ func _on_surface_option_item_selected(index: int) -> void:
 
 func _on_tracer_count_spin_box_value_changed(value: float) -> void:
 	GlobalSettingsManager.range_settings.shot_tracer_count.set_value(int(value))
-
-
-func _on_ball_type_option_item_selected(index: int) -> void:
-<<<<<<< HEAD
-	GlobalSettings.range_settings.ball_type.set_value(index)
-=======
-	if ball_type_option == null:
-		return
-	var id: int = ball_type_option.get_item_id(index)
-	GlobalSettingsManager.range_settings.ball_type.set_value(id)
->>>>>>> 4e157d9 (Updating Settings class name, singleton manager)
 
 
 func _setup_square_monitor_section() -> void:
