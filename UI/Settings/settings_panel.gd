@@ -535,7 +535,7 @@ func _connect_control_signals() -> void:
 	_main_menu_button.pressed.connect(_on_main_menu_pressed)
 	_save_button.pressed.connect(_on_save_pressed)
 	_close_button.pressed.connect(hide_panel)
-	_player_name_input.text_submitted.connect(_on_player_name_text_submitted)
+	_player_name_input.text_submitted.connect(_commit_player_name)
 	_player_name_input.focus_exited.connect(_on_player_name_focus_exited)
 	_range_default_club_option.item_selected.connect(_on_range_default_club_selected)
 	_test_shots_check.toggled.connect(_on_test_shots_toggled)
@@ -732,10 +732,6 @@ func _on_backdrop_gui_input(event: InputEvent) -> void:
 
 func _on_panel_layout_changed() -> void:
 	_sync_panel_shadow_to_panel()
-
-
-func _on_player_name_text_submitted(text: String) -> void:
-	_commit_player_name(text)
 
 
 func _on_player_name_focus_exited() -> void:
