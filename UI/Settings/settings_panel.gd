@@ -534,7 +534,7 @@ func _connect_control_signals() -> void:
 	_panel.resized.connect(_on_panel_layout_changed)
 	_main_menu_button.pressed.connect(_on_main_menu_pressed)
 	_save_button.pressed.connect(_on_save_pressed)
-	_close_button.pressed.connect(_on_close_pressed)
+	_close_button.pressed.connect(hide_panel)
 	_player_name_input.text_submitted.connect(_on_player_name_text_submitted)
 	_player_name_input.focus_exited.connect(_on_player_name_focus_exited)
 	_range_default_club_option.item_selected.connect(_on_range_default_club_selected)
@@ -722,10 +722,6 @@ func _on_save_pressed() -> void:
 func _on_main_menu_pressed() -> void:
 	GlobalSettingsManager.save_app_settings()
 	main_menu_requested.emit()
-	hide_panel()
-
-
-func _on_close_pressed() -> void:
 	hide_panel()
 
 
